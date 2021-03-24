@@ -5,10 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +26,16 @@ public class Matching {
 
     private String time;
 
-    private Long manId;
+    @JoinColumn(name = "man_id")
+    @ManyToOne
+    private Account manId;
 
-    private Long womanId;
+    @JoinColumn(name = "woman_id")
+    @ManyToOne
+    private Account womanId;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "matchingId")
+    private List<Chatroom> chatroomList = new ArrayList<>();
+
+
 }

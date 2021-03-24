@@ -38,8 +38,7 @@ public class AccountService implements UserDetailsService {
      * 모든 account 조회
      */
     public List<Account> listAll() {
-  //      return accountRepository.findAll();
-        return null;
+        return accountRepository.findAll();
     }
 
     /**

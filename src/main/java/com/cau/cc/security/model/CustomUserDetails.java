@@ -17,7 +17,7 @@ public class CustomUserDetails extends org.springframework.security.core.userdet
         this.account = myUser;
     }
 
-    public String getFullName() {
+    public String getEmail() {
         return account.getEmail() + " " + account.getEmail();
     }
 }

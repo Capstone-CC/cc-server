@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +20,10 @@ public class Report {
 
     private String content;
 
-    private Long reporterId;
+    @ManyToOne
+    private Account reporterId;
 
-    private Long reportedId;
+    @ManyToOne
+    private Account reportedId;
 
 }

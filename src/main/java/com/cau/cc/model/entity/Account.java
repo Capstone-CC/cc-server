@@ -5,10 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,5 +47,9 @@ public class Account {
 
     private String verificationCode;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
+    private List<Account> reporterList;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
+    private List<Account> reportedList;
 }

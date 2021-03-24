@@ -12,8 +12,6 @@ public class CcApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CcApplication.class, args);
-
-
     }
 
 }

@@ -47,9 +47,19 @@ public class Account {
 
     private String verificationCode;
 
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manId")
+    private List<Matching> manList = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "womanId")
+    private List<Matching> womanList = new ArrayList<>();
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reporterId")
     private List<Report> reporterList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedId")
     private List<Report> reportedList = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
+    private List<Major> majorList = new ArrayList<>();
 }

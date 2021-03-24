@@ -20,9 +20,11 @@ public class Report {
 
     private String content;
 
+    @JoinColumn(name = "reporter_id")
     @ManyToOne
     private Account reporterId;
 
+    @JoinColumn(name = "reported_id")
     @ManyToOne
     private Account reportedId;
 

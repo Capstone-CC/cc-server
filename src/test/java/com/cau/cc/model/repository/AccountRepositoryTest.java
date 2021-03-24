@@ -43,7 +43,33 @@ class AccountRepositoryTest {
         user.setLocation(location);
         user.setEmail(email);
 
-        Account newUser = accountRepository.save(user);
+        Long id1 = 2L;
+        String name1 = "정지순";
+        String nickName1 = "돼지";
+        String password1 = "Test01@gmail.com";
+        String image1 = "image";
+        String gender1 = "man";
+        int age1 = 1;
+        int grade1 = 4;
+        int height1 = 180;
+        String location1 = "서울";
+        String email1 = "wlrhkd49@naver.com";
+
+
+        Account user2 = new Account();
+        user.setId(id1);
+        user.setName(name1);
+        user.setNickName(nickName1);
+        user.setPassword(password1);
+        user.setImage(image1);
+        user.setGender(gender1);
+        user.setAge(age1);
+        user.setGrade(grade1);
+        user.setHeight(height1);
+        user.setLocation(location1);
+        user.setEmail(email1);
+
+        Account newUser = accountRepository.save(user2);
 
         Assertions.assertNotNull(newUser);
 

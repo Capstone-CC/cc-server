@@ -20,9 +20,8 @@ public class Major {
 
     private String majorName;
 
+    @JoinColumn(name = "user_id")
     @ManyToOne
-    private Account reporterId;
+    private Account userId;
 
-    @ManyToOne
-    private Account reportedId;
 }

@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,5 +20,7 @@ public class Chatroom {
 
     private String name;
 
-    private Long matchingId;
+    @JoinColumn(name = "matching_id")
+    @ManyToOne
+    private Matching matchingId;
 }

@@ -21,8 +21,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/","/api/email","/api/verify").permitAll();
+                .antMatchers("/","/h2-console/**","/api/email","/api/verify").permitAll();
+
+        
+        // this will ignore only h2-console csrf, spring security 4+
+        http.csrf().ignoringAntMatchers("/h2-console/**");
+        //this will allow frames with same origin which is much more safe
+        http.headers().frameOptions().sameOrigin();
     }
-
-
 }

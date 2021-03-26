@@ -1,9 +1,6 @@
 package com.cau.cc.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
+@ToString(exclude = {"manId","womanId","chatroomList"})
 public class Matching {
 
     @Id

@@ -1,9 +1,15 @@
-package com.cau.cc.model.dto;
+package com.cau.cc.model.network.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class AccountDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class AccountApiResponse {
     private Long id;
 
     private String name;
@@ -33,5 +39,4 @@ public class AccountDto {
     private String email;
 
     private String verificationCode;
-
 }

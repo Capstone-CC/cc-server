@@ -3,6 +3,8 @@ package com.cau.cc.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,8 +21,7 @@ public class Major {
     //enum
     private String majorName;
 
-    @JoinColumn(name = "user_id")
-    @ManyToOne
-    private Account userId;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
+    private List<Account> accountList = new ArrayList<>();
 
 }

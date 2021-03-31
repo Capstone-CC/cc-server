@@ -60,6 +60,7 @@ public class Account {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedId")
     private List<Report> reportedList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
-    private List<Major> majorList = new ArrayList<>();
+    @JoinColumn(name = "major_id")
+    @ManyToOne
+    private Major majorId;
 }

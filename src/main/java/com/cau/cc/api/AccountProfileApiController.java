@@ -17,25 +17,29 @@ public class AccountProfileApiController implements CrudInterface<AccountApiRequ
 
     @Override
     @PostMapping("") // /api/profile
-    public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
+    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request) {
         return accountProfileService.create(request);
     }
 
     @Override
     @GetMapping("{id}") // /api/profile/id
-    public Header<AccountApiResponse> read(Long id) {
+    public Header<AccountApiResponse> read(@PathVariable Long id) {
         return accountProfileService.read(id);
     }
 
     @Override
     @PutMapping("") // /api/profile
+<<<<<<< HEAD
+    public Header<AccountApiResponse> update(@RequestBody Header<AccountApiRequest> request) {
+=======
     public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
+>>>>>>> c1e42910c34c6b57ccab321a4a99ad4dcc448284
         return accountProfileService.update(request);
     }
 
     @Override
     @DeleteMapping("{id}") // /api/profile/id
-    public Header delete(Long id) {
+    public Header delete(@PathVariable Long id) {
         return accountProfileService.delete(id);
     }
 }

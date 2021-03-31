@@ -14,30 +14,35 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/account")
 public class AccountApiController implements CrudInterface<AccountApiRequest, AccountApiResponse> {
 
 
     @Autowired
     private AccountService accountService;
 
-    @Override
-    public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
+
+
+    @Override // 호출안됨
+    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request) {
         return null;
     }
 
     @Override
-    public Header<AccountApiResponse> read(Long id) {
+    @GetMapping("")
+    public Header<AccountApiResponse> read(@RequestBody Long id) {
         return accountService.read(id);
     }
 
     @Override
-    public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
+    @PutMapping("")
+    public Header<AccountApiResponse> update(@RequestBody Header<AccountApiRequest> request) {
         return accountService.update(request);
     }
 
     @Override
-    public Header delete(Long id) {
+    @DeleteMapping("")
+    public Header delete(@RequestBody Long id) {
         return accountService.delete(id);
     }
 }

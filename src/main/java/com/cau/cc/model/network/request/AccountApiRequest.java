@@ -22,6 +22,8 @@ public class AccountApiRequest {
 
     private String gender;
 
+    // TODO : major 추가
+
     private int age;
 
     private int grade; // 학년

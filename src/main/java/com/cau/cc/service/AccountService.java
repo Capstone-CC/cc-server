@@ -5,6 +5,7 @@ import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
+import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
@@ -28,11 +29,48 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class AccountService implements CrudInterface<AccountApiRequest, AccountApiResponse> {
+public class AccountService implements  CrudInterface<AccountApiRequest, AccountApiResponse> {
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    AccountRepository accountRepository;
+
+    /**
+     * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
+     */
     @Override
     public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
-        return null;
+        AccountApiRequest body = request.getData();
+
+        //validateDuplicateMember
+        Account findAccount = accountRepository.findByEmail(body.getEmail());
+
+        if(findAccount != null){ // 이미존재하는 email
+           return Header.ERROR("이미 존재하는 Email 입니다.");
+        }
+
+        Account account = Account.builder()
+                .email(body.getEmail())
+                .password(passwordEncoder.encode(body.getPassword()))
+                .gender(body.getGender())
+                .grade(body.getGrade())
+                //TODO : major 저장
+                //TODO : major의 account 저장
+                .build();
+
+        Account findAccount2 = accountRepository.save(account);
+
+
+        //reponser
+        AccountApiResponse response = new AccountApiResponse();
+        response.setEmail(findAccount2.getEmail());
+        response.setGender(findAccount2.getGender());
+        response.setGrade(findAccount2.getGrade());
+        //TODO : major 추가
+
+        return Header.OK(response);
     }
 
     @Override
@@ -50,12 +88,4 @@ public class AccountService implements CrudInterface<AccountApiRequest, AccountA
         return null;
     }
 
-    private Header<AccountApiResponse> response(Account account) {
-//        AccountApiResponse body = AccountApiResponse.builder()
-//                .id(account.getId())
-//                .name(account.getName())
-//                .matchingId(account.getMatchingId().getId())
-//                .build();
-        return Header.OK();
-    }
 }

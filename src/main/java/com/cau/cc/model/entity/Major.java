@@ -16,6 +16,7 @@ public class Major {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //enum
     private String majorName;
 
     @JoinColumn(name = "user_id")

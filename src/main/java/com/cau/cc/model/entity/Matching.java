@@ -1,8 +1,10 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @Entity
 @Builder
 @ToString(exclude = {"manId","womanId","chatroomList"})
+@Accessors(chain = true)
 public class Matching {
 
     @Id
@@ -22,7 +25,7 @@ public class Matching {
 
     private int womanUserState;
 
-    private String time;
+    private LocalDateTime time;
 
     @JoinColumn(name = "man_id")
     @ManyToOne

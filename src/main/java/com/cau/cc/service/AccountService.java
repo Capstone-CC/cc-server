@@ -2,9 +2,11 @@ package com.cau.cc.service;
 
 import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.security.model.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +48,14 @@ public class AccountService implements CrudInterface<AccountApiRequest, AccountA
     @Override
     public Header delete(Long id) {
         return null;
+    }
+
+    private Header<AccountApiResponse> response(Account account) {
+//        AccountApiResponse body = AccountApiResponse.builder()
+//                .id(account.getId())
+//                .name(account.getName())
+//                .matchingId(account.getMatchingId().getId())
+//                .build();
+        return Header.OK();
     }
 }

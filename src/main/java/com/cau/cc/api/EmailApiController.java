@@ -3,12 +3,10 @@ package com.cau.cc.api;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
-import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.service.AccountService;
 import com.cau.cc.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -43,6 +41,7 @@ public class EmailApiController {
         body.setVerificationCode(randomCode);
 
         //세션에 받은 이메일을 key로 AccountDTO 객체 Session의 저장
+        // TODO : 세션 만료 시간 설정
         httpSession.setAttribute(body.getEmail(),body);
 
         return ResponseEntity.ok("email send finished");
@@ -72,7 +71,9 @@ public class EmailApiController {
         //세션에서 꺼내온 newAccountDTO와 기존에있던 originAcountDto code가 같으면
         if(newBody.getVerificationCode().contains(originBody.getVerificationCode())){
             //인증 완료 했으므로 세션에서 지우기
-            httpSession.removeAttribute(newBody.getEmail());
+            // TODO : 세선 유지 후 인증 된 사용자임을 저장
+            originBody.setCheckEmaile(true);
+            httpSession.setAttribute(originBody.getName(),originBody);
             return true;
         } else{ // 다르면
             return false;
@@ -83,12 +84,21 @@ public class EmailApiController {
     AccountService accountService;
 
     /**
-     * 이메일 인증된 사용자 가입 [아직미완성]
+     * 이메일 인증된 사용자 가입
+     * 세션에서 꺼내서  확인 후 나머지 정보 추가 해서 저장
      */
     @PostMapping("/register")
-    public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
-        return accountService.create(request);
+    public String create(@RequestBody Header<AccountApiRequest> request,
+                                             HttpSession httpSession) {
+        
+        //입력받은 객체에 대한 값을 세션에서 꺼내서
+        AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getData().getName());
+        
+        //세션에서 꺼낸 originBody가 인증된 사용자인지 검토
+        if(origiBody.isCheckEmaile()){
+            return "가입완료";
+        } else{
+            return "가입안됨";
+        }
     }
-
-
 }

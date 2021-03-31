@@ -28,7 +28,7 @@ public class AccountProfileApiController implements CrudInterface<AccountApiRequ
     }
 
     @Override
-    @PostMapping("") // /api/profile
+    @PutMapping("") // /api/profile
     public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
         return accountProfileService.update(request);
     }

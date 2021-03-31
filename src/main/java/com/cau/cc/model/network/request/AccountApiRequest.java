@@ -40,4 +40,6 @@ public class AccountApiRequest {
 
     private String verificationCode;
 
+    private boolean checkEmaile;
+
 }

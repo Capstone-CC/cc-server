@@ -1,6 +1,7 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.*;
@@ -25,6 +26,7 @@ public class Account {
 
     private String image;
 
+    //enum
     private String gender;
 
     private int age;

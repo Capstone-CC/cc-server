@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AccountApiResponse {
-
     private Long id;
 
     private String name;

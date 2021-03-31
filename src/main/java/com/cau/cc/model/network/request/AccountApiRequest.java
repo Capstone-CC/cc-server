@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AccountApiRequest {
-
     private Long id;
 
     private String name;
@@ -40,5 +39,7 @@ public class AccountApiRequest {
     private String email;
 
     private String verificationCode;
+
+    private boolean checkEmaile;
 
 }

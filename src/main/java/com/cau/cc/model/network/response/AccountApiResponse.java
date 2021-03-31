@@ -39,4 +39,5 @@ public class AccountApiResponse {
     private String email;
 
     private String verificationCode;
+
 }

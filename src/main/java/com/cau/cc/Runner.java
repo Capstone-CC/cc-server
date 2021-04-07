@@ -6,6 +6,7 @@ import com.cau.cc.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -18,6 +19,9 @@ public class Runner implements ApplicationRunner {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -52,6 +56,14 @@ public class Runner implements ApplicationRunner {
             accountRepository.save(account1);
             System.out.println(connection.getMetaData().getURL());
             System.out.println(connection.getMetaData().getUserName());
+
+            //test db
+            Account account2 = Account.builder()
+                    .id(2l)
+                    .email("test@gmail.com")
+                    .password(passwordEncoder.encode("123123"))
+                    .build();
+            accountRepository.save(account2);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.cau.cc.api;
 
+import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
@@ -7,7 +8,10 @@ import com.cau.cc.service.AccountService;
 import com.cau.cc.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
@@ -15,7 +19,7 @@ import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api")
-public class EmailApiController {
+public class RegisterApiController {
 
     @Autowired
     private EmailService emailService;
@@ -24,7 +28,7 @@ public class EmailApiController {
      * 이메일받아서 인증보내기
      */
     @GetMapping("/email")
-    public ResponseEntity<String> email(@RequestBody Header<AccountApiRequest> request,
+    public Header<String> email(@RequestBody Header<AccountApiRequest> request,
                                         HttpSession httpSession)
             throws UnsupportedEncodingException, MessagingException {
 
@@ -34,17 +38,32 @@ public class EmailApiController {
         //email 받아서
         String email = body.getEmail();
 
-        //메일보내고 인증코드 받아서
-        String randomCode = emailService.sendVerificationEmail(email);
+        //response
+        String response = null;
 
-        //인증코드는 받은 AccountDto에 저장하고
-        body.setVerificationCode(randomCode);
+        if(email.contains("@")){ //이메일 형식이면
+            //메일보내고 인증코드 받아서
+            String randomCode = emailService.sendVerificationEmail(email);
 
-        //세션에 받은 이메일을 key로 AccountDTO 객체 Session의 저장
-        // TODO : 세션 만료 시간 설정
-        httpSession.setAttribute(body.getEmail(),body);
+            //인증코드는 받은 AccountDto에 저장하고
+            body.setVerificationCode(randomCode);
 
-        return ResponseEntity.ok("email send finished");
+            //세션에 받은 이메일을 key로 AccountDTO 객체 Session의 저장
+            //세션 만료 시간 3600
+            httpSession.setAttribute(body.getEmail(),body);
+
+            //response
+            response = "email send finished";
+
+            //Header는 static 클래스
+            return Header.OK(response);
+
+        } else { // 이메일 형식 아니면
+            //response
+            response = "Not email format";
+            return Header.ERROR(response);
+
+        }
     }
 
     /**
@@ -55,7 +74,7 @@ public class EmailApiController {
      *
      */
     @GetMapping("/verify")
-    public boolean verify(@RequestBody Header<AccountApiRequest> request,
+    public Header<String> verify(@RequestBody Header<AccountApiRequest> request,
                           HttpSession httpSession){
 
         AccountApiRequest newBody = request.getData();
@@ -64,19 +83,27 @@ public class EmailApiController {
         //해당 객체의 코드와 파라미터로 받은 accountDto의 code를 비교
         AccountApiRequest originBody = (AccountApiRequest) httpSession.getAttribute(newBody.getEmail());
 
+        String response = null;
+
         if(newBody == null){ //쿠키가 없는경우
-            return false;
+            response = "이메일 인증을 해주세요";
+            return Header.ERROR(response);
         }
 
-        //세션에서 꺼내온 newAccountDTO와 기존에있던 originAcountDto code가 같으면
+        //파라미터로 받은 newAccount와 기존에있던 originAcountDto code가 같으면
         if(newBody.getVerificationCode().contains(originBody.getVerificationCode())){
             //인증 완료 했으므로 세션에서 지우기
             // TODO : 세선 유지 후 인증 된 사용자임을 저장
             originBody.setCheckEmaile(true);
-            httpSession.setAttribute(originBody.getName(),originBody);
-            return true;
+            // 기존과 동일한 session name으로 들어오면 덮어씌어진다.
+            httpSession.setAttribute(originBody.getEmail(),originBody);
+
+            response = "인증 완료";
+            return Header.OK(response);
+
         } else{ // 다르면
-            return false;
+            response = "인증번호가 틀렸습니다.";
+            return Header.ERROR(response);
         }
     }
 
@@ -86,19 +113,25 @@ public class EmailApiController {
     /**
      * 이메일 인증된 사용자 가입
      * 세션에서 꺼내서  확인 후 나머지 정보 추가 해서 저장
+     *
+     * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
     @PostMapping("/register")
-    public String create(@RequestBody Header<AccountApiRequest> request,
+    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request,
                                              HttpSession httpSession) {
         
         //입력받은 객체에 대한 값을 세션에서 꺼내서
-        AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getData().getName());
+        AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getData().getEmail());
         
         //세션에서 꺼낸 originBody가 인증된 사용자인지 검토
         if(origiBody.isCheckEmaile()){
-            return "가입완료";
+            // 세션만료
+            httpSession.removeAttribute(origiBody.getEmail());
+
+            return accountService.create(request);
+
         } else{
-            return "가입안됨";
+            return Header.ERROR("세션만료");
         }
     }
 }

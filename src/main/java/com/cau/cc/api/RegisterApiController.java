@@ -19,7 +19,6 @@ import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin("*")
 public class RegisterApiController {
 
     @Autowired

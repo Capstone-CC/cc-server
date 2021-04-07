@@ -1,6 +1,7 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"userId"})
 public class Major {
 

@@ -11,6 +11,7 @@ import java.util.*;
 @Data
 @Entity
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"manList","womanList","reporterList","reportedList","majorList"})
 public class Account {
 

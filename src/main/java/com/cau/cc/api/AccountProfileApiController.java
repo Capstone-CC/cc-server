@@ -29,10 +29,7 @@ public class AccountProfileApiController implements CrudInterface<AccountApiRequ
 
     @Override
     @PutMapping("") // /api/profile
-//<<<<<<< HEAD
     public Header<AccountApiResponse> update(@RequestBody Header<AccountApiRequest> request) {
-//=======
-//>>>>>>> c1e42910c34c6b57ccab321a4a99ad4dcc448284
         return accountProfileService.update(request);
     }
 

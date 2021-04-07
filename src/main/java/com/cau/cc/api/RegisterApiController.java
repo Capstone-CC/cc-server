@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("*")
 public class RegisterApiController {
 
     @Autowired
@@ -28,15 +29,18 @@ public class RegisterApiController {
      * 이메일받아서 인증보내기
      */
     @GetMapping("/email")
-    public Header<String> email(@RequestBody Header<AccountApiRequest> request,
+    public Header<String> email(@RequestParam String email,
+            //@RequestBody Header<AccountApiRequest> request,
                                         HttpSession httpSession)
             throws UnsupportedEncodingException, MessagingException {
 
 
-        AccountApiRequest body = request.getData();
 
+        AccountApiRequest body = new AccountApiRequest();
+
+        body.setEmail(email);
         //email 받아서
-        String email = body.getEmail();
+ //       String email = body.getEmail();
 
         //response
         String response = null;
@@ -74,10 +78,15 @@ public class RegisterApiController {
      *
      */
     @GetMapping("/verify")
-    public Header<String> verify(@RequestBody Header<AccountApiRequest> request,
+    public Header<String> verify(@RequestParam String email,
+            @RequestParam String code,
+            //@RequestBody Header<AccountApiRequest> request,
                           HttpSession httpSession){
 
-        AccountApiRequest newBody = request.getData();
+//        AccountApiRequest newBody = request.getData();
+        AccountApiRequest newBody = new AccountApiRequest();
+        newBody.setEmail(email);
+        newBody.setVerificationCode(code);
 
         //쿠키의 맞는 세션을 받아 해당 세션에서 파라미터로 받은 이메일의 해당하는 ACCOUNT객체 꺼내고
         //해당 객체의 코드와 파라미터로 받은 accountDto의 code를 비교

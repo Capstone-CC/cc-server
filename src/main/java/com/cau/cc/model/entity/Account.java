@@ -1,6 +1,7 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.*;
@@ -10,6 +11,7 @@ import java.util.*;
 @Data
 @Entity
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"manList","womanList","reporterList","reportedList","majorList"})
 public class Account {
 
@@ -25,6 +27,7 @@ public class Account {
 
     private String image;
 
+    //enum
     private String gender;
 
     private int age;
@@ -58,6 +61,7 @@ public class Account {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedId")
     private List<Report> reportedList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
-    private List<Major> majorList = new ArrayList<>();
+    @JoinColumn(name = "major_id")
+    @ManyToOne
+    private Major majorId;
 }

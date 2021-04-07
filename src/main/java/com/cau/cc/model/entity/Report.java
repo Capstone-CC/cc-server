@@ -1,14 +1,17 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"reporterId","reported_id"})
 public class Report {
 
@@ -17,6 +20,8 @@ public class Report {
     private Long id;
 
     private String content;
+
+    private LocalDateTime reportTime;
 
     @JoinColumn(name = "reporter_id")
     @ManyToOne

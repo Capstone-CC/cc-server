@@ -1,9 +1,15 @@
-package com.cau.cc.model.dto;
+package com.cau.cc.model.network.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class AccountDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class AccountApiRequest {
     private Long id;
 
     private String name;
@@ -15,6 +21,8 @@ public class AccountDto {
     private String image;
 
     private String gender;
+
+    // TODO : major 추가
 
     private int age;
 
@@ -33,5 +41,7 @@ public class AccountDto {
     private String email;
 
     private String verificationCode;
+
+    private boolean checkEmaile;
 
 }

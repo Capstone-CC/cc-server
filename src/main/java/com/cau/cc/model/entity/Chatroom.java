@@ -1,6 +1,7 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"matchingId"})
 public class Chatroom {
 

@@ -1,14 +1,18 @@
 package com.cau.cc.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"userId"})
 public class Major {
 
@@ -16,10 +20,10 @@ public class Major {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //enum
     private String majorName;
 
-    @JoinColumn(name = "user_id")
-    @ManyToOne
-    private Account userId;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
+    private List<Account> accountList = new ArrayList<>();
 
 }

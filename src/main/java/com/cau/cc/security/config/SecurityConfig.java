@@ -96,12 +96,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         // - (3)
         configuration.addAllowedOrigin("http://54.180.141.109:3000");
-        configuration.addAllowedOrigin("http://10.210.60.107");
+        configuration.addAllowedOrigin("http://10.210.60.116:3000");
+        configuration.addAllowedOrigin("http://172.30.1.19");
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH","OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Access-Contorl-Allow-Headers,Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"));
 
-
- //       configuration.setAllowCredentials(true);
+        //       configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -126,7 +126,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
+                .antMatchers("/","/api/register","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         

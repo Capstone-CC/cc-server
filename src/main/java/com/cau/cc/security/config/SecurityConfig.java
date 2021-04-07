@@ -96,6 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         // - (3)
         configuration.addAllowedOrigin("http://54.180.141.109:3000");
+        configuration.addAllowedOrigin("http://10.210.60.107");
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH","OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Access-Contorl-Allow-Headers,Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"));
 

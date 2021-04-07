@@ -98,7 +98,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedOrigin("http://54.180.141.109:3000");
         configuration.addAllowedOrigin("http://10.210.60.116:3000");
         configuration.addAllowedOrigin("http://172.30.1.19");
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH","OPTIONS"));
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+//        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH","OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Access-Contorl-Allow-Headers,Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"));
 
         //       configuration.setAllowCredentials(true);

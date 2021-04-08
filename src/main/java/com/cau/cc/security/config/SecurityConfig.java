@@ -90,55 +90,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param
      * @throws Exception
      */
-    // CORS 허용 적용
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        // - (3)
-//        configuration.addAllowedOrigin("http://54.180.141.109:3000");
-//        configuration.addAllowedOrigin("http://10.210.60.116:3000");
-//        configuration.addAllowedOrigin("http://172.30.1.19");
-////        configuration.addAllowedMethod("GET");
-////        configuration.addAllowedMethod("POST");
-////        configuration.addAllowedMethod("OPTIONS");
-////        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH","OPTIONS"));
-////        configuration.addAllowedHeader("Access-Contorl-Allow-Headers");
-////        configuration.addAllowedHeader("Content-Type");
-////        configuration.addAllowedHeader("Authorization");
-////        configuration.addAllowedHeader("X-Requested-With");
-//
-//        configuration.addAllowedMethod("*");
-//        configuration.addAllowedHeader("*");
-////        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-////
-//////        configuration.addAllowedOrigin("http://10.210.60.116:3000");
-//////        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE"));
-//////        configuration.setAllowCredentials(true);
-//////        configuration.setAllowedHeaders(Arrays.asList("Authorization", "TOKEN_ID", "X-Requested-With", "Authorization", "Content-Type", "Content-Length", "Cache-Control"));
-//////
-//////        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//////        source.registerCorsConfiguration("/**", configuration);
-//////
-//////        return source;
-//    }
-
+    // CORS 허용 적용 (Global)
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         System.out.println("----------------cors config-----------------------");
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin("http://54.180.141.109:3000");
-        configuration.addAllowedOrigin("http://220.72.78.45");
-        configuration.addAllowedOrigin("http://220.72.78.45:80");
-        //        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type","Access-Control-Allow-Origin"));
-        //configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
@@ -150,18 +112,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-
-                .cors().and()
                 .csrf().disable()
+                .cors().and()
                 .authorizeRequests()
-                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                //.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/","/api/register","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         
-        // this will ignore only h2-console csrf, spring security 4+
-        // http.csrf().ignoringAntMatchers("/h2-console/**");
-        //this will allow frames with same origin which is much more safe
+        // thi s will ignore only h2-console csrf, spring security 4+
+        //        // http.csrf().ignoringAntMatchers("/h2-console/**");
+        //        //this will allow frames withsame origin which is much more safe
         http.headers().frameOptions().disable();
 
     }

@@ -90,65 +90,44 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-//    /**
-//     * cors
-//     * @param
-//     * @throws Exception
-//     */
-//    // CORS 허용 적용 (Global)
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource(){
-//        System.out.println("----------------cors config-----------------------");
-//
-//        CorsConfiguration configuration = new CorsConfiguration();
-//
-//        configuration.addAllowedOriginPattern("*");
-//        configuration.addAllowedOriginPattern("http://cauconnect.com");
-//        configuration.addAllowedOriginPattern("http://3.36.250.224:3030");
-//        configuration.setAllowedMethods(Arrays.asList("*"));
-//        configuration.setAllowedHeaders(Arrays.asList("*"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//
-//        System.out.println("----------------cors config end-----------------------");
-//        return source;
-//    }
+    /**
+     * cors
+     * @param
+     * @throws Exception
+     */
+    // CORS 허용 적용 (Global)
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(){
+        System.out.println("----------------cors config-----------------------");
+
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        System.out.println("----------------cors config end-----------------------");
+        return source;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-//                .cors().configurationSource(corsConfigurationSource).and()
                 .cors().and()
                 .authorizeRequests()
-//                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() //OPTIONS 메소드 허락
                 .antMatchers("/","/api/register","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-        //http.addFilterBefore(corsFilter(), SecurityContextPersistenceFilter.class);
-        // thi s will ignore only h2-console csrf, spring security 4+
-        //        // http.csrf().ignoringAntMatchers("/h2-console/**");
-        //        //this will allow frames withsame origin which is much more safe
+
+        //this will allow frames withsame origin which is much more safe
         http.headers().frameOptions().disable();
 
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOriginPattern("*");
-        corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
-                "Accept", "Authorization", "Origin, Accept", "X-Requested-With",
-                "Access-Control-Request-Method", "Access-Control-Request-Headers"));
-        corsConfiguration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization",
-                "Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-        return new CorsFilter(urlBasedCorsConfigurationSource);
-    }
+
 
 }

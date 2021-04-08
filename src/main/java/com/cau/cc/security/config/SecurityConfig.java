@@ -1,4 +1,5 @@
 package com.cau.cc.security.config;
+import com.cau.cc.cors.CORSFilter;
 import com.cau.cc.security.filter.LoginProcessingFilter;
 import com.cau.cc.security.handler.AjaxAuthenticationFailureHandler;
 import com.cau.cc.security.handler.AjaxAuthenticationSuccessHandler;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
@@ -86,46 +89,44 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    /**
-     * cors
-     * @param
-     * @throws Exception
-     */
-    // CORS 허용 적용 (Global)
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-        System.out.println("----------------cors config-----------------------");
-
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.addAllowedOriginPattern("*");
-        configuration.addAllowedOriginPattern("http://cauconnect.com");
-        configuration.addAllowedOriginPattern("http://3.36.250.224:3030");
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        System.out.println("----------------cors config end-----------------------");
-        return source;
-    }
-
-    @Autowired
-    CorsConfigurationSource corsConfigurationSource;
+//    /**
+//     * cors
+//     * @param
+//     * @throws Exception
+//     */
+//    // CORS 허용 적용 (Global)
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource(){
+//        System.out.println("----------------cors config-----------------------");
+//
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        configuration.addAllowedOriginPattern("*");
+//        configuration.addAllowedOriginPattern("http://cauconnect.com");
+//        configuration.addAllowedOriginPattern("http://3.36.250.224:3030");
+//        configuration.setAllowedMethods(Arrays.asList("*"));
+//        configuration.setAllowedHeaders(Arrays.asList("*"));
+//        configuration.setAllowCredentials(true);
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//
+//        System.out.println("----------------cors config end-----------------------");
+//        return source;
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource).and()
+//                .cors().configurationSource(corsConfigurationSource).and()
+//                .cors().and()
                 .authorizeRequests()
 //                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() //OPTIONS 메소드 허락
+//                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() //OPTIONS 메소드 허락
                 .antMatchers("/","/api/register","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-        
+        //http.addFilterBefore(corsFilter(), SecurityContextPersistenceFilter.class);
         // thi s will ignore only h2-console csrf, spring security 4+
         //        // http.csrf().ignoringAntMatchers("/h2-console/**");
         //        //this will allow frames withsame origin which is much more safe

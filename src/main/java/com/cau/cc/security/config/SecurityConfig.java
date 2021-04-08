@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.session.DefaultCookieSerializerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -119,7 +120,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource).and()
                 .authorizeRequests()
-                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+//                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() //OPTIONS 메소드 허락
                 .antMatchers("/","/api/register","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -1,5 +1,5 @@
 package com.cau.cc.security.config;
-import com.cau.cc.cors.CORSFilter;
+
 import com.cau.cc.security.filter.LoginProcessingFilter;
 import com.cau.cc.security.handler.AjaxAuthenticationFailureHandler;
 import com.cau.cc.security.handler.AjaxAuthenticationSuccessHandler;
@@ -28,6 +28,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
@@ -119,7 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
 //                .cors().configurationSource(corsConfigurationSource).and()
-//                .cors().and()
+                .cors().and()
                 .authorizeRequests()
 //                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 //                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() //OPTIONS 메소드 허락
@@ -134,5 +135,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
+                "Accept", "Authorization", "Origin, Accept", "X-Requested-With",
+                "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization",
+                "Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+    }
 
 }

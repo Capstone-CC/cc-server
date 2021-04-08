@@ -119,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource).and()
                 .authorizeRequests()
-                //.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/","/api/register","/api/login","/h2-console/**","/api/email","/api/verify","/api/matching/**").permitAll();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);

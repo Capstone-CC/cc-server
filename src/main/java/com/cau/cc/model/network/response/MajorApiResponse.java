@@ -1,5 +1,6 @@
 package com.cau.cc.model.network.response;
 
+import com.cau.cc.model.entity.MajorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,5 @@ public class MajorApiResponse {
 
     private Long id;
 
-    private String majorName;
+    private MajorEnum majorName;
 }

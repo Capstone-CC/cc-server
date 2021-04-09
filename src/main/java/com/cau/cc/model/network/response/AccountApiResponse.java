@@ -1,5 +1,9 @@
 package com.cau.cc.model.network.response;
 
+import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.model.entity.Major;
+import com.cau.cc.model.entity.MajorEnum;
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,34 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AccountApiResponse {
-    private Long id;
-
-    private String name;
-
-    private String nickName;
-
-    private String password;
-
-    private String image;
-
-    private String gender;
-
-    private int age;
-
-    private int grade; // 학년
-
-    private int height;
-
-    private String location;
-
-    private String timeTable;
-
-    private String hobby;
-
-    private String commend;
 
     private String email;
 
-    private String verificationCode;
+    private GenderEnum gender;
+
+    private MajorEnum majorName;
+
+    private int grade; // 학년
 
 }

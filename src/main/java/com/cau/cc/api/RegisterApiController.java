@@ -1,6 +1,8 @@
 package com.cau.cc.api;
 
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
@@ -10,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -100,7 +106,6 @@ public class RegisterApiController {
 
         //파라미터로 받은 newAccount와 기존에있던 originAcountDto code가 같으면
         if(newBody.getVerificationCode().contains(originBody.getVerificationCode())){
-            //인증 완료 했으므로 세션에서 지우기
             // TODO : 세선 유지 후 인증 된 사용자임을 저장
             originBody.setCheckEmaile(true);
             // 기존과 동일한 session name으로 들어오면 덮어씌어진다.
@@ -127,12 +132,35 @@ public class RegisterApiController {
     @PostMapping("/register")
     public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request,
                                              HttpSession httpSession) {
-        
+
+
+
         //입력받은 객체에 대한 값을 세션에서 꺼내서
         AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getData().getEmail());
         
         //세션에서 꺼낸 originBody가 인증된 사용자인지 검토
         if(origiBody.isCheckEmaile()){
+
+            System.out.println(request.getData().getGender());
+            System.out.println(request.getData().getMajorName());
+
+            // 2개의 비번 틀리면 return
+            if(!request.getData().getPassword().equals(request.getData().getConfirmPw())){
+                return Header.ERROR("비밀번호 확인 오류");
+            }
+            if(request.getData().getEmail() == null){
+                return Header.ERROR("이메일 정보를 입력해주세요");
+            }
+
+            if(!isGender(request.getData().getGender())){
+                return Header.ERROR("성별정보 오류");
+            }
+
+            //학과정보 올바른지 확인
+            if(!isMajor(request.getData().getMajorName())){
+                return Header.ERROR("학과정보 오류");
+            }
+
             // 세션만료
             httpSession.removeAttribute(origiBody.getEmail());
 
@@ -141,5 +169,31 @@ public class RegisterApiController {
         } else{
             return Header.ERROR("세션만료");
         }
+    }
+
+    private boolean isGender(GenderEnum gender) {
+        int check = 0;
+        for(GenderEnum g : GenderEnum.values()){
+            if(g == gender){
+                check = 1;
+            }
+        }
+        if (check==1){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isMajor(MajorEnum majorName) {
+        int check = 0;
+        for(MajorEnum m : MajorEnum.values()){
+            if(m == majorName){
+                check = 1;
+            }
+        }
+        if (check==1){
+            return true;
+        }
+        return false;
     }
 }

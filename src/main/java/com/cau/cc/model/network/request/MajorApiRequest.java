@@ -1,5 +1,6 @@
 package com.cau.cc.model.network.request;
 
+import com.cau.cc.model.entity.MajorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,5 @@ public class MajorApiRequest {
 
     private Long id;
 
-    private String majorName;
+    private MajorEnum majorName;
 }

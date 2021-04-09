@@ -20,8 +20,8 @@ public class Major {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //enum
-    private String majorName;
+    @Enumerated(EnumType.STRING)
+    private MajorEnum majorName; // 학과 [BIOLOGY, COMPSCI, ELECENG, FINANCE, HISTORY, MUSIC, PHYSICS]
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
     private List<Account> accountList = new ArrayList<>();

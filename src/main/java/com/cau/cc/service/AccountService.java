@@ -3,12 +3,14 @@ package com.cau.cc.service;
 import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
+import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
+import com.cau.cc.model.repository.MajorRepository;
 import com.cau.cc.security.model.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,6 +39,9 @@ public class AccountService implements  CrudInterface<AccountApiRequest, Account
     @Autowired
     AccountRepository accountRepository;
 
+    @Autowired
+    MajorRepository majorRepository;
+
     /**
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
@@ -51,14 +56,17 @@ public class AccountService implements  CrudInterface<AccountApiRequest, Account
            return Header.ERROR("이미 존재하는 Email 입니다.");
         }
 
+        //TODO : account -> major 단방향
+        Major major = majorRepository.findByMajorName(body.getMajorName());
+
         Account account = Account.builder()
                 .email(body.getEmail())
                 .password(passwordEncoder.encode(body.getPassword()))
                 .gender(body.getGender())
                 .grade(body.getGrade())
-                //TODO : major 저장
-                //TODO : major의 account 저장
+                .majorId(major)
                 .build();
+
 
         Account findAccount2 = accountRepository.save(account);
 
@@ -67,6 +75,7 @@ public class AccountService implements  CrudInterface<AccountApiRequest, Account
         response.setEmail(findAccount2.getEmail());
         response.setGender(findAccount2.getGender());
         response.setGrade(findAccount2.getGrade());
+        response.setMajorName(findAccount2.getMajorId().getMajorName());
         //TODO : major 추가
 
         return Header.OK(response);

@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"userId"})
+@ToString
 public class Major {
 
     @Id
@@ -21,7 +21,7 @@ public class Major {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private MajorEnum majorName; // 학과 [BIOLOGY, COMPSCI, ELECENG, FINANCE, HISTORY, MUSIC, PHYSICS]
+    private MajorEnum majorName; // 학과
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
     private List<Account> accountList = new ArrayList<>();

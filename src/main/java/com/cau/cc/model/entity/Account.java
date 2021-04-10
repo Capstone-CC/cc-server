@@ -28,7 +28,7 @@ public class Account {
     private String image;
 
     @Enumerated(EnumType.STRING)
-    private GenderEnum gender; // 성별 [MALE, FEMALE]
+    private GenderEnum gender; // 성별 [남, 녀]
 
     private int age;
 

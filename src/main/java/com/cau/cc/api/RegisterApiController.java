@@ -6,10 +6,20 @@ import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.response.LoginApiResponse;
+import com.cau.cc.security.token.AjaxAuthenticationToken;
 import com.cau.cc.service.AccountService;
 import com.cau.cc.service.EmailService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -22,6 +32,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -34,12 +46,10 @@ public class RegisterApiController {
      * 이메일받아서 인증보내기
      */
     @GetMapping("/email")
-    public Header<String> email(@RequestParam String email,
+    public Header<LoginApiResponse> email(@RequestParam String email,
             //@RequestBody Header<AccountApiRequest> request,
                                         HttpSession httpSession)
             throws UnsupportedEncodingException, MessagingException {
-
-
 
         AccountApiRequest body = new AccountApiRequest();
 
@@ -61,16 +71,19 @@ public class RegisterApiController {
             //세션 만료 시간 3600
             httpSession.setAttribute(body.getEmail(),body);
 
-            //response
-            response = "email send finished";
-
             //Header는 static 클래스
-            return Header.OK(response);
+            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+                    .result("true")
+                    .build();
+            return Header.OK(loginApiResponse);
 
         } else { // 이메일 형식 아니면
-            //response
-            response = "Not email format";
-            return Header.ERROR(response);
+            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+                    .result("false")
+                    .build();
+            return Header.OK(loginApiResponse1);
+//            response = "Not email format";
+//            return Header.ERROR(response);
 
         }
     }
@@ -83,7 +96,7 @@ public class RegisterApiController {
      *
      */
     @GetMapping("/verify")
-    public Header<String> verify(@RequestParam String email,
+    public Header<LoginApiResponse> verify(@RequestParam String email,
             @RequestParam String code,
             //@RequestBody Header<AccountApiRequest> request,
                           HttpSession httpSession){
@@ -97,11 +110,15 @@ public class RegisterApiController {
         //해당 객체의 코드와 파라미터로 받은 accountDto의 code를 비교
         AccountApiRequest originBody = (AccountApiRequest) httpSession.getAttribute(newBody.getEmail());
 
-        String response = null;
+//        String response = null;
 
         if(newBody == null){ //쿠키가 없는경우
-            response = "이메일 인증을 해주세요";
-            return Header.ERROR(response);
+            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+                    .result("false")
+                    .build();
+            return Header.OK(loginApiResponse1);
+//            response = "이메일 인증을 해주세요";
+//            return Header.ERROR(response);
         }
 
         //파라미터로 받은 newAccount와 기존에있던 originAcountDto code가 같으면
@@ -111,17 +128,25 @@ public class RegisterApiController {
             // 기존과 동일한 session name으로 들어오면 덮어씌어진다.
             httpSession.setAttribute(originBody.getEmail(),originBody);
 
-            response = "인증 완료";
-            return Header.OK(response);
+
+            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+                    .result("true")
+                    .build();
+            return Header.OK(loginApiResponse);
 
         } else{ // 다르면
-            response = "인증번호가 틀렸습니다.";
-            return Header.ERROR(response);
+            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+                    .result("false")
+                    .build();
+            return Header.OK(loginApiResponse1);
+//            response = "인증번호가 틀렸습니다.";
+//            return Header.ERROR(response);
         }
     }
 
     @Autowired
     AccountService accountService;
+
 
     /**
      * 이메일 인증된 사용자 가입
@@ -130,8 +155,8 @@ public class RegisterApiController {
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
     @PostMapping("/register")
-    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request,
-                                             HttpSession httpSession) {
+    public Header<LoginApiResponse> create(@RequestBody Header<AccountApiRequest> request,
+                                           HttpSession httpSession) {
 
 
 
@@ -141,33 +166,79 @@ public class RegisterApiController {
         //세션에서 꺼낸 originBody가 인증된 사용자인지 검토
         if(origiBody.isCheckEmaile()){
 
+            LoginApiResponse loginApiResponse1 = null;
+
             System.out.println(request.getData().getGender());
             System.out.println(request.getData().getMajorName());
 
             // 2개의 비번 틀리면 return
             if(!request.getData().getPassword().equals(request.getData().getConfirmPw())){
-                return Header.ERROR("비밀번호 확인 오류");
+                loginApiResponse1 = LoginApiResponse.builder()
+                        .result("false")
+                        .build();
+                return Header.OK(loginApiResponse1);
+                //return Header.ERROR("비밀번호 확인 오류");
             }
             if(request.getData().getEmail() == null){
-                return Header.ERROR("이메일 정보를 입력해주세요");
+                loginApiResponse1 = LoginApiResponse.builder()
+                        .result("false")
+                        .build();
+                return Header.OK(loginApiResponse1);
+                //return Header.ERROR("이메일 정보를 입력해주세요");
             }
 
             if(!isGender(request.getData().getGender())){
-                return Header.ERROR("성별정보 오류");
+                loginApiResponse1 = LoginApiResponse.builder()
+                        .result("false")
+                        .build();
+                return Header.OK(loginApiResponse1);
+                //return Header.ERROR("성별정보 오류");
             }
 
             //학과정보 올바른지 확인
             if(!isMajor(request.getData().getMajorName())){
-                return Header.ERROR("학과정보 오류");
+                loginApiResponse1 = LoginApiResponse.builder()
+                        .result("false")
+                        .build();
+                return Header.OK(loginApiResponse1);
+                //return Header.ERROR("학과정보 오류");
             }
+
+
+            // 가입완료
+            accountService.create(request);
 
             // 세션만료
             httpSession.removeAttribute(origiBody.getEmail());
 
-            return accountService.create(request);
+
+            /**
+             * 강제로그인
+             */
+            //권한 가져와서
+            List<GrantedAuthority> roles = new ArrayList<>();
+            roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+            //파라미터로 받은 id, pw 토큰 생성
+            Authentication ajaxAuthenticationToken =
+                    new AjaxAuthenticationToken(request.getData().getEmail(), request.getData().getPassword(),roles);
+
+            //인증 성공한것으로 Context의 Authentication 객체 저장
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(ajaxAuthenticationToken);
+
+            httpSession.setAttribute("SPRING_SECURITY_CONTEXT",securityContext);   // 세션에 spring security context 넣음
+
+            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+                    .result("true")
+                    .build();
+            return Header.OK(loginApiResponse);
 
         } else{
-            return Header.ERROR("세션만료");
+            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+                    .result("false")
+                    .build();
+            return Header.OK(loginApiResponse1);
         }
     }
 
@@ -195,5 +266,11 @@ public class RegisterApiController {
             return true;
         }
         return false;
+    }
+
+
+    @GetMapping("/test")
+    public String test(){
+        return "test";
     }
 }

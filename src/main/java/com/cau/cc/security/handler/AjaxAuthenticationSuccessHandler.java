@@ -25,7 +25,7 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         //Account account = (Account) authentication.getPrincipal();
 
         LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                .result("true")
+                .result(true)
                 .build();
 
 

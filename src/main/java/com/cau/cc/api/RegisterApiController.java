@@ -73,13 +73,13 @@ public class RegisterApiController {
 
             //Header는 static 클래스
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                    .result("true")
+                    .result(true)
                     .build();
             return loginApiResponse;
 
         } else { // 이메일 형식 아니면
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result("false")
+                    .result(false)
                     .build();
             return loginApiResponse1;
 //            response = "Not email format";
@@ -114,7 +114,7 @@ public class RegisterApiController {
 
         if(newBody == null){ //쿠키가 없는경우
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result("false")
+                    .result(false)
                     .build();
             return loginApiResponse1;
 //            response = "이메일 인증을 해주세요";
@@ -130,13 +130,13 @@ public class RegisterApiController {
 
 
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                    .result("true")
+                    .result(true)
                     .build();
             return loginApiResponse;
 
         } else{ // 다르면
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result("false")
+                    .result(false)
                     .build();
             return loginApiResponse1;
 //            response = "인증번호가 틀렸습니다.";
@@ -174,14 +174,14 @@ public class RegisterApiController {
             // 2개의 비번 틀리면 return
             if(!request.getData().getPassword().equals(request.getData().getConfirmPw())){
                 loginApiResponse1 = LoginApiResponse.builder()
-                        .result("false")
+                        .result(false)
                         .build();
                 return loginApiResponse1;
                 //return Header.ERROR("비밀번호 확인 오류");
             }
             if(request.getData().getEmail() == null){
                 loginApiResponse1 = LoginApiResponse.builder()
-                        .result("false")
+                        .result(false)
                         .build();
                 return loginApiResponse1;
                 //return Header.ERROR("이메일 정보를 입력해주세요");
@@ -189,7 +189,7 @@ public class RegisterApiController {
 
             if(!isGender(request.getData().getGender())){
                 loginApiResponse1 = LoginApiResponse.builder()
-                        .result("false")
+                        .result(false)
                         .build();
                 return loginApiResponse1;
                 //return Header.ERROR("성별정보 오류");
@@ -198,7 +198,7 @@ public class RegisterApiController {
             //학과정보 올바른지 확인
             if(!isMajor(request.getData().getMajorName())){
                 loginApiResponse1 = LoginApiResponse.builder()
-                        .result("false")
+                        .result(false)
                         .build();
                 return loginApiResponse1;
                 //return Header.ERROR("학과정보 오류");
@@ -230,13 +230,13 @@ public class RegisterApiController {
             httpSession.setAttribute("SPRING_SECURITY_CONTEXT",securityContext);   // 세션에 spring security context 넣음
 
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                    .result("true")
+                    .result(true)
                     .build();
             return loginApiResponse;
 
         } else{
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result("false")
+                    .result(false)
                     .build();
             return loginApiResponse1;
         }

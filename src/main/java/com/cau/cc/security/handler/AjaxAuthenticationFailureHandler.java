@@ -33,7 +33,7 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
 //        }
 
         LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                .result("false")
+                .result(false)
                 .build();
         response.setStatus(HttpStatus.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -13,15 +13,15 @@ import java.util.List;
 @Entity
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"userId"})
+@ToString
 public class Major {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //enum
-    private String majorName;
+    @Enumerated(EnumType.STRING)
+    private MajorEnum majorName; // 학과
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
     private List<Account> accountList = new ArrayList<>();

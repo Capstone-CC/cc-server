@@ -27,8 +27,8 @@ public class Account {
 
     private String image;
 
-    //enum
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender; // 성별 [남, 녀]
 
     private int age;
 
@@ -64,4 +64,6 @@ public class Account {
     @JoinColumn(name = "major_id")
     @ManyToOne
     private Major majorId;
+
+
 }

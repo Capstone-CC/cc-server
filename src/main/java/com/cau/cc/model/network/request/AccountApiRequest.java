@@ -1,9 +1,14 @@
 package com.cau.cc.model.network.request;
 
+import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.model.entity.Major;
+import com.cau.cc.model.entity.MajorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.Enumerated;
 
 @Data
 @AllArgsConstructor
@@ -18,11 +23,13 @@ public class AccountApiRequest {
 
     private String password;
 
+    private String confirmPw;
+
     private String image;
 
-    private String gender;
+    private GenderEnum gender;
 
-    // TODO : major 추가
+    private MajorEnum majorName;
 
     private int age;
 

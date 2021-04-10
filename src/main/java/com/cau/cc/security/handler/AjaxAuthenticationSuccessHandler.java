@@ -34,7 +34,7 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         
 
-        objectMapper.writeValue(response.getWriter(), Header.OK(loginApiResponse));
+        objectMapper.writeValue(response.getWriter(), loginApiResponse);
 
     }
 }

@@ -52,13 +52,13 @@ public class EmailService  {
     public String sendVerificationEmail(String email)
             throws MessagingException, UnsupportedEncodingException {
         String fromAddress = "yohoee770"; //발신자 이메일
-        String senderName = "CampusContact"; //발신자 이름
+        String senderName = "CauConnect"; //발신자 이름
         String subject = "Please verify your registration"; // 메일 제목
         String content = "Dear [[name]],<br>" //메일내용
                 + "Please input the Code below to verify your registration:<br>"
                 + "<h3>Code = [[code]]</h3>"
                 + "Thank you,<br>"
-                + "CampusContact";
+                + "CauConnect";
 
         // 메일 보내기위해 필요한 객체
         MimeMessage message = mailSender.createMimeMessage();

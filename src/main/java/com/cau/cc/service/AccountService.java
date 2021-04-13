@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class AccountService implements  CrudInterface<AccountApiRequest, AccountApiResponse> {
+public class AccountService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -55,25 +55,23 @@ public class AccountService implements  CrudInterface<AccountApiRequest, Account
     /**
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
-    @Override
-    public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
-        AccountApiRequest body = request.getData();
+    public Header<AccountApiResponse> create(AccountApiRequest request) {
 
         //validateDuplicateMember
-        Account findAccount = accountRepository.findByEmail(body.getEmail());
+        Account findAccount = accountRepository.findByEmail(request.getEmail());
 
         if(findAccount != null){ // 이미존재하는 email
            return Header.ERROR("이미 존재하는 Email 입니다.");
         }
 
         //TODO : account -> major 단방향
-        Major major = majorRepository.findByMajorName(body.getMajorName());
+        Major major = majorRepository.findByMajorName(request.getMajorName());
 
         Account account = Account.builder()
-                .email(body.getEmail())
-                .password(passwordEncoder.encode(body.getPassword()))
-                .gender(body.getGender())
-                .grade(body.getGrade())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .gender(request.getGender())
+                .grade(request.getGrade())
                 .majorId(major)
                 .build();
 
@@ -91,24 +89,8 @@ public class AccountService implements  CrudInterface<AccountApiRequest, Account
         return Header.OK(response);
     }
 
-
     public void login(String id, String pw){
 
-    }
-
-    @Override
-    public Header<AccountApiResponse> read(Long id) {
-        return null;
-    }
-
-    @Override
-    public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
-        return null;
-    }
-
-    @Override
-    public Header delete(Long id) {
-        return null;
     }
 
 }

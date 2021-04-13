@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,7 +33,11 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         //response
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        
+
+        //Create Cookie after Create
+        Cookie newCookie = new Cookie("login", "true");
+        newCookie.setHttpOnly(false);
+        response.addCookie(newCookie);
 
         objectMapper.writeValue(response.getWriter(), loginApiResponse);
 

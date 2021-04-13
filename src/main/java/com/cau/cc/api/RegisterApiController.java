@@ -155,31 +155,31 @@ public class RegisterApiController {
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
     @PostMapping("/register")
-    public LoginApiResponse create(@RequestBody Header<AccountApiRequest> request,
+    public LoginApiResponse create(@RequestBody AccountApiRequest request,
                                            HttpSession httpSession) {
 
 
 
         //입력받은 객체에 대한 값을 세션에서 꺼내서
-        AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getData().getEmail());
+        AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getEmail());
         
         //세션에서 꺼낸 originBody가 인증된 사용자인지 검토
         if(origiBody.isCheckEmaile()){
 
             LoginApiResponse loginApiResponse1 = null;
 
-            System.out.println(request.getData().getGender());
-            System.out.println(request.getData().getMajorName());
+            System.out.println(request.getGender());
+            System.out.println(request.getMajorName());
 
             // 2개의 비번 틀리면 return
-            if(!request.getData().getPassword().equals(request.getData().getConfirmPw())){
+            if(!request.getPassword().equals(request.getConfirmPw())){
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
                 return loginApiResponse1;
                 //return Header.ERROR("비밀번호 확인 오류");
             }
-            if(request.getData().getEmail() == null){
+            if(request.getEmail() == null){
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
@@ -187,7 +187,7 @@ public class RegisterApiController {
                 //return Header.ERROR("이메일 정보를 입력해주세요");
             }
 
-            if(!isGender(request.getData().getGender())){
+            if(!isGender(request.getGender())){
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
@@ -196,7 +196,7 @@ public class RegisterApiController {
             }
 
             //학과정보 올바른지 확인
-            if(!isMajor(request.getData().getMajorName())){
+            if(!isMajor(request.getMajorName())){
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
@@ -221,7 +221,7 @@ public class RegisterApiController {
 
             //파라미터로 받은 id, pw 토큰 생성
             Authentication ajaxAuthenticationToken =
-                    new AjaxAuthenticationToken(request.getData().getEmail(), request.getData().getPassword(),roles);
+                    new AjaxAuthenticationToken(request.getEmail(), request.getPassword(),roles);
 
             //인증 성공한것으로 Context의 Authentication 객체 저장
             SecurityContext securityContext = SecurityContextHolder.getContext();

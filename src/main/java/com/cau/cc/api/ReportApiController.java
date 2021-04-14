@@ -17,7 +17,7 @@ public class ReportApiController implements CrudInterface<ReportApiRequest, Repo
 
     @Override
     @PostMapping("") // /api/report
-    public Header<ReportApiResponse> create(@RequestBody Header<ReportApiRequest> request) {
+    public Header<ReportApiResponse> create(@RequestBody ReportApiRequest request) {
         return reportApiLogicService.create(request);
     }
 
@@ -29,7 +29,7 @@ public class ReportApiController implements CrudInterface<ReportApiRequest, Repo
 
     @Override
     @PutMapping("") // /api/report
-    public Header<ReportApiResponse> update(@RequestBody Header<ReportApiRequest> request) {
+    public Header<ReportApiResponse> update(@RequestBody ReportApiRequest request) {
         return reportApiLogicService.update(request);
     }
 

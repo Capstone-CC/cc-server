@@ -15,7 +15,7 @@ public class AccountProfileService implements CrudInterface<AccountApiRequest, A
     private AccountRepository accountRepository;
 
     @Override
-    public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
+    public Header<AccountApiResponse> create(AccountApiRequest request) {
         return null;
     }
 
@@ -25,7 +25,7 @@ public class AccountProfileService implements CrudInterface<AccountApiRequest, A
     }
 
     @Override
-    public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
+    public Header<AccountApiResponse> update(AccountApiRequest request) {
         return null;
     }
 

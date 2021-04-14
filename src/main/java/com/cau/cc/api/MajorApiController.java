@@ -17,7 +17,7 @@ public class MajorApiController implements CrudInterface<MajorApiRequest, MajorA
 
     @Override
     @PostMapping("") // /api/major
-    public Header<MajorApiResponse> create(@RequestBody Header<MajorApiRequest> request) {
+    public Header<MajorApiResponse> create(@RequestBody MajorApiRequest request) {
         return majorApiLogicService.create(request);
     }
 
@@ -29,7 +29,7 @@ public class MajorApiController implements CrudInterface<MajorApiRequest, MajorA
 
     @Override
     @PutMapping("") // /api/major
-    public Header<MajorApiResponse> update(@RequestBody Header<MajorApiRequest> request) {
+    public Header<MajorApiResponse> update(@RequestBody MajorApiRequest request) {
         return majorApiLogicService.update(request);
     }
 

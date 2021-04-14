@@ -16,6 +16,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -119,16 +120,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
+<<<<<<< HEAD
                 .antMatchers("/","/api/profile/**","/api/register","/api/login","/h2-console/**","/api/upload","/api/email","/api/verify","/api/matching/**","/api/major/**").permitAll()
+=======
+                .antMatchers("/","/api/register",
+                        "/api/login","/h2-console/**",
+                        "/api/swagger",
+                        "/v2/api-docs","/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/swagger-ui/*",
+                        "/webjars/**",
+                        "/v2/**",
+                        "/api/upload",
+                        "/api/email","/api/verify",
+                        "/api/matching/**","/api/major/**").permitAll()
+>>>>>>> c21b111fed79c15c3ee21020adec15cf23d961b6
                 .anyRequest().authenticated();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
         //this will allow frames withsame origin which is much more safe
         http.headers().frameOptions().disable();
-
     }
 
 
 
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().antMatchers("/v2/api-docs/**");
+//        web.ignoring().antMatchers("/swagger.json");
+//        web.ignoring().antMatchers("/swagger-ui.html");
+//        web.ignoring().antMatchers("/swagger-resources/**");
+//        web.ignoring().antMatchers("/webjars/**");
+//    }
 }

@@ -48,7 +48,7 @@ public class RegisterApiController {
      * 이메일받아서 인증보내기
      */
     @GetMapping("/email")
-    public LoginApiResponse email(@RequestParam String email,
+    public Header<LoginApiResponse> email(@RequestParam String email,
             //@RequestBody Header<AccountApiRequest> request,
                                         HttpSession httpSession)
             throws UnsupportedEncodingException, MessagingException {
@@ -77,13 +77,13 @@ public class RegisterApiController {
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
                     .result(true)
                     .build();
-            return loginApiResponse;
+            return Header.OK(loginApiResponse);
 
         } else { // 이메일 형식 아니면
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
                     .result(false)
                     .build();
-            return loginApiResponse1;
+            return Header.OK(loginApiResponse1);
 //            response = "Not email format";
 //            return Header.ERROR(response);
 
@@ -98,7 +98,7 @@ public class RegisterApiController {
      *
      */
     @GetMapping("/verify")
-    public LoginApiResponse verify(@RequestParam String email,
+    public Header<LoginApiResponse> verify(@RequestParam String email,
             @RequestParam String code,
             //@RequestBody Header<AccountApiRequest> request,
                           HttpSession httpSession){
@@ -118,7 +118,7 @@ public class RegisterApiController {
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
                     .result(false)
                     .build();
-            return loginApiResponse1;
+            return Header.OK(loginApiResponse1);
 //            response = "이메일 인증을 해주세요";
 //            return Header.ERROR(response);
         }
@@ -134,13 +134,13 @@ public class RegisterApiController {
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
                     .result(true)
                     .build();
-            return loginApiResponse;
+            return Header.OK(loginApiResponse);
 
         } else{ // 다르면
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
                     .result(false)
                     .build();
-            return loginApiResponse1;
+            return Header.OK(loginApiResponse1);
 //            response = "인증번호가 틀렸습니다.";
 //            return Header.ERROR(response);
         }
@@ -157,7 +157,7 @@ public class RegisterApiController {
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
     @PostMapping("/register")
-    public LoginApiResponse create(@RequestBody AccountApiRequest request,
+    public Header<LoginApiResponse> create(@RequestBody AccountApiRequest request,
                                    HttpSession httpSession,
                                    HttpServletResponse response) {
 
@@ -179,14 +179,14 @@ public class RegisterApiController {
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
-                return loginApiResponse1;
+                return Header.OK(loginApiResponse1);
                 //return Header.ERROR("비밀번호 확인 오류");
             }
             if(request.getEmail() == null){
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
-                return loginApiResponse1;
+                return Header.OK(loginApiResponse1);
                 //return Header.ERROR("이메일 정보를 입력해주세요");
             }
 
@@ -194,7 +194,7 @@ public class RegisterApiController {
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
-                return loginApiResponse1;
+                return Header.OK(loginApiResponse1);
                 //return Header.ERROR("성별정보 오류");
             }
 
@@ -203,7 +203,7 @@ public class RegisterApiController {
                 loginApiResponse1 = LoginApiResponse.builder()
                         .result(false)
                         .build();
-                return loginApiResponse1;
+                return Header.OK(loginApiResponse1);
                 //return Header.ERROR("학과정보 오류");
             }
 
@@ -240,13 +240,13 @@ public class RegisterApiController {
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
                     .result(true)
                     .build();
-            return loginApiResponse;
+            return Header.OK(loginApiResponse);
 
         } else{
             LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
                     .result(false)
                     .build();
-            return loginApiResponse1;
+            return Header.OK(loginApiResponse1);
         }
     }
 

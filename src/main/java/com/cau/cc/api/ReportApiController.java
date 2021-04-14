@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/report")
+@RequestMapping("/report")
 public class ReportApiController implements CrudInterface<ReportApiRequest, ReportApiResponse> {
 
     @Autowired

@@ -8,11 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Accessors(chain = true)
 public class AccountApiResponse {
 
     private String email;
@@ -22,5 +24,11 @@ public class AccountApiResponse {
     private MajorEnum majorName;
 
     private int grade; // 학년
+
+    private String nickName;
+
+    private String hobby;
+
+    private String commend;
 
 }

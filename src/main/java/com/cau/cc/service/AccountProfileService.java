@@ -1,35 +1,79 @@
 package com.cau.cc.service;
 
 import com.cau.cc.ifs.CrudInterface;
+import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
+import com.cau.cc.model.repository.MajorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-public class AccountProfileService implements CrudInterface<AccountApiRequest, AccountApiResponse> {
+public class AccountProfileService {
 
     @Autowired
     private AccountRepository accountRepository;
 
-    @Override
     public Header<AccountApiResponse> create(AccountApiRequest request) {
         return null;
     }
 
-    @Override
-    public Header<AccountApiResponse> read(Long id) {
-        return null;
+    public Header<AccountApiResponse> read(String email) {
+        Account account = accountRepository.findByEmail(email);
+        if(account!=null) {
+            AccountApiResponse accountApiResponse = response(account);
+            return Header.OK(accountApiResponse);
+        }
+        else return Header.ERROR("데이터 없음");
+
     }
 
-    @Override
+    private AccountApiResponse response(Account account) {
+        AccountApiResponse  accountApiResponse = AccountApiResponse.builder()
+                .email(account.getEmail())
+                .gender(account.getGender())
+                .grade(account.getGrade())
+                .majorName(account.getMajorId().getMajorName())
+                .nickName(account.getNickName())
+                .hobby(account.getHobby())
+                .commend(account.getCommend())
+                .build();
+
+        return accountApiResponse;
+    }
+
+    @Autowired
+    MajorRepository majorRepository;
+
     public Header<AccountApiResponse> update(AccountApiRequest request) {
-        return null;
+
+        Account account = accountRepository.findByEmail(request.getEmail());
+        //major 테이블에서 majorname을 통해서 majorId 값 받아오기
+        Major major =  majorRepository.findByMajorName(request.getMajorName());
+
+        if(account != null) {
+            account.setNickName(request.getNickName())
+                    .setEmail(request.getEmail())
+                    .setGender(request.getGender())
+                    .setGrade(request.getGrade())
+                    .setMajorId(major)
+                    .setHobby(request.getHobby())
+                    .setCommend(request.getCommend());
+
+            Account updateAccount = accountRepository.save(account);
+            AccountApiResponse accountApiResponse = response(updateAccount);
+            return Header.OK(accountApiResponse);
+        }
+        else return Header.ERROR("데이터 없음");
+
+
     }
 
-    @Override
     public Header delete(Long id) {
         return null;
     }

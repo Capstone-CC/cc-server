@@ -19,7 +19,7 @@ public class Header<T> {
     //api 통신 설명
     private String description;
 
-    private T data;
+    private T value;
 
     // OK
     public static <T> Header<T> OK() {
@@ -32,7 +32,7 @@ public class Header<T> {
     public static <T> Header<T> OK(T data) {
         return (Header<T>)Header.builder()
                 .transactionTime(LocalDateTime.now())
-                .data(data)
+                .value(data)
                 .build();
     }
 

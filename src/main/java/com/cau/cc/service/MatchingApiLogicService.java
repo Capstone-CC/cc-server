@@ -22,9 +22,9 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
     private MatchingRepository matchingRepository;
 
     @Override
-    public Header<MatchingApiResponse> create(Header<MatchingApiRequest> request) {
+    public Header<MatchingApiResponse> create(MatchingApiRequest request) {
 
-        MatchingApiRequest body = request.getData();
+        MatchingApiRequest body = request;
 
         Matching matching = Matching.builder()
                 .manUserState(body.getManUserState())
@@ -48,8 +48,8 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
     }
 
     @Override
-    public Header<MatchingApiResponse> update(Header<MatchingApiRequest> request) {
-        MatchingApiRequest body = request.getData();
+    public Header<MatchingApiResponse> update(MatchingApiRequest request) {
+        MatchingApiRequest body = request;
 
         return matchingRepository.findById(body.getId())
                 .map(entityMatching -> {

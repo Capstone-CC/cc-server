@@ -17,7 +17,7 @@ public class DatelocationApiController implements CrudInterface<DatelocationApiR
 
     @Override
     @PostMapping("")
-    public Header<DatelocationApiResponse> create(@RequestBody Header<DatelocationApiRequest> request) {
+    public Header<DatelocationApiResponse> create(@RequestBody DatelocationApiRequest request) {
         return datelocationApiLogicService.create(request);
     }
 
@@ -29,7 +29,7 @@ public class DatelocationApiController implements CrudInterface<DatelocationApiR
 
     @Override
     @PutMapping("")
-    public Header<DatelocationApiResponse> update(@RequestBody Header<DatelocationApiRequest> request) {
+    public Header<DatelocationApiResponse> update(@RequestBody DatelocationApiRequest request) {
         return datelocationApiLogicService.update(request);
     }
 

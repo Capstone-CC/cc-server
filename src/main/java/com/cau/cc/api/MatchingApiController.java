@@ -17,7 +17,7 @@ public class MatchingApiController implements CrudInterface<MatchingApiRequest, 
 
     @Override
     @PostMapping("") // /api/matching
-    public Header<MatchingApiResponse> create(@RequestBody Header<MatchingApiRequest> request) {
+    public Header<MatchingApiResponse> create(@RequestBody MatchingApiRequest request) {
         return matchingApiLogicService.create(request);
     }
 
@@ -29,7 +29,7 @@ public class MatchingApiController implements CrudInterface<MatchingApiRequest, 
 
     @Override
     @PutMapping("")
-    public Header<MatchingApiResponse> update(@RequestBody Header<MatchingApiRequest> request) {
+    public Header<MatchingApiResponse> update(@RequestBody MatchingApiRequest request) {
         return matchingApiLogicService.update(request);
     }
 

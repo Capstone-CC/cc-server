@@ -10,30 +10,26 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/profile")
-public class AccountProfileApiController implements CrudInterface<AccountApiRequest, AccountApiResponse> {
+public class AccountProfileApiController {
 
     @Autowired
     private AccountProfileService accountProfileService;
 
-    @Override
     @PostMapping("") // /api/profile
     public Header<AccountApiResponse> create(@RequestBody AccountApiRequest request) {
         return accountProfileService.create(request);
     }
 
-    @Override
-    @GetMapping("{id}") // /api/profile/id
-    public Header<AccountApiResponse> read(@PathVariable Long id ) {
-        return accountProfileService.read(id);
+    @GetMapping("") // /api/profile ? email = email@naver.com
+    public Header<AccountApiResponse> read(@RequestParam("email") String email ) {
+        return accountProfileService.read(email);
     }
 
-    @Override
     @PutMapping("") // /api/profile
     public Header<AccountApiResponse> update(@RequestBody AccountApiRequest request) {
         return accountProfileService.update(request);
     }
 
-    @Override
     @DeleteMapping("{id}") // /api/profile/id
     public Header delete(@PathVariable Long id) {
         return accountProfileService.delete(id);

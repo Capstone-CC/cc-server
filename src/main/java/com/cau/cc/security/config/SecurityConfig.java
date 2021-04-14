@@ -120,7 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/","/api/register",
+                .antMatchers("/","/api/profile/**","/api/register",
                         "/api/login","/h2-console/**",
                         "/api/swagger",
                         "/api/v2/api-docs","/api/configuration/ui",

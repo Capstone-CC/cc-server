@@ -21,7 +21,7 @@ public class ChatroomApiLogicService implements CrudInterface<ChatroomApiRequest
     @Override
     public Header<ChatroomApiResponse> create(Header<ChatroomApiRequest> request) {
 
-        ChatroomApiRequest body = request.getData();
+        ChatroomApiRequest body = request.getValue();
 
         Chatroom chatroom = Chatroom.builder()
                 .name(body.getName())
@@ -44,7 +44,7 @@ public class ChatroomApiLogicService implements CrudInterface<ChatroomApiRequest
 
     @Override
     public Header<ChatroomApiResponse> update(Header<ChatroomApiRequest> request) {
-        ChatroomApiRequest body = request.getData();
+        ChatroomApiRequest body = request.getValue();
 
         return chatRoomRepository.findById(body.getId())
                 .map(chatroom -> {

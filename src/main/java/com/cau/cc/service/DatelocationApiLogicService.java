@@ -17,7 +17,7 @@ public class DatelocationApiLogicService implements CrudInterface<DatelocationAp
 
     @Override
     public Header<DatelocationApiResponse> create(Header<DatelocationApiRequest> request) {
-        DatelocationApiRequest body = request.getData();
+        DatelocationApiRequest body = request.getValue();
 
         Datelocation datelocation = Datelocation.builder()
                 .location(body.getLocation())
@@ -38,7 +38,7 @@ public class DatelocationApiLogicService implements CrudInterface<DatelocationAp
 
     @Override
     public Header<DatelocationApiResponse> update(Header<DatelocationApiRequest> request) {
-        DatelocationApiRequest body = request.getData();
+        DatelocationApiRequest body = request.getValue();
 
         return datelocationRepository.findById(body.getId())
                 .map(datelocation -> {

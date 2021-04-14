@@ -23,7 +23,7 @@ public class AccountProfileApiController implements CrudInterface<AccountApiRequ
 
     @Override
     @GetMapping("{id}") // /api/profile/id
-    public Header<AccountApiResponse> read(@PathVariable Long id) {
+    public Header<AccountApiResponse> read(@PathVariable Long id ) {
         return accountProfileService.read(id);
     }
 

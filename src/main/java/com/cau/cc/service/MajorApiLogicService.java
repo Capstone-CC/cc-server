@@ -21,7 +21,7 @@ public class MajorApiLogicService implements CrudInterface<MajorApiRequest, Majo
     @Override
     public Header<MajorApiResponse> create(Header<MajorApiRequest> request) {
 
-        MajorApiRequest body = request.getData();
+        MajorApiRequest body = request.getValue();
 
         Major major = Major.builder()
                 .majorName(body.getMajorName())
@@ -40,7 +40,7 @@ public class MajorApiLogicService implements CrudInterface<MajorApiRequest, Majo
 
     @Override
     public Header<MajorApiResponse> update(Header<MajorApiRequest> request) {
-        MajorApiRequest body = request.getData();
+        MajorApiRequest body = request.getValue();
 
         return majorRepository.findById(body.getId())
                 .map(major -> {

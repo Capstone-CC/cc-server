@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/major")
+@RequestMapping("/major")
 public class MajorApiController implements CrudInterface<MajorApiRequest, MajorApiResponse> {
 
     @Autowired

@@ -120,16 +120,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/","/api/profile/**","/api/register",
-                        "/api/login","/h2-console/**",
-                        "/api/swagger",
-                        "/api/v2/api-docs","/api/configuration/ui",
-                        "/api/swagger-resources/**",
-                        "/api/configuration/security",
-                        "/api/swagger-ui.html",
-                        "/api/swagger-ui/**",
-                        "/api/webjars/**",
-                        "/api/v2/**",
+                .antMatchers("/","/profile/**","/register",
+                        "/login","/h2-console/**",
+//                        "/api/swagger",
+//                        "/api/v2/api-docs","/api/configuration/ui",
+//                        "/api/swagger-resources/**",
+//                        "/api/configuration/security",
+//                        "/api/swagger-ui.html",
+//                        "/api/swagger-ui/**",
+//                        "/api/webjars/**",
+//                        "/api/v2/**",
+                        "/swagger",
                         "/v2/api-docs","/configuration/ui",
                         "/swagger-resources/**",
                         "/configuration/security",
@@ -137,9 +138,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**",
                         "/webjars/**",
                         "/v2/**",
-                        "/api/upload",
-                        "/api/email","/api/verify",
-                        "/api/matching/**","/api/major/**").permitAll()
+                        "/upload",
+                        "/email","/verify",
+                        "/matching/**","/major/**").permitAll()
                 .anyRequest().authenticated();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);

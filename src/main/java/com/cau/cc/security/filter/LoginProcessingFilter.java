@@ -32,7 +32,7 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
      * 해당 url 매핑되면 필터 작동
      */
     public LoginProcessingFilter() {
-        super(new AntPathRequestMatcher("/api/login"));
+        super(new AntPathRequestMatcher("/login"));
     }
 
     /**

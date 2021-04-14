@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/chatroom")
+@RequestMapping("/chatroom")
 public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, ChatroomApiResponse> {
 
     @Autowired

@@ -17,7 +17,7 @@ public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, 
 
     @Override
     @PostMapping("")
-    public Header<ChatroomApiResponse> create(@RequestBody Header<ChatroomApiRequest> request) {
+    public Header<ChatroomApiResponse> create(@RequestBody ChatroomApiRequest request) {
         return chatroomApiLogicService.create(request);
     }
 
@@ -29,7 +29,7 @@ public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, 
 
     @Override
     @PutMapping("")
-    public Header<ChatroomApiResponse> update(@RequestBody Header<ChatroomApiRequest> request) {
+    public Header<ChatroomApiResponse> update(@RequestBody ChatroomApiRequest request) {
         return chatroomApiLogicService.update(request);
     }
 

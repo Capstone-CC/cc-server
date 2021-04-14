@@ -22,8 +22,8 @@ public class ReportApiLogicService implements CrudInterface<ReportApiRequest, Re
     private ReportRepository reportRepository;
 
     @Override
-    public Header<ReportApiResponse> create(Header<ReportApiRequest> request) {
-        ReportApiRequest body = request.getValue();
+    public Header<ReportApiResponse> create(ReportApiRequest request) {
+        ReportApiRequest body = request;
 
         Report report = Report.builder()
                 .content(body.getContent())
@@ -44,8 +44,8 @@ public class ReportApiLogicService implements CrudInterface<ReportApiRequest, Re
     }
 
     @Override
-    public Header<ReportApiResponse> update(Header<ReportApiRequest> request) {
-        ReportApiRequest body = request.getValue();
+    public Header<ReportApiResponse> update(ReportApiRequest request) {
+        ReportApiRequest body = request;
 
         return reportRepository.findById(body.getId())
                 .map(report -> {

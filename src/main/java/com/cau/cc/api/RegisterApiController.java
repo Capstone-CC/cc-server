@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -156,7 +158,8 @@ public class RegisterApiController {
      */
     @PostMapping("/register")
     public LoginApiResponse create(@RequestBody AccountApiRequest request,
-                                           HttpSession httpSession) {
+                                   HttpSession httpSession,
+                                   HttpServletResponse response) {
 
 
 
@@ -228,6 +231,11 @@ public class RegisterApiController {
             securityContext.setAuthentication(ajaxAuthenticationToken);
 
             httpSession.setAttribute("SPRING_SECURITY_CONTEXT",securityContext);   // 세션에 spring security context 넣음
+
+            //Create Cookie after Create
+            Cookie newCookie = new Cookie("login", "true");
+            newCookie.setHttpOnly(false);
+            response.addCookie(newCookie);
 
             LoginApiResponse loginApiResponse = LoginApiResponse.builder()
                     .result(true)

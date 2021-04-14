@@ -120,10 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-<<<<<<< HEAD
-                .antMatchers("/","/api/profile/**","/api/register","/api/login","/h2-console/**","/api/upload","/api/email","/api/verify","/api/matching/**","/api/major/**").permitAll()
-=======
-                .antMatchers("/","/api/register",
+                .antMatchers("/","/api/profile/**","/api/register",
                         "/api/login","/h2-console/**",
                         "/api/swagger",
                         "/v2/api-docs","/configuration/ui",
@@ -136,7 +133,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/upload",
                         "/api/email","/api/verify",
                         "/api/matching/**","/api/major/**").permitAll()
->>>>>>> c21b111fed79c15c3ee21020adec15cf23d961b6
                 .anyRequest().authenticated();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);

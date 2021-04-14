@@ -10,10 +10,12 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.ServletContext;
 
 @Configuration
+@EnableSwagger2
 public class Swagger2Config {
 
     private ServletContext servletContext;
@@ -26,12 +28,12 @@ public class Swagger2Config {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-//                .host("localhost:8080").pathProvider(new RelativePathProvider(servletContext){
-//                    @Override
-//                    public String getApplicationBasePath() {
-//                        return "/api";
-//                    }
-//                })
+                .host("localhost:8080").pathProvider(new RelativePathProvider(servletContext){
+                    @Override
+                    public String getApplicationBasePath() {
+                        return "/api";
+                    }
+                })
                 .apiInfo(apiInfo())
                 .select()
                 //패키지 경로 설정

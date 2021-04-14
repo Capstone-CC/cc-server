@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 
 @SpringBootApplication
-@EnableSwagger2
 @EnableScheduling
 public class CcApplication {
 

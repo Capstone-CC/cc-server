@@ -48,6 +48,8 @@ public class Account {
 
     private String verificationCode;
 
+    private int count;
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "manId")
     private List<Matching> manList = new ArrayList<>();

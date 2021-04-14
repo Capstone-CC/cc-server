@@ -122,7 +122,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/","/api/register",
                         "/api/login","/h2-console/**",
-                        "/swagger-ui.html","/your-app-root/v2/**","/swagger-resources/**","/swagger.json",
+                        "/v2/api-docs","/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/swagger-ui/*",
+                        "/webjars/**",
+                        "/v2/**",
                         "/api/upload",
                         "/api/email","/api/verify",
                         "/api/matching/**","/api/major/**").permitAll()
@@ -134,12 +140,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs/**");
-        web.ignoring().antMatchers("/swagger.json");
-        web.ignoring().antMatchers("/swagger-ui.html");
-        web.ignoring().antMatchers("/swagger-resources/**");
-        web.ignoring().antMatchers("/webjars/**");
-    }
+
+
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().antMatchers("/v2/api-docs/**");
+//        web.ignoring().antMatchers("/swagger.json");
+//        web.ignoring().antMatchers("/swagger-ui.html");
+//        web.ignoring().antMatchers("/swagger-resources/**");
+//        web.ignoring().antMatchers("/webjars/**");
+//    }
 }

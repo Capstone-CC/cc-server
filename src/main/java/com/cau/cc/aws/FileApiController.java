@@ -2,6 +2,8 @@ package com.cau.cc.aws;
 
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.response.ImageUploadApiResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,7 @@ import java.awt.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@Api(tags = "파일 업로드")
 public class FileApiController {
 
     @Autowired
@@ -24,6 +26,7 @@ public class FileApiController {
      * 이미지 1개 업로드하기
      * "file" 이름으로 이미지 받는다
      */
+    @ApiOperation(value = "image 업로드",notes = "이미지 url 반환")
     @PostMapping("/upload")
     public Header<ImageUploadApiResponse> uploadImages(@RequestParam("file") MultipartFile file) throws Exception{
         log.debug("[ Call /obj/img-put - POST ]");

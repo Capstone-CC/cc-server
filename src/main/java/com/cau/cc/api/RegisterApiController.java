@@ -10,6 +10,9 @@ import com.cau.cc.model.network.response.LoginApiResponse;
 import com.cau.cc.security.token.AjaxAuthenticationToken;
 import com.cau.cc.service.AccountService;
 import com.cau.cc.service.EmailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,16 +41,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Api(tags = "이메일 인증 & 가입")
 public class RegisterApiController {
 
     @Autowired
     private EmailService emailService;
 
-    /**
-     * 이메일받아서 인증보내기
-     */
+    @ApiOperation(value = "이메일 코드 전송",notes = "이메일 코드 전송")
     @GetMapping("/email")
-    public Header<LoginApiResponse> email(@RequestParam String email,
+    public Header<LoginApiResponse> email(@ApiParam(value = "이메일주소", required = true, example = "test@cau.ac.kr") @RequestParam String email,
             //@RequestBody Header<AccountApiRequest> request,
                                         HttpSession httpSession)
             throws UnsupportedEncodingException, MessagingException {
@@ -96,9 +98,10 @@ public class RegisterApiController {
      * 클라이언트에선 이메일로 인증코드 받은 경우만 verify 신청 할 수 있도록 해야한다.
      *
      */
+    @ApiOperation(value = "이메일 코드 인증",notes = "이메일 코드 인증")
     @GetMapping("/verify")
-    public Header<LoginApiResponse> verify(@RequestParam String email,
-            @RequestParam String code,
+    public Header<LoginApiResponse> verify(@ApiParam(value = "이메일주소" ,required = true) @RequestParam String email,
+                                           @ApiParam(value = "이메일 인증코드",required = true) @RequestParam String code,
             //@RequestBody Header<AccountApiRequest> request,
                           HttpSession httpSession){
 
@@ -155,6 +158,7 @@ public class RegisterApiController {
      *
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
+    @ApiOperation(value = "인증 후 회원가입",notes = "가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR")
     @PostMapping("/register")
     public Header<LoginApiResponse> create(@RequestBody AccountApiRequest request,
                                    HttpSession httpSession,

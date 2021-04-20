@@ -137,10 +137,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui.html",
                         "/swagger-ui/**",
                         "/webjars/**",
+                        "/configuration/security",
                         "/v2/**",
                         "/upload",
                         "/email","/verify",
-                        "/matching/**","/major/**").permitAll()
+                        "/matching/**","/major/**",
+                        "/test").permitAll()
                 .anyRequest().authenticated();
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -150,13 +152,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        web.ignoring().antMatchers("/v2/api-docs/**");
-//        web.ignoring().antMatchers("/swagger.json");
-//        web.ignoring().antMatchers("/swagger-ui.html");
-//        web.ignoring().antMatchers("/swagger-resources/**");
-//        web.ignoring().antMatchers("/webjars/**");
-//    }
 }

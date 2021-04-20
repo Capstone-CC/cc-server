@@ -5,6 +5,8 @@ import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.security.token.AjaxAuthenticationToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.http.entity.ContentType;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -17,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 
 public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilter {
 

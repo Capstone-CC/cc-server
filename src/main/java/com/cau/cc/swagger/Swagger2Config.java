@@ -46,7 +46,7 @@ public class Swagger2Config {
         return new ApiInfoBuilder()
                 .title("CauConnect")
                 .version("1.1")
-//                .description("")
+                .description("Default root Path : https://cauconnect.com/api")
 //                .license("라이센스 작성")
 //                .licenseUrl("라이센스 URL 작성")
                 .build();

@@ -3,6 +3,7 @@ package com.cau.cc.security.config;
 import com.cau.cc.security.filter.LoginProcessingFilter;
 import com.cau.cc.security.handler.AjaxAuthenticationFailureHandler;
 import com.cau.cc.security.handler.AjaxAuthenticationSuccessHandler;
+import com.cau.cc.security.handler.CustomLogourSuccessHandler;
 import com.cau.cc.security.provider.AjaxAuthenticationProvider;
 import com.cau.cc.security.service.CustomerUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +144,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/email","/verify",
                         "/matching/**","/major/**",
                         "/test").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .logout()
+                    .permitAll()
+                    .logoutUrl("/logout")
+                    .deleteCookies("JSESSIONID")
+                    .logoutSuccessHandler(new CustomLogourSuccessHandler());
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 

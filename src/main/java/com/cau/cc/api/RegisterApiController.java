@@ -280,6 +280,20 @@ public class RegisterApiController {
     }
 
 
+    /**
+     * 로그인 해야 접근가능
+     * @return
+     */
+    @GetMapping("/testlogin")
+    public String testAfterLogin(){
+        return "test";
+    }
+
+
+    /**
+     * 로그인 없이 접근 가능
+     * @return
+     */
     @GetMapping("/test")
     public String test(){
         return "test";

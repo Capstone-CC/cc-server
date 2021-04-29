@@ -27,7 +27,7 @@ public class AuthApi {
         throw new IllegalStateException("This method shouldn't be called. It's implemented by Spring Security filters.");
     }
 
-    @ApiOperation(value = "로그아웃")
+    @ApiOperation(value = "로그아웃",notes = "쿠키만 필요")
     @PostMapping("/logout")
     public void fakeLogin() {
         throw new IllegalStateException("This method shouldn't be called. It's implemented by Spring Security filters.");

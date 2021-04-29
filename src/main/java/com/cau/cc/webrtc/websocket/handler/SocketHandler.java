@@ -22,7 +22,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
     //TODO : watingRoom 만들기 -> sessionId
     private Map<String,String> watingSession = new HashMap<>();
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    //private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     /**
@@ -36,7 +36,7 @@ public class SocketHandler extends TextWebSocketHandler {
         for (WebSocketSession webSocketSession : sessions) {
             //TODO : MESSAGE
             if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
-                logger.debug("[ws] The received message {}!", message.getPayload());
+           //     logger.debug("[ws] The received message {}!", message.getPayload());
                 webSocketSession.sendMessage(message);
             }
         }
@@ -57,7 +57,7 @@ public class SocketHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
-        logger.debug("[ws] sesstion remove");
+     //   logger.debug("[ws] sesstion remove");
         sessions.remove(session.getId());
     }
     //

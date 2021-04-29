@@ -15,5 +15,7 @@ public class ChatroomApiRequest {
 
     private String name;
 
-    private Long matchingId;
+    private Long manId;
+
+    private Long womanId;
 }

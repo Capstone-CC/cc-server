@@ -12,7 +12,7 @@ import java.util.*;
 @Entity
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"manList","womanList","reporterList","reportedList","majorList"})
+@ToString(exclude = {"manList","womanList","manList_chat","womanList_chat","reporterList","reportedList","majorList"})
 public class Account {
 
     @Id
@@ -57,6 +57,12 @@ public class Account {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "womanId")
     private List<Matching> womanList = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manId")
+    private List<Chatroom> manList_chat = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "womanId")
+    private List<Chatroom> womanList_chat = new ArrayList<>();
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reporterId")
     private List<Report> reporterList = new ArrayList<>();
 
@@ -66,6 +72,5 @@ public class Account {
     @JoinColumn(name = "major_id")
     @ManyToOne
     private Major majorId;
-
 
 }

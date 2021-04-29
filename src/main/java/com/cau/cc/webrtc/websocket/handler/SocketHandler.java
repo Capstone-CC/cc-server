@@ -1,6 +1,9 @@
 package com.cau.cc.webrtc.websocket.handler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -19,6 +22,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
     //TODO : watingRoom 만들기 -> sessionId
     private Map<String,String> watingSession = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     /**
@@ -32,6 +36,7 @@ public class SocketHandler extends TextWebSocketHandler {
         for (WebSocketSession webSocketSession : sessions) {
             //TODO : MESSAGE
             if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+                logger.debug("[ws] The received message {}!", message.getPayload());
                 webSocketSession.sendMessage(message);
             }
         }
@@ -47,6 +52,13 @@ public class SocketHandler extends TextWebSocketHandler {
         sessions.add(session);
     }
 
-
+    /**
+     * 브라우저가 연결을 닫으면 이 메서드가 호출되고 세션이 세션 목록에서 제거
+     */
+    @Override
+    public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
+        logger.debug("[ws] sesstion remove");
+        sessions.remove(session.getId());
+    }
     //
 }

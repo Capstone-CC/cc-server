@@ -35,8 +35,5 @@ public class Matching {
     @ManyToOne
     private Account womanId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "matchingId")
-    private List<Chatroom> chatroomList = new ArrayList<>();
-
 
 }

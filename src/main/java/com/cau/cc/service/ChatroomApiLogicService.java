@@ -5,6 +5,7 @@ import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
+import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.model.repository.MatchingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class ChatroomApiLogicService implements CrudInterface<ChatroomApiRequest
     @Autowired
     private ChatRoomRepository chatRoomRepository;
     @Autowired
-    private MatchingRepository matchingRepository;
+    private AccountRepository accountRepository;
 
     @Override
     public Header<ChatroomApiResponse> create(ChatroomApiRequest request) {
@@ -25,7 +26,8 @@ public class ChatroomApiLogicService implements CrudInterface<ChatroomApiRequest
 
         Chatroom chatroom = Chatroom.builder()
                 .name(body.getName())
-                .matchingId(matchingRepository.getOne(body.getMatchingId()))
+                .manId(accountRepository.getOne(body.getManId()))
+                .womanId(accountRepository.getOne(body.getWomanId()))
                 .build();
 
         Chatroom newChatroom = chatRoomRepository.save(chatroom);
@@ -49,7 +51,6 @@ public class ChatroomApiLogicService implements CrudInterface<ChatroomApiRequest
         return chatRoomRepository.findById(body.getId())
                 .map(chatroom -> {
                     chatroom.setName(body.getName());
-                    chatroom.setMatchingId(matchingRepository.getOne(body.getMatchingId()));
                     return chatroom;
                 })
                 .map(newChatroom -> chatRoomRepository.save(newChatroom))
@@ -71,7 +72,8 @@ public class ChatroomApiLogicService implements CrudInterface<ChatroomApiRequest
         ChatroomApiResponse body = ChatroomApiResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getName())
-                .matchingId(chatroom.getMatchingId().getId())
+                .manId(chatroom.getManId().getId())
+                .womanId(chatroom.getWomanId().getId())
                 .build();
         return Header.OK(body);
     }

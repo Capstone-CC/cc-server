@@ -25,9 +25,9 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         // 인증의 최종 성공한 Entity인 Account 객체가 들어있다. getPrincipal() 통해 빼오기기
         //Account account = (Account) authentication.getPrincipal();
 
-        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                .result(true)
-                .build();
+//        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+//                .result(true)
+//                .build();
 
 
         //response
@@ -39,7 +39,7 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         newCookie.setHttpOnly(false);
         response.addCookie(newCookie);
 
-        objectMapper.writeValue(response.getWriter(), Header.OK(loginApiResponse));
+        objectMapper.writeValue(response.getWriter(), Header.OK());
 
     }
 }

@@ -79,11 +79,10 @@ public class RegisterApiController {
         //세션 만료 시간 3600
         httpSession.setAttribute(body.getEmail(),body);
 
-        //Header는 static 클래스
-        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                .result(true)
-                .build();
-        return Header.OK(loginApiResponse);
+//        //Header는 static 클래스
+//        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+//                .build();
+        return Header.OK();
 
 //        } else { // 이메일 형식 아니면
 //            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
@@ -106,7 +105,6 @@ public class RegisterApiController {
     @GetMapping("/verify")
     public Header<LoginApiResponse> verify(@ApiParam(value = "이메일주소" ,required = true) @RequestParam String email,
                                            @ApiParam(value = "이메일 인증코드",required = true) @RequestParam String code,
-            //@RequestBody Header<AccountApiRequest> request,
                           HttpSession httpSession){
 
 //        AccountApiRequest newBody = request.getData();
@@ -121,10 +119,7 @@ public class RegisterApiController {
 //        String response = null;
 
         if(newBody == null){ //쿠키가 없는경우
-            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result(false)
-                    .build();
-            return Header.OK(loginApiResponse1);
+            return Header.ERROR("이메일 인증을 해주세요");
 //            response = "이메일 인증을 해주세요";
 //            return Header.ERROR(response);
         }
@@ -136,17 +131,13 @@ public class RegisterApiController {
             // 기존과 동일한 session name으로 들어오면 덮어씌어진다.
             httpSession.setAttribute(originBody.getEmail(),originBody);
 
-
-            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                    .result(true)
-                    .build();
-            return Header.OK(loginApiResponse);
+            return Header.OK();
 
         } else{ // 다르면
-            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result(false)
-                    .build();
-            return Header.OK(loginApiResponse1);
+//            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+//                    .result(false)
+//                    .build();
+            return Header.ERROR("인증번호가 틀렸습니다.");
 //            response = "인증번호가 틀렸습니다.";
 //            return Header.ERROR(response);
         }
@@ -178,35 +169,33 @@ public class RegisterApiController {
 
             // 2개의 비번 틀리면 return
             if(!request.getPassword().equals(request.getConfirmPw())){
-                loginApiResponse1 = LoginApiResponse.builder()
-                        .result(false)
-                        .build();
-                return Header.OK(loginApiResponse1);
+
+                return Header.ERROR("비밀번호 확인 오류");
                 //return Header.ERROR("비밀번호 확인 오류");
             }
             if(request.getEmail() == null){
-                loginApiResponse1 = LoginApiResponse.builder()
-                        .result(false)
-                        .build();
-                return Header.OK(loginApiResponse1);
-                //return Header.ERROR("이메일 정보를 입력해주세요");
+//                loginApiResponse1 = LoginApiResponse.builder()
+//                        .result(false)
+//                        .build();
+                //return Header.OK(loginApiResponse1);
+                return Header.ERROR("이메일 정보를 입력해주세요");
             }
 
             if(!isGender(request.getGender())){
-                loginApiResponse1 = LoginApiResponse.builder()
-                        .result(false)
-                        .build();
-                return Header.OK(loginApiResponse1);
-                //return Header.ERROR("성별정보 오류");
+//                loginApiResponse1 = LoginApiResponse.builder()
+//                        .result(false)
+//                        .build();
+//                return Header.OK(loginApiResponse1);
+                return Header.ERROR("성별정보 오류");
             }
 
             //학과정보 올바른지 확인
             if(!isMajor(request.getMajorName())){
-                loginApiResponse1 = LoginApiResponse.builder()
-                        .result(false)
-                        .build();
-                return Header.OK(loginApiResponse1);
-                //return Header.ERROR("학과정보 오류");
+//                loginApiResponse1 = LoginApiResponse.builder()
+//                        .result(false)
+//                        .build();
+//                return Header.OK(loginApiResponse1);
+                return Header.ERROR("학과정보 오류");
             }
 
 
@@ -239,16 +228,16 @@ public class RegisterApiController {
             newCookie.setHttpOnly(false);
             response.addCookie(newCookie);
 
-            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                    .result(true)
-                    .build();
-            return Header.OK(loginApiResponse);
+//            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+//                    .result(true)
+//                    .build();
+            return Header.OK();
 
         } else{
-            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result(false)
-                    .build();
-            return Header.OK(loginApiResponse1);
+//            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+//                    .result(false)
+//                    .build();
+            return Header.ERROR("인증 안된 사용자");
         }
     }
 

@@ -7,6 +7,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.network.response.LoginApiResponse;
+import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.security.token.AjaxAuthenticationToken;
 import com.cau.cc.service.AccountService;
 import com.cau.cc.service.EmailService;
@@ -47,6 +48,9 @@ public class RegisterApiController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
     @ApiOperation(value = "이메일 코드 전송",notes = "이메일 코드 전송")
     @GetMapping("/email")
     public Header<LoginApiResponse> email(@ApiParam(value = "이메일주소", required = true, example = "test@cau.ac.kr") @RequestParam String email,
@@ -55,6 +59,15 @@ public class RegisterApiController {
             throws UnsupportedEncodingException, MessagingException {
 
         AccountApiRequest body = new AccountApiRequest();
+
+        //validateDuplicateMember
+        Account findAccount = accountRepository.findByEmail(email);
+
+        if(findAccount != null){ // 이미존재하는 email
+            return Header.ERROR("이미 존재하는 Email 입니다.");
+        }
+
+
 
         body.setEmail(email);
         //email 받아서

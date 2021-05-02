@@ -140,6 +140,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/configuration/security",
                         "/v2/**",
+                        "/profile/**",
                         "/upload",
                         "/email","/verify",
                         "/matching/**","/major/**",

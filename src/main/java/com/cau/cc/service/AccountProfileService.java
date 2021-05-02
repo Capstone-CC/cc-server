@@ -32,7 +32,7 @@ public class AccountProfileService {
         else return Header.ERROR("데이터 없음");
 
     }
-
+// 이멜, 닉네임, 성별, 학과, 학년, 자기소개
     private AccountApiResponse response(Account account) {
         AccountApiResponse  accountApiResponse = AccountApiResponse.builder()
                 .email(account.getEmail())
@@ -40,7 +40,6 @@ public class AccountProfileService {
                 .grade(account.getGrade())
                 .majorName(account.getMajorId().getMajorName())
                 .nickName(account.getNickName())
-                .hobby(account.getHobby())
                 .commend(account.getCommend())
                 .build();
 

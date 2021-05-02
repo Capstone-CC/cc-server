@@ -6,6 +6,8 @@ import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.service.AccountProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +23,12 @@ public class AccountProfileApiController {
     }
 
     @GetMapping("") // /api/profile ? email = email@naver.com
-    public Header<AccountApiResponse> read(@RequestParam("email") String email ) {
+    public Header<AccountApiResponse> read() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        if(email == null) return null;
         return accountProfileService.read(email);
     }
 

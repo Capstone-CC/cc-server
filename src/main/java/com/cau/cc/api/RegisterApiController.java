@@ -49,7 +49,7 @@ public class RegisterApiController {
     private EmailService emailService;
 
     @Autowired
-    private AccountRepository accountRepository;
+    AccountService accountService;
 
     @ApiOperation(value = "이메일 코드 전송",notes = "이메일 코드 전송")
     @GetMapping("/email")
@@ -60,10 +60,7 @@ public class RegisterApiController {
 
         AccountApiRequest body = new AccountApiRequest();
 
-        //validateDuplicateMember
-        Account findAccount = accountRepository.findByEmail(email);
-
-        if(findAccount != null){ // 이미존재하는 email
+        if(!accountService.emailCheck(email)){
             return Header.ERROR("이미 존재하는 Email 입니다.");
         }
 
@@ -154,9 +151,6 @@ public class RegisterApiController {
 //            return Header.ERROR(response);
         }
     }
-
-    @Autowired
-    AccountService accountService;
 
 
     /**

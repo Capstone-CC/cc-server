@@ -57,12 +57,11 @@ public class AccountService {
      */
     public Header<AccountApiResponse> create(AccountApiRequest request) {
 
-        //validateDuplicateMember
-        Account findAccount = accountRepository.findByEmail(request.getEmail());
-
-        if(findAccount != null){ // 이미존재하는 email
-           return Header.ERROR("이미 존재하는 Email 입니다.");
+        //verify
+        if(!emailCheck(request.getEmail())){
+            return Header.ERROR("이미 존재하는 Email 입니다.");
         }
+
 
         //TODO : account -> major 단방향
         Major major = majorRepository.findByMajorName(request.getMajorName());
@@ -90,8 +89,14 @@ public class AccountService {
         return Header.OK(response);
     }
 
-    public void login(String id, String pw){
+    public boolean emailCheck(String email){
+        //validateDuplicateMember
+        Account findAccount = accountRepository.findByEmail(email);
 
+        if(findAccount != null){ // 이미존재하는 email
+            return false;
+        }
+        return true;
     }
 
 }

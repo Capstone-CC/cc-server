@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Builder
 @Accessors(chain = true)
-@ToString
+@ToString(exclude = {"accountList"})
 public class Major {
 
     @Id

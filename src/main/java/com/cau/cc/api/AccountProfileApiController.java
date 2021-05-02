@@ -28,7 +28,11 @@ public class AccountProfileApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
-        if(email == null) return null;
+        if(email == null) {
+            Authentication auth2 = SecurityContextHolder.getContext().getAuthentication();
+            String email2 = auth2.getName();
+            return accountProfileService.read(email2);
+        }
         return accountProfileService.read(email);
     }
 

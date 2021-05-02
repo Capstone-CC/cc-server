@@ -39,6 +39,8 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         newCookie.setHttpOnly(false);
         response.addCookie(newCookie);
 
+
+
         objectMapper.writeValue(response.getWriter(), Header.OK());
 
     }

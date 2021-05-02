@@ -49,7 +49,7 @@ public class RegisterApiController {
     private EmailService emailService;
 
     @Autowired
-    private AccountRepository accountRepository;
+    AccountService accountService;
 
     @ApiOperation(value = "이메일 코드 전송",notes = "이메일 코드 전송")
     @GetMapping("/email")
@@ -60,48 +60,39 @@ public class RegisterApiController {
 
         AccountApiRequest body = new AccountApiRequest();
 
-        //validateDuplicateMember
-        Account findAccount = accountRepository.findByEmail(email);
-
-        if(findAccount != null){ // 이미존재하는 email
+        if(!accountService.emailCheck(email)){
             return Header.ERROR("이미 존재하는 Email 입니다.");
         }
 
-
-
         body.setEmail(email);
-        //email 받아서
- //       String email = body.getEmail();
 
         //response
         String response = null;
 
-        if(email.contains("@cau.ac.kr")){ //이메일 형식이면
-            //메일보내고 인증코드 받아서
-            String randomCode = emailService.sendVerificationEmail(email);
+        //메일보내고 인증코드 받아서
+        String randomCode = emailService.sendVerificationEmail(email);
 
-            //인증코드는 받은 AccountDto에 저장하고
-            body.setVerificationCode(randomCode);
+        //인증코드는 받은 AccountDto에 저장하고
+        body.setVerificationCode(randomCode);
 
-            //세션에 받은 이메일을 key로 AccountDTO 객체 Session의 저장
-            //세션 만료 시간 3600
-            httpSession.setAttribute(body.getEmail(),body);
+        //세션에 받은 이메일을 key로 AccountDTO 객체 Session의 저장
+        //세션 만료 시간 3600
+        httpSession.setAttribute(body.getEmail(),body);
 
-            //Header는 static 클래스
-            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                    .result(true)
-                    .build();
-            return Header.OK(loginApiResponse);
+        //Header는 static 클래스
+        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+                .result(true)
+                .build();
+        return Header.OK(loginApiResponse);
 
-        } else { // 이메일 형식 아니면
-            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
-                    .result(false)
-                    .build();
-            return Header.OK(loginApiResponse1);
+//        } else { // 이메일 형식 아니면
+//            LoginApiResponse loginApiResponse1 = LoginApiResponse.builder()
+//                    .result(false)
+//                    .build();
+//            return Header.OK(loginApiResponse1);
 //            response = "Not email format";
 //            return Header.ERROR(response);
-
-        }
+//        }
     }
 
     /**
@@ -160,9 +151,6 @@ public class RegisterApiController {
 //            return Header.ERROR(response);
         }
     }
-
-    @Autowired
-    AccountService accountService;
 
 
     /**

@@ -51,6 +51,10 @@ public class EmailService  {
      */
     public String sendVerificationEmail(String email)
             throws MessagingException, UnsupportedEncodingException {
+
+        StringBuffer fullEmail = new StringBuffer(email);
+        fullEmail.append("@cau.ac.kr");
+
         String fromAddress = "yohoee770"; //발신자 이메일
         String senderName = "CauConnect"; //발신자 이름
         String subject = "Please verify your registration"; // 메일 제목
@@ -66,7 +70,7 @@ public class EmailService  {
 
         // 메일 발신자 정보(주소,이름)와 수신자메일주소, 메일제목 담기
         helper.setFrom(fromAddress, senderName);
-        helper.setTo(email);
+        helper.setTo(fullEmail.toString());
         helper.setSubject(subject);
 
         //랜덤코드
@@ -81,7 +85,7 @@ public class EmailService  {
         String randomCode = buffer.toString();
 
         // html 내용 replace
-        content = content.replace("[[name]]", email);
+        content = content.replace("[[name]]", fullEmail.toString());
         content = content.replace("[[code]]", randomCode);
 
         //본문 담기, true는 html 형식으로 보내겠다는 의미

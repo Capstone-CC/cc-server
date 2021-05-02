@@ -40,7 +40,7 @@ public class AccountProfileService {
                 .grade(account.getGrade())
                 .majorName(account.getMajorId().getMajorName())
                 .nickName(account.getNickName())
-                .commend(account.getCommend())
+                .content(account.getContent())
                 .build();
 
         return accountApiResponse;
@@ -61,8 +61,7 @@ public class AccountProfileService {
                     .setGender(request.getGender())
                     .setGrade(request.getGrade())
                     .setMajorId(major)
-                    .setHobby(request.getHobby())
-                    .setCommend(request.getCommend());
+                    .setContent(request.getContent());
 
             Account updateAccount = accountRepository.save(account);
             AccountApiResponse accountApiResponse = response(updateAccount);

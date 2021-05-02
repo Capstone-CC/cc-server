@@ -223,10 +223,10 @@ public class RegisterApiController {
 
             httpSession.setAttribute("SPRING_SECURITY_CONTEXT",securityContext);   // 세션에 spring security context 넣음
 
-            //Create Cookie after Create
-            Cookie newCookie = new Cookie("login", "true");
-            newCookie.setHttpOnly(false);
-            response.addCookie(newCookie);
+//            //Create Cookie after Create
+//            Cookie newCookie = new Cookie("login", "true");
+//            newCookie.setHttpOnly(false);
+//            response.addCookie(newCookie);
 
 //            LoginApiResponse loginApiResponse = LoginApiResponse.builder()
 //                    .result(true)

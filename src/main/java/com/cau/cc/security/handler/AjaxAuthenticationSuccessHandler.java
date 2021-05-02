@@ -35,9 +35,6 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         //Create Cookie after Create
-        Cookie newCookie = new Cookie("login", "true");
-        newCookie.setHttpOnly(false);
-        response.addCookie(newCookie);
 
         objectMapper.writeValue(response.getWriter(), Header.OK());
 

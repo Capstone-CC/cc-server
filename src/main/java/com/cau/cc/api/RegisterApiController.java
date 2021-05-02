@@ -63,7 +63,7 @@ public class RegisterApiController {
         //response
         String response = null;
 
-        if(email.contains("@")){ //이메일 형식이면
+        if(email.contains("@cau.ac.kr")){ //이메일 형식이면
             //메일보내고 인증코드 받아서
             String randomCode = emailService.sendVerificationEmail(email);
 
@@ -163,8 +163,6 @@ public class RegisterApiController {
     public Header<LoginApiResponse> create(@RequestBody AccountApiRequest request,
                                    HttpSession httpSession,
                                    HttpServletResponse response) {
-
-
 
         //입력받은 객체에 대한 값을 세션에서 꺼내서
         AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getEmail());

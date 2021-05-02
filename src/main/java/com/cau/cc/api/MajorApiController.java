@@ -1,14 +1,19 @@
 package com.cau.cc.api;
 
 import com.cau.cc.ifs.CrudInterface;
+import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.MajorApiRequest;
 import com.cau.cc.model.network.response.MajorApiResponse;
 import com.cau.cc.service.MajorApiLogicService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 @RestController
+@Api(tags = "major")
 @RequestMapping("/major")
 public class MajorApiController implements CrudInterface<MajorApiRequest, MajorApiResponse> {
 
@@ -37,5 +42,16 @@ public class MajorApiController implements CrudInterface<MajorApiRequest, MajorA
     @DeleteMapping("{id}") // /api/major/id
     public Header delete(@PathVariable Long id) {
         return majorApiLogicService.delete(id);
+    }
+
+    @GetMapping("/list")
+    @ApiOperation(value = "이메일 코드 인증",notes = "이메일 코드 인증")
+    public Header<MajorApiResponse> getMajors(){
+        MajorApiResponse majorApiResponse = new MajorApiResponse();
+
+        for(MajorEnum m : MajorEnum.values()){
+            majorApiResponse.getMajorEnums().add(m);
+        }
+        return Header.OK(majorApiResponse);
     }
 }

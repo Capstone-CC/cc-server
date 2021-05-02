@@ -7,6 +7,7 @@ import com.cau.cc.model.network.request.MajorApiRequest;
 import com.cau.cc.model.network.response.MajorApiResponse;
 import com.cau.cc.service.MajorApiLogicService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -44,6 +45,7 @@ public class MajorApiController implements CrudInterface<MajorApiRequest, MajorA
     }
 
     @GetMapping("/list")
+    @ApiOperation(value = "이메일 코드 인증",notes = "이메일 코드 인증")
     public Header<MajorApiResponse> getMajors(){
         MajorApiResponse majorApiResponse = new MajorApiResponse();
 

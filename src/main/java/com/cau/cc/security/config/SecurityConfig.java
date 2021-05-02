@@ -144,7 +144,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/email","/verify",
                         "/matching/**","/major/**",
                         "/test",
-                        "/socket").permitAll()
+                        "/socket",
+                        "/major/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

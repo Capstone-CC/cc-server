@@ -59,6 +59,9 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
      //   logger.debug("[ws] sesstion remove");
         sessions.remove(session.getId());
+
+        //TODO : state 확인 -> chatroom 만들기
+
     }
     //
 }

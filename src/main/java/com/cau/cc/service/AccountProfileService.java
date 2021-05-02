@@ -38,10 +38,14 @@ public class AccountProfileService {
                 .email(account.getEmail())
                 .gender(account.getGender())
                 .grade(account.getGrade())
-                .majorName(account.getMajorId().getMajorName())
                 .nickName(account.getNickName())
                 .content(account.getContent())
                 .build();
+
+        if(account.getMajorId() != null){
+            accountApiResponse.setMajorName(account.getMajorId().getMajorName());
+        }
+
 
         return accountApiResponse;
     }

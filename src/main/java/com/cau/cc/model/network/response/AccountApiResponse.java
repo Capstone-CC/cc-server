@@ -27,8 +27,6 @@ public class AccountApiResponse {
 
     private String nickName;
 
-    private String hobby;
-
-    private String commend;
+    private String content;
 
 }

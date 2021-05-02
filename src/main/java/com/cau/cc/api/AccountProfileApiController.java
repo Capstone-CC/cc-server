@@ -1,6 +1,7 @@
 package com.cau.cc.api;
 
 import com.cau.cc.ifs.CrudInterface;
+import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
@@ -26,14 +27,14 @@ public class AccountProfileApiController {
     public Header<AccountApiResponse> read() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+        Account account = (Account) auth.getPrincipal();
 
-        if(email == null) {
+        if(account.getEmail() == null) {
             Authentication auth2 = SecurityContextHolder.getContext().getAuthentication();
             String email2 = auth2.getName();
             return accountProfileService.read(email2);
         }
-        return accountProfileService.read(email);
+        return accountProfileService.read(account.getEmail());
     }
 
     @PutMapping("") // /api/profile

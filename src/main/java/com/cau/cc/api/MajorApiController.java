@@ -45,7 +45,7 @@ public class MajorApiController implements CrudInterface<MajorApiRequest, MajorA
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "이메일 코드 인증",notes = "이메일 코드 인증")
+    @ApiOperation(value = "major list",notes = "major list")
     public Header<MajorApiResponse> getMajors(){
         MajorApiResponse majorApiResponse = new MajorApiResponse();
 

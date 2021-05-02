@@ -48,6 +48,7 @@ public class Runner implements ApplicationRunner {
 
             Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
 
+
             //test db
             Account account2 = Account.builder()
                     .id(2l)

@@ -21,9 +21,13 @@ public class Header<T> {
 
     private T value;
 
+    //api 결과
+    private boolean result;
+
     // OK
     public static <T> Header<T> OK() {
         return (Header<T>) Header.builder()
+                .result(true)
                 .transactionTime(LocalDateTime.now())
                 .build();
     }
@@ -31,6 +35,7 @@ public class Header<T> {
     // DATA OK
     public static <T> Header<T> OK(T data) {
         return (Header<T>)Header.builder()
+                .result(true)
                 .transactionTime(LocalDateTime.now())
                 .value(data)
                 .build();
@@ -39,6 +44,7 @@ public class Header<T> {
     // ERROR
     public static <T> Header<T> ERROR(String description) {
         return (Header<T>)Header.builder()
+                .result(false)
                 .transactionTime(LocalDateTime.now())
                 .description(description)
                 .build();

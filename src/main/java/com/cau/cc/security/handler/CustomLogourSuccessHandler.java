@@ -21,13 +21,13 @@ public class CustomLogourSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        LogoutApiResponse logoutApiResponse = LogoutApiResponse.builder()
-                .result(true)
-                .build();
+//        LogoutApiResponse logoutApiResponse = LogoutApiResponse.builder()
+//                .result(true)
+//                .build();
 
         //response
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getWriter(), Header.OK(logoutApiResponse));
+        objectMapper.writeValue(response.getWriter(), Header.OK());
     }
 }

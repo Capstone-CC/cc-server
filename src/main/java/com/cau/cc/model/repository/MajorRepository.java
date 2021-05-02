@@ -12,5 +12,5 @@ public interface MajorRepository extends JpaRepository<Major, Long> {
 
 
     @Query("SELECT m FROM Major m WHERE m.majorName = ?1")
-    public Major findByMajorName(MajorEnum majorname);
+    public Major findByMajorName(MajorEnum majorName);
 }

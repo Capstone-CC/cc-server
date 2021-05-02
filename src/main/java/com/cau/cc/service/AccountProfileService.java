@@ -52,6 +52,7 @@ public class AccountProfileService {
     public Header<AccountApiResponse> update(AccountApiRequest request) {
 
         Account account = accountRepository.findByEmail(request.getEmail());
+
         //major 테이블에서 majorname을 통해서 majorId 값 받아오기
         Major major =  majorRepository.findByMajorName(request.getMajorName());
 

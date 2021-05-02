@@ -36,6 +36,8 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
         //Create Cookie after Create
 
+
+
         objectMapper.writeValue(response.getWriter(), Header.OK());
 
     }

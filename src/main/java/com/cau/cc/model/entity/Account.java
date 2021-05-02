@@ -40,9 +40,9 @@ public class Account {
 
     private String timeTable;
 
-    private String hobby;
+    //private String hobby;
 
-    private String commend;
+    private String content;
 
     private String email;
 

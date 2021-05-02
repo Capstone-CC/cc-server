@@ -41,9 +41,7 @@ public class AccountApiRequest {
 
     private String timeTable;
 
-    private String hobby;
-
-    private String commend;
+    private String content;
 
     private String email;
 

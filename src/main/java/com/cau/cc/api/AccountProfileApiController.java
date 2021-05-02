@@ -22,7 +22,7 @@ public class AccountProfileApiController {
         return accountProfileService.create(request);
     }
 
-    @GetMapping("") // /api/profile ? email = email@naver.com
+    @GetMapping("")
     public Header<AccountApiResponse> read() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

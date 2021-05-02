@@ -46,38 +46,12 @@ public class Runner implements ApplicationRunner {
                 majorRepository.save(major1);
             }
 
-            Account account = new Account();
-            account.setId(1L);
-            account.setName("1");
-            account.setNickName("1");
-            account.setPassword("1");
-            account.setImage("1");
-            account.setGender(GenderEnum.남);
-            account.setAge(1);
-            account.setHeight(170);
-            account.setLocation("서울");
-            account.setEmail("1");
-            Account account1 = new Account();
-            account1.setId(2L);
-            account1.setName("2");
-            account1.setNickName("1");
-            account1.setPassword("1");
-            account1.setImage("1");
-            account1.setAge(1);
-            account1.setGender(GenderEnum.여);
-            account1.setHeight(170);
-            account1.setLocation("서울");
-            account1.setEmail("1");
-            accountRepository.save(account);
-
-            accountRepository.save(account1);
-
             Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
 
             //test db
             Account account2 = Account.builder()
                     .id(2l)
-                    .email("test@gmail.com")
+                    .email("test")
                     .password(passwordEncoder.encode("123123"))
                     .gender(GenderEnum.남)
                     .majorId(major)

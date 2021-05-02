@@ -72,6 +72,7 @@ public class AccountService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .gender(request.getGender())
                 .grade(request.getGrade())
+                .nickName("푸앙이")
                 .majorId(major)
                 .build();
 
@@ -84,7 +85,7 @@ public class AccountService {
         response.setGender(findAccount2.getGender());
         response.setGrade(findAccount2.getGrade());
         response.setMajorName(findAccount2.getMajorId().getMajorName());
-        //TODO : major 추가
+        response.setNickName(findAccount2.getNickName());
 
         return Header.OK(response);
     }

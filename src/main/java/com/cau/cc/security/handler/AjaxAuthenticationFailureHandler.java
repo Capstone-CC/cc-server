@@ -32,12 +32,12 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
 //            errMsg = "Expired password";
 //        }
 
-        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
-                .result(false)
-                .build();
+//        LoginApiResponse loginApiResponse = LoginApiResponse.builder()
+//                .result(false)
+//                .build();
         response.setStatus(HttpStatus.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        objectMapper.writeValue(response.getWriter(), Header.OK(loginApiResponse));
+        objectMapper.writeValue(response.getWriter(), Header.ERROR("로그인 실패"));
     }
 }

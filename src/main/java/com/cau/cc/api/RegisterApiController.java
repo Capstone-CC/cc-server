@@ -201,7 +201,7 @@ public class RegisterApiController {
 
 
             // 가입완료
-            accountService.create(request);
+            Account account = accountService.create(request);
 
             // 세션만료
             httpSession.removeAttribute(origiBody.getEmail());
@@ -214,15 +214,17 @@ public class RegisterApiController {
             List<GrantedAuthority> roles = new ArrayList<>();
             roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-            //파라미터로 받은 id, pw 토큰 생성
+            //저장한객체 , pw, 권한리스트로 토큰 생성
             Authentication ajaxAuthenticationToken =
-                    new AjaxAuthenticationToken(request.getEmail(), request.getPassword(),roles);
+                    new AjaxAuthenticationToken(account, null, roles);
 
             //인증 성공한것으로 Context의 Authentication 객체 저장
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(ajaxAuthenticationToken);
 
             httpSession.setAttribute("SPRING_SECURITY_CONTEXT",securityContext);   // 세션에 spring security context 넣음
+            SecurityContextHolder.clearContext();
+
 
 //            //Create Cookie after Create
 //            Cookie newCookie = new Cookie("login", "true");

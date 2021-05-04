@@ -25,11 +25,11 @@ public class AccountService {
     /**
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
-    public Header<AccountApiResponse> create(AccountApiRequest request) {
+    public Account create(AccountApiRequest request) {
 
         //verify
         if(!emailCheck(request.getEmail())){
-            return Header.ERROR("이미 존재하는 Email 입니다.");
+            return null;
         }
 
 
@@ -47,19 +47,7 @@ public class AccountService {
                 .build();
 
 
-        Account findAccount2 = accountRepository.save(account);
-
-        //reponser
-        AccountApiResponse response = new AccountApiResponse();
-        response.setEmail(findAccount2.getEmail());
-        response.setGender(findAccount2.getGender());
-        response.setGrade(findAccount2.getGrade());
-        response.setMajorName(findAccount2.getMajorName());
-        response.setNickName(findAccount2.getNickName());
-
-
-
-        return Header.OK(response);
+        return accountRepository.save(account);
     }
 
     public boolean emailCheck(String email){

@@ -18,6 +18,6 @@ public class CustomUserDetails extends org.springframework.security.core.userdet
     }
 
     public String getEmail() {
-        return account.getEmail() + " " + account.getEmail();
+        return account.getEmail();
     }
 }

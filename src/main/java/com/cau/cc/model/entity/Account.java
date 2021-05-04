@@ -69,8 +69,12 @@ public class Account {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedId")
     private List<Report> reportedList = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private MajorEnum majorName; // 학과
+/*
     @JoinColumn(name = "major_id")
     @ManyToOne
     private Major majorId;
+*/
 
 }

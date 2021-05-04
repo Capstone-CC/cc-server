@@ -29,7 +29,7 @@ public class AccountApiRequest {
 
     private GenderEnum gender;
 
-    private MajorEnum majorName;
+    private MajorEnum major;
 
     private int age;
 

@@ -6,7 +6,6 @@ import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.MajorRepository;
-import com.cau.cc.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -55,7 +54,7 @@ public class Runner implements ApplicationRunner {
                     .email("test")
                     .password(passwordEncoder.encode("123123"))
                     .gender(GenderEnum.남)
-                    .majorId(major)
+                    .majorName(MajorEnum.경영경제대학)
                     .grade(1)
                     .build();
             accountRepository.save(account2);

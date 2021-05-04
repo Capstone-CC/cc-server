@@ -21,7 +21,7 @@ public class AccountApiResponse {
 
     private GenderEnum gender;
 
-    private MajorEnum majorName;
+    private MajorEnum major;
 
     private int grade; // 학년
 

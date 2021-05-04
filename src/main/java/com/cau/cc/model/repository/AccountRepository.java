@@ -16,5 +16,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT u FROM Account u  WHERE u.verificationCode = ?1")
     public Account findByVerificationCode(String code);
 
-    //public Account findByname(String name);
+    public Account findByname(String name);
 }

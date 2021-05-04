@@ -6,6 +6,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.service.AccountProfileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,9 +31,7 @@ public class AccountProfileApiController {
         Account account = (Account) auth.getPrincipal();
 
         if(account.getEmail() == null) {
-            Authentication auth2 = SecurityContextHolder.getContext().getAuthentication();
-            String email2 = auth2.getName();
-            return accountProfileService.read(email2);
+            return Header.ERROR("로그인이 필요합니다.");
         }
         return accountProfileService.read(account.getEmail());
     }

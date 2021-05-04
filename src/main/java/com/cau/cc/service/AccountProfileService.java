@@ -2,7 +2,6 @@ package com.cau.cc.service;
 
 import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
-import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
@@ -38,7 +37,7 @@ public class AccountProfileService {
                 .email(account.getEmail())
                 .gender(account.getGender())
                 .grade(account.getGrade())
-                .major(account.getMajorName())
+                .majorName(account.getMajorName())
                 .nickName(account.getNickName())
                 .content(account.getContent())
                 .build();

@@ -1,6 +1,5 @@
 package com.cau.cc.model.network.response;
 
-import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.entity.MajorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

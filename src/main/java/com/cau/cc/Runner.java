@@ -2,7 +2,6 @@ package com.cau.cc;
 
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.GenderEnum;
-import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.repository.AccountRepository;
 //import com.cau.cc.model.repository.MajorRepository;
@@ -36,13 +35,13 @@ public class Runner implements ApplicationRunner {
             /**
              * DB init
              */
-            Major major1 = null;
-            long i=0l;
-            for(MajorEnum m : MajorEnum.values()){
-                major1 = new Major();
-                major1.setMajorName(m);
-                major1.setId(++i);
-            }
+//            Major major1 = null;
+//            long i=0l;
+//            for(MajorEnum m : MajorEnum.values()){
+//                major1 = new Major();
+//                major1.setMajorName(m);
+//                major1.setId(++i);
+//            }
 
             //Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
 

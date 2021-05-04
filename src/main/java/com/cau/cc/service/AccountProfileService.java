@@ -65,7 +65,7 @@ public class AccountProfileService {
                     .setEmail(request.getEmail())
                     .setGender(request.getGender())
                     .setGrade(request.getGrade())
-                    .setMajorName(request.getMajor())
+                    .setMajorName(request.getMajorName())
                     .setContent(request.getContent());
 
             Account updateAccount = accountRepository.save(account);

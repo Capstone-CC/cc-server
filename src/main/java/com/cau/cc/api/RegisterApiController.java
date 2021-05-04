@@ -7,6 +7,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.network.response.LoginApiResponse;
+import com.cau.cc.model.network.response.MajorApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.security.token.AjaxAuthenticationToken;
 import com.cau.cc.service.AccountService;
@@ -165,7 +166,7 @@ public class RegisterApiController {
             LoginApiResponse loginApiResponse1 = null;
 
             System.out.println(request.getGender());
-            System.out.println(request.getMajor());
+            System.out.println(request.getMajorName());
 
             // 2개의 비번 틀리면 return
             if(!request.getPassword().equals(request.getConfirmPw())){
@@ -190,7 +191,7 @@ public class RegisterApiController {
             }
 
             //학과정보 올바른지 확인
-            if(!isMajor(request.getMajor())){
+            if(!isMajor(request.getMajorName())){
 //                loginApiResponse1 = LoginApiResponse.builder()
 //                        .result(false)
 //                        .build();
@@ -285,5 +286,17 @@ public class RegisterApiController {
     @GetMapping("/test")
     public String test(){
         return "test";
+    }
+
+
+    @GetMapping("/major/list")
+    @ApiOperation(value = "major list",notes = "major list")
+    public Header<MajorApiResponse> getMajors(){
+        MajorApiResponse majorApiResponse = new MajorApiResponse();
+
+        for(MajorEnum m : MajorEnum.values()){
+            majorApiResponse.getMajorEnums().add(m);
+        }
+        return Header.OK(majorApiResponse);
     }
 }

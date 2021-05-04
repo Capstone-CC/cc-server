@@ -43,7 +43,7 @@ public class AccountService {
                 .gender(request.getGender())
                 .grade(request.getGrade())
                 .nickName("푸앙이")
-                .majorName(request.getMajor())
+                .majorName(request.getMajorName())
                 .build();
 
 

@@ -7,7 +7,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
-import com.cau.cc.model.repository.MajorRepository;
+//import com.cau.cc.model.repository.MajorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +51,8 @@ public class AccountProfileService {
         return accountApiResponse;
     }
 
-    @Autowired
-    MajorRepository majorRepository;
+//    @Autowired
+//    MajorRepository majorRepository;
 
     public Header<AccountApiResponse> update(AccountApiRequest request) {
 

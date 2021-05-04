@@ -42,11 +42,11 @@ public class AccountProfileService {
                 .nickName(account.getNickName())
                 .content(account.getContent())
                 .build();
-
-        if(account.getMajorName() != null){
-            accountApiResponse.setMajor(account.getMajorName());
-        }
-
+//
+//        if(account.getMajorName() != null){
+//            accountApiResponse.setMajor(account.getMajorName());
+//        }
+//
 
         return accountApiResponse;
     }

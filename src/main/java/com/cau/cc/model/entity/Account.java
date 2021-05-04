@@ -12,7 +12,7 @@ import java.util.*;
 @Entity
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"manList","womanList","manList_chat","womanList_chat","reporterList","reportedList","majorList","accountList"})
+@ToString(exclude = {"manList","womanList","manList_chat","womanList_chat","reporterList","reportedList","majorList"})
 public class Account {
 
     @Id
@@ -39,8 +39,6 @@ public class Account {
     private String location;
 
     private String timeTable;
-
-    //private String hobby;
 
     private String content;
 

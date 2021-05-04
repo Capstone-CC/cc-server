@@ -4,6 +4,7 @@ import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.Major;
+import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
@@ -66,6 +67,7 @@ public class AccountService {
         //TODO : account -> major 단방향
         //Major major = majorRepository.findByMajorName(request.getMajorId().getMajorName());
 
+
         Account account = Account.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -74,7 +76,10 @@ public class AccountService {
                 .nickName("푸앙이")
                 .majorName(request.getMajor())
                 .build();
-
+//
+//        if(major != null){
+//            account.setMajorId(major);
+//        }
 
         Account findAccount2 = accountRepository.save(account);
 
@@ -85,6 +90,11 @@ public class AccountService {
         response.setGrade(findAccount2.getGrade());
         response.setMajor(findAccount2.getMajorName());
         response.setNickName(findAccount2.getNickName());
+
+        if(findAccount2.getMajorName() != null){
+            response.setMajor(findAccount2.getMajorName());
+        }
+
 
         return Header.OK(response);
     }

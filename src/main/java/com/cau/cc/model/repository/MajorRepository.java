@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface MajorRepository extends JpaRepository<Major, Long> {
 
 
-    @Query("SELECT m FROM Major m WHERE m.majorName = ?1")
-    public Major findByMajorName(MajorEnum majorName);
+    @Query("SELECT m FROM Major m join fetch m.accountList WHERE m.majorName = ?1")
+    Major findByMajorName(MajorEnum majorName);
+
 }

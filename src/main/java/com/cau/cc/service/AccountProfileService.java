@@ -43,6 +43,11 @@ public class AccountProfileService {
                 .content(account.getContent())
                 .build();
 
+        if(account.getMajorName() != null){
+            accountApiResponse.setMajor(account.getMajorName());
+        }
+
+
         return accountApiResponse;
     }
 

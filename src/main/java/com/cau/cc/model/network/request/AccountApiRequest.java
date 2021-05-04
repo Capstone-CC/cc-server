@@ -1,7 +1,6 @@
 package com.cau.cc.model.network.request;
 
 import com.cau.cc.model.entity.GenderEnum;
-import com.cau.cc.model.entity.Major;
 import com.cau.cc.model.entity.MajorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

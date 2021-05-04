@@ -45,10 +45,7 @@ public class AccountService {
                 .nickName("푸앙이")
                 .majorName(request.getMajor())
                 .build();
-//
-//        if(major != null){
-//            account.setMajorId(major);
-//        }
+
 
         Account findAccount2 = accountRepository.save(account);
 
@@ -57,12 +54,9 @@ public class AccountService {
         response.setEmail(findAccount2.getEmail());
         response.setGender(findAccount2.getGender());
         response.setGrade(findAccount2.getGrade());
-        response.setMajor(findAccount2.getMajorName());
+        response.setMajorName(findAccount2.getMajorName());
         response.setNickName(findAccount2.getNickName());
 
-        if(findAccount2.getMajorName() != null){
-            response.setMajor(findAccount2.getMajorName());
-        }
 
 
         return Header.OK(response);

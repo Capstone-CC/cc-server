@@ -165,7 +165,7 @@ public class RegisterApiController {
             LoginApiResponse loginApiResponse1 = null;
 
             System.out.println(request.getGender());
-            System.out.println(request.getMajorName());
+            System.out.println(request.getMajor());
 
             // 2개의 비번 틀리면 return
             if(!request.getPassword().equals(request.getConfirmPw())){
@@ -190,7 +190,7 @@ public class RegisterApiController {
             }
 
             //학과정보 올바른지 확인
-            if(!isMajor(request.getMajorName())){
+            if(!isMajor(request.getMajor())){
 //                loginApiResponse1 = LoginApiResponse.builder()
 //                        .result(false)
 //                        .build();

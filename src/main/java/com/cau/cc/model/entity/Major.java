@@ -23,7 +23,7 @@ public class Major {
     @Enumerated(EnumType.STRING)
     private MajorEnum majorName; // 학과
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
-    private List<Account> accountList = new ArrayList<>();
+    /*@OneToMany(fetch = FetchType.LAZY, mappedBy = "majorId")
+    private List<Account> accountList = new ArrayList<>();*/
 
 }

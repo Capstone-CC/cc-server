@@ -38,7 +38,7 @@ public class AccountProfileService {
                 .email(account.getEmail())
                 .gender(account.getGender())
                 .grade(account.getGrade())
-                .majorName(account.getMajorId().getMajorName())
+                .major(account.getMajorName())
                 .nickName(account.getNickName())
                 .content(account.getContent())
                 .build();
@@ -54,14 +54,14 @@ public class AccountProfileService {
         Account account = accountRepository.findByEmail(request.getEmail());
 
         //major 테이블에서 majorname을 통해서 majorId 값 받아오기
-        Major major =  majorRepository.findByMajorName(request.getMajorName());
+        //Major major =  majorRepository.findByMajorName(request.getMajorId().getMajorName());
 
         if(account != null) {
             account.setNickName(request.getNickName())
                     .setEmail(request.getEmail())
                     .setGender(request.getGender())
                     .setGrade(request.getGrade())
-                    .setMajorId(major)
+                    .setMajorName(request.getMajor())
                     .setContent(request.getContent());
 
             Account updateAccount = accountRepository.save(account);

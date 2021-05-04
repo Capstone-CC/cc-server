@@ -64,7 +64,7 @@ public class AccountService {
 
 
         //TODO : account -> major 단방향
-        Major major = majorRepository.findByMajorName(request.getMajorName());
+        //Major major = majorRepository.findByMajorName(request.getMajorId().getMajorName());
 
         Account account = Account.builder()
                 .email(request.getEmail())
@@ -72,7 +72,7 @@ public class AccountService {
                 .gender(request.getGender())
                 .grade(request.getGrade())
                 .nickName("푸앙이")
-                .majorId(major)
+                .majorName(request.getMajor())
                 .build();
 
 
@@ -83,7 +83,7 @@ public class AccountService {
         response.setEmail(findAccount2.getEmail());
         response.setGender(findAccount2.getGender());
         response.setGrade(findAccount2.getGrade());
-        response.setMajorName(findAccount2.getMajorId().getMajorName());
+        response.setMajor(findAccount2.getMajorName());
         response.setNickName(findAccount2.getNickName());
 
         return Header.OK(response);

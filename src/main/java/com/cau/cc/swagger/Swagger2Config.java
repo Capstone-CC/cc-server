@@ -28,12 +28,12 @@ public class Swagger2Config {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .host("localhost:8080").pathProvider(new RelativePathProvider(servletContext){
-                    @Override
-                    public String getApplicationBasePath() {
-                        return "/api";
-                    }
-                })
+//                .host("cauconnect.com").pathProvider(new RelativePathProvider(servletContext){
+//                    @Override
+//                    public String getApplicationBasePath() {
+//                        return "/api";
+//                    }
+//                })
                 .apiInfo(apiInfo())
                 .select()
                 //패키지 경로 설정
@@ -51,9 +51,4 @@ public class Swagger2Config {
 //                .licenseUrl("라이센스 URL 작성")
                 .build();
     }
-
-
-
-
-
 }

@@ -1,7 +1,12 @@
 package com.cau.cc.webrtc.websocket.handler;
 
+import com.cau.cc.model.entity.Account;
+import com.cau.cc.webrtc.model.MatchingAccount;
+import com.cau.cc.webrtc.model.WebSocketMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -19,11 +24,11 @@ public class SocketHandler extends TextWebSocketHandler {
 
     List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
+    public static Map<String,MatchingAccount> matchingRoom = new HashMap<>();
 
-    //TODO : watingRoom 만들기 -> sessionId
-    private Map<String,String> watingSession = new HashMap<>();
     //private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    ObjectMapper mapper = new ObjectMapper();
 
     /**
      * 클라이언트로부터 메시지를 받으면 목록의 모든 클라이언트 세션을 반복하고
@@ -33,12 +38,70 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message)
             throws InterruptedException, IOException {
-        for (WebSocketSession webSocketSession : sessions) {
-            //TODO : MESSAGE
-            if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
-           //     logger.debug("[ws] The received message {}!", message.getPayload());
-                webSocketSession.sendMessage(message);
-            }
+
+        WebSocketMessage webSocketMessage = mapper.readValue(message.getPayload(),WebSocketMessage.class);
+
+        /**Session의 해당 하는 account**/
+        Authentication authentication = (Authentication) session.getPrincipal();
+        Account account = (Account) authentication.getPrincipal();
+
+        switch (webSocketMessage.getEvent()){
+//            //TODO: join 일때 대기방에 들어가기
+//            case "join":
+//                MatchingAccount matchingAccount = MatchingAccount.builder()
+//                        .email(account.getEmail())
+//                        .grade(account.getGrade())
+//                        .majorName(account.getMajorName())
+//                        .matchingState(false)
+//                        .acceptState(false)
+//                        .build();
+//                matchingRoom.put(session.getId(),matchingAccount);
+//                break;
+
+
+            //TODO: offer, answer, candidate 일때 상대방 찾아서 찾은 상대방에게 보내기
+            case "offer":
+            case "answer":
+                //TODO: 상대방 찾기
+
+                //TODO: 자신의 peerSessionId 저장 후 상대방의 peerSessionId를 자신으로 저장
+
+                //TODO: 상대방에게 메시지 보내기 추후 for문 삭제
+                for (WebSocketSession webSocketSession : sessions) {
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+                        String json = mapper.writeValueAsString(webSocketMessage);
+                        webSocketSession.sendMessage(new TextMessage(json));
+                    }
+                }
+                break;
+
+                //TODO: 연결된 이후
+            case "candidate":
+                //TODO: 매칭룸 생성
+
+                //TODO: 상대방에게 메시지 보내기 추후 for문 삭제
+                for (WebSocketSession webSocketSession : sessions) {
+                    if (webSocketSession.isOpen() && !session.getId().equals(webSocketSession.getId())) {
+                        String json = mapper.writeValueAsString(webSocketMessage);
+                        webSocketSession.sendMessage(new TextMessage(json));
+                    }
+                }
+                break;
+
+                /**수락 요청시**/
+            case "accept":
+                /** 자신의 수락상태 true로 바꾸고 **/
+                MatchingAccount acceptUser = matchingRoom.get(session.getId());
+                acceptUser.setAcceptState(true);
+
+                /** 상대방의 수락상태 확인 **/
+                MatchingAccount peerUser = matchingRoom.get(acceptUser.getPeerSessionId());
+                if(peerUser.isAcceptState()){
+                    //TODO : 상대방도 수락이므로 Mathching 테이블 만들기
+
+                }
+                /**수락 안했으므로 패스**/
+                break;
         }
     }
 
@@ -49,7 +112,23 @@ public class SocketHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        /**대기 방인 mathcingRoom에 session Id(String)를 key값으로 MatchingAccount 객체 넣기**/
         sessions.add(session);
+
+        /**Session의 해당 하는 account**/
+        Authentication authentication = (Authentication) session.getPrincipal();
+        Account account = (Account) authentication.getPrincipal();
+
+        /**대기룸 입장**/
+        MatchingAccount matchingAccount = MatchingAccount.builder()
+                .email(account.getEmail())
+                .grade(account.getGrade())
+                .majorName(account.getMajorName())
+                .matchingState(false)
+                .acceptState(false)
+                .build();
+        matchingRoom.put(session.getId(),matchingAccount);
+
     }
 
     /**
@@ -59,9 +138,5 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
      //   logger.debug("[ws] sesstion remove");
         sessions.remove(session.getId());
-
-        //TODO : state 확인 -> chatroom 만들기
-
     }
-    //
 }

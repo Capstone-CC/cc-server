@@ -1,16 +1,15 @@
 package com.cau.cc.service;
 
-import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
+import com.cau.cc.model.network.request.AccountProfileApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.response.AccountProfileApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 //import com.cau.cc.model.repository.MajorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AccountProfileService {
@@ -18,22 +17,22 @@ public class AccountProfileService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public Header<AccountApiResponse> create(AccountApiRequest request) {
+    public Header<AccountProfileApiResponse> create(AccountProfileApiRequest request) {
         return null;
     }
 
-    public Header<AccountApiResponse> read(String email) {
+    public Header<AccountProfileApiResponse> read(String email) {
         Account account = accountRepository.findByEmail(email);
         if(account!=null) {
-            AccountApiResponse accountApiResponse = response(account);
+            AccountProfileApiResponse accountApiResponse = response(account);
             return Header.OK(accountApiResponse);
         }
         else return Header.ERROR("데이터 없음");
 
     }
 // 이멜, 닉네임, 성별, 학과, 학년, 자기소개
-    private AccountApiResponse response(Account account) {
-        AccountApiResponse  accountApiResponse = AccountApiResponse.builder()
+    private AccountProfileApiResponse response(Account account) {
+        AccountProfileApiResponse accountProfileApiResponse = AccountProfileApiResponse.builder()
                 .email(account.getEmail())
                 .gender(account.getGender())
                 .grade(account.getGrade())
@@ -47,13 +46,13 @@ public class AccountProfileService {
 //        }
 //
 
-        return accountApiResponse;
+        return accountProfileApiResponse;
     }
 
 //    @Autowired
 //    MajorRepository majorRepository;
 
-    public Header<AccountApiResponse> update(AccountApiRequest request) {
+    public Header<AccountProfileApiResponse> update(AccountProfileApiRequest request) {
 
         Account account = accountRepository.findByEmail(request.getEmail());
 
@@ -69,7 +68,7 @@ public class AccountProfileService {
                     .setContent(request.getContent());
 
             Account updateAccount = accountRepository.save(account);
-            AccountApiResponse accountApiResponse = response(updateAccount);
+            AccountProfileApiResponse accountApiResponse = response(updateAccount);
             return Header.OK(accountApiResponse);
         }
         else return Header.ERROR("데이터 없음");

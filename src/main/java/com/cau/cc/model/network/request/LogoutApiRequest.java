@@ -1,4 +1,4 @@
-package com.cau.cc.model.network.response;
+package com.cau.cc.model.network.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class LoginApiResponse {
+public class LogoutApiRequest {
 }

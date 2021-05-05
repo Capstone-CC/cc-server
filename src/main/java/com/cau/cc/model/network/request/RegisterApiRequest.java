@@ -8,34 +8,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Enumerated;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AccountApiRequest {
+public class RegisterApiRequest {
 
-    private String nickName;
 
-    private String image;
-
+    @ApiModelProperty(example = "남")
     private GenderEnum gender;
 
+    @ApiModelProperty(example = "소프트웨어대학")
     private MajorEnum majorName;
 
+    @ApiModelProperty(example = "1")
     private int grade; // 학년
 
-    private String content;
-
+    @ApiModelProperty(example = "test")
     private String email;
 
-    private String verificationCode;
-
-    private boolean checkEmaile;
-
+    @ApiModelProperty(example = "123123")
     private String password;
 
+    @ApiModelProperty(example = "123123")
     private String confirmPw;
-
 }

@@ -5,38 +5,24 @@ import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
-import com.cau.cc.model.network.response.AccountApiResponse;
-import com.cau.cc.model.network.response.LoginApiResponse;
-import com.cau.cc.model.network.response.MajorApiResponse;
-import com.cau.cc.model.repository.AccountRepository;
+import com.cau.cc.model.network.request.LoginApiRequest;
+import com.cau.cc.model.network.request.RegisterApiRequest;
 import com.cau.cc.security.token.AjaxAuthenticationToken;
 import com.cau.cc.service.AccountService;
 import com.cau.cc.service.EmailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -54,9 +40,9 @@ public class RegisterApiController {
 
     @ApiOperation(value = "이메일 코드 전송",notes = "이메일 코드 전송")
     @GetMapping("/email")
-    public Header<LoginApiResponse> email(@ApiParam(value = "이메일주소", required = true, example = "test@cau.ac.kr") @RequestParam String email,
-            //@RequestBody Header<AccountApiRequest> request,
-                                        HttpSession httpSession)
+    public Header email(@ApiParam(value = "이메일주소", required = true, example = "test") @RequestParam String email,
+                                         //@RequestBody Header<AccountApiRequest> request,
+                                         @ApiIgnore() HttpSession httpSession)
             throws UnsupportedEncodingException, MessagingException {
 
         AccountApiRequest body = new AccountApiRequest();
@@ -104,9 +90,9 @@ public class RegisterApiController {
      */
     @ApiOperation(value = "이메일 코드 인증",notes = "이메일 코드 인증")
     @GetMapping("/verify")
-    public Header<LoginApiResponse> verify(@ApiParam(value = "이메일주소" ,required = true) @RequestParam String email,
-                                           @ApiParam(value = "이메일 인증코드",required = true) @RequestParam String code,
-                          HttpSession httpSession){
+    public Header verify(@ApiParam(value = "이메일주소" ,required = true, example = "test") @RequestParam String email,
+                                          @ApiParam(value = "이메일 인증코드",required = true) @RequestParam String code,
+                                          @ApiIgnore() HttpSession httpSession){
 
 //        AccountApiRequest newBody = request.getData();
         AccountApiRequest newBody = new AccountApiRequest();
@@ -153,9 +139,8 @@ public class RegisterApiController {
      */
     @ApiOperation(value = "인증 후 회원가입",notes = "가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR")
     @PostMapping("/register")
-    public Header<LoginApiResponse> create(@RequestBody AccountApiRequest request,
-                                   HttpSession httpSession,
-                                   HttpServletResponse response) {
+    public Header create(@RequestBody RegisterApiRequest request,
+                         @ApiIgnore() HttpSession httpSession) {
 
         //입력받은 객체에 대한 값을 세션에서 꺼내서
         AccountApiRequest origiBody = (AccountApiRequest) httpSession.getAttribute(request.getEmail());
@@ -163,7 +148,7 @@ public class RegisterApiController {
         //세션에서 꺼낸 originBody가 인증된 사용자인지 검토
         if(origiBody.isCheckEmaile()){
 
-            LoginApiResponse loginApiResponse1 = null;
+            LoginApiRequest loginApiResponse1 = null;
 
             System.out.println(request.getGender());
             System.out.println(request.getMajorName());
@@ -290,15 +275,4 @@ public class RegisterApiController {
         return "test";
     }
 
-
-    @GetMapping("/major/list")
-    @ApiOperation(value = "major list",notes = "major list")
-    public Header<MajorApiResponse> getMajors(){
-        MajorApiResponse majorApiResponse = new MajorApiResponse();
-
-        for(MajorEnum m : MajorEnum.values()){
-            majorApiResponse.getMajorEnums().add(m);
-        }
-        return Header.OK(majorApiResponse);
-    }
 }

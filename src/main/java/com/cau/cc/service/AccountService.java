@@ -1,9 +1,7 @@
 package com.cau.cc.service;
 
 import com.cau.cc.model.entity.Account;
-import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.request.AccountApiRequest;
-import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.request.RegisterApiRequest;
 import com.cau.cc.model.repository.AccountRepository;
 //import com.cau.cc.model.repository.MajorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,7 @@ public class AccountService {
     /**
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
-    public Account create(AccountApiRequest request) {
+    public Account create(RegisterApiRequest request) {
 
         //verify
         if(!emailCheck(request.getEmail())){

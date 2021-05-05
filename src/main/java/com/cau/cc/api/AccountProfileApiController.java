@@ -1,18 +1,21 @@
 package com.cau.cc.api;
 
-import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
+import com.cau.cc.model.network.request.AccountProfileApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.response.AccountProfileApiResponse;
 import com.cau.cc.service.AccountProfileService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Api(tags = "프로필 Read & Update")
 @RequestMapping("/profile")
 public class AccountProfileApiController {
 
@@ -20,12 +23,13 @@ public class AccountProfileApiController {
     private AccountProfileService accountProfileService;
 
     @PostMapping("") // /api/profile
-    public Header<AccountApiResponse> create(@RequestBody AccountApiRequest request) {
+    public Header<AccountProfileApiResponse> create(@RequestBody AccountProfileApiRequest request) {
         return accountProfileService.create(request);
     }
 
     @GetMapping("")
-    public Header<AccountApiResponse> read() {
+    @ApiOperation(value = "프로필 Read",notes = "프로필 Read")
+    public Header<AccountProfileApiResponse> read() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) auth.getPrincipal();
@@ -37,7 +41,8 @@ public class AccountProfileApiController {
     }
 
     @PutMapping("") // /api/profile
-    public Header<AccountApiResponse> update(@RequestBody AccountApiRequest request) {
+    @ApiOperation(value = "프로필 Update",notes = "프로필 Update")
+    public Header<AccountProfileApiResponse> update(@RequestBody AccountProfileApiRequest request) {
         return accountProfileService.update(request);
     }
 
@@ -45,4 +50,6 @@ public class AccountProfileApiController {
     public Header delete(@PathVariable Long id) {
         return accountProfileService.delete(id);
     }
+
+
 }

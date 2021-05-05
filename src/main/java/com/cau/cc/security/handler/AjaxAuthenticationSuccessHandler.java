@@ -1,9 +1,6 @@
 package com.cau.cc.security.handler;
 
-import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.response.AccountApiResponse;
-import com.cau.cc.model.network.response.LoginApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

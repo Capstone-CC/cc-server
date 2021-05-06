@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.socket.WebSocketSession;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 public class MatchingAccount {
+
+    private WebSocketSession mySession;
     private int grade; // 학년
     private String email;
     private MajorEnum majorName;

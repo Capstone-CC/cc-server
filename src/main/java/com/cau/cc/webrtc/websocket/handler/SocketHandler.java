@@ -19,14 +19,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class SocketHandler extends TextWebSocketHandler {
 
-    Map<String,WebSocketSession> sessions = new HashMap<>();
+    Map<String,WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    public static Map<String,MatchingAccount> matchingRoom = new HashMap<>();
+    public static Map<String,MatchingAccount> matchingRoom = new ConcurrentHashMap<>();
 
     //private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -108,6 +109,9 @@ public class SocketHandler extends TextWebSocketHandler {
                 //TODO: 연결 된 상대방에게 상대방에게 메시지 보내기 추후 for문 삭제
                 /**1. 자신의 객체 찾고**/
                 MatchingAccount my = matchingRoom.get(session.getId());
+                if(my == null || my.getPeerSessionId() == null){
+                    break;
+                }
                 /**2. 자신과 연결된 상대방에게 answer 전달 **/
                 MatchingAccount connectOther = matchingRoom.get(my.getPeerSessionId());
                 if(connectOther != null){
@@ -146,7 +150,10 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         /**대기 방인 mathcingRoom에 session Id(String)를 key값으로 MatchingAccount 객체 넣기**/
-        sessions.put(session.getId(),session);
+        WebSocketSession s = sessions.get(session.getId());
+        if(s == null){
+            sessions.put(session.getId(),session);
+        }
 
 
 
@@ -159,6 +166,7 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
      //   logger.debug("[ws] sesstion remove");
+
         sessions.remove(session.getId());
 
         /**종료한 Session이 대기룸에 있으면 제거**/

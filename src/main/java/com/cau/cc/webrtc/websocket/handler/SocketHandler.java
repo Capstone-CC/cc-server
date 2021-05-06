@@ -182,7 +182,9 @@ public class SocketHandler extends TextWebSocketHandler {
             String json = mapper.writeValueAsString(webSocketMessage);
             webSocketSession.sendMessage(new TextMessage(json));
         } catch (IOException e) {
-            //logger.debug("An error occured: {}", e.getMessage());
+            synchronized( sessions ) {
+                sessions.remove( webSocketSession );
+            }
         }
     }
 }

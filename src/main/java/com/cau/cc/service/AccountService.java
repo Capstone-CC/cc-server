@@ -1,10 +1,15 @@
 package com.cau.cc.service;
 
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.network.Header;
+import com.cau.cc.model.network.request.AccountModifyRequest;
 import com.cau.cc.model.network.request.RegisterApiRequest;
 import com.cau.cc.model.repository.AccountRepository;
 //import com.cau.cc.model.repository.MajorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +22,6 @@ public class AccountService {
     @Autowired
     AccountRepository accountRepository;
 
-//    @Autowired
-//    MajorRepository majorRepository;
-
     /**
      * 가입 필수 정보 : EMAIL, PW, GENDER, GRADE, MAJOR
      */
@@ -29,11 +31,6 @@ public class AccountService {
         if(!emailCheck(request.getEmail())){
             return null;
         }
-
-
-        //TODO : account -> major 단방향
-        //Major major = majorRepository.findByMajorName(request.getMajorId().getMajorName());
-
 
         Account account = Account.builder()
                 .email(request.getEmail())
@@ -56,6 +53,27 @@ public class AccountService {
             return false;
         }
         return true;
+    }
+
+    public Header modify(AccountModifyRequest request){
+
+        Account origin = accountRepository.findByEmail(request.getEmail());
+
+        /**입력한 비번이 맞는지 (암호화 되지않은 password와 암호화된 password 비교)**/
+        if(!passwordEncoder.matches(request.getOriginPw(), origin.getPassword())){
+            return Header.ERROR("현재 비밀번호가 틀렸습니다.");
+        }
+        
+        /** 비번은 동일하므로 변경할 비번 동일 한지 확인 **/
+        if(!request.getPassword().equals(request.getConfirmPw())){
+            return Header.ERROR("변경 할 비밀번호가 서로 틀립니다.");
+        }
+        
+        /**변경 할 비번 동일**/
+        String newPassword = passwordEncoder.encode(request.getPassword());
+        origin.setPassword(newPassword);
+        accountRepository.save(origin);
+        return Header.OK();
     }
 
 }

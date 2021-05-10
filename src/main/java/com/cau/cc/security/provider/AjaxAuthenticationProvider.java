@@ -35,9 +35,9 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         //인증된 UserDetails 타입의 CustomUserDetails 객체
         CustomUserDetails accountContext = (CustomUserDetails) customerUserDetailsService.loadUserByUsername(username);
 
-        //패스워드 검증
+        //패스워드 검증 (암호화 되지않은 password와 암호화된 password 비교)
         if(!passwordEncoder.matches(password,accountContext.getPassword())){
-            throw  new BadCredentialsException("BadCredentialsException");
+            throw new BadCredentialsException("BadCredentialsException");
         }
 
         //pw 검증 완료된 인증된 account 객체, pw는 null처리,

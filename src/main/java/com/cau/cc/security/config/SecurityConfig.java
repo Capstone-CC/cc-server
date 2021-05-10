@@ -147,7 +147,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/test",
                         "/socket",
                         "/major/**",
-                        "/logout").permitAll()
+                        "/logout",
+                        "/account/password").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

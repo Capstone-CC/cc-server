@@ -34,6 +34,6 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
         response.setStatus(HttpStatus.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        objectMapper.writeValue(response.getWriter(), Header.ERROR("로그인 실패"));
+        objectMapper.writeValue(response.getWriter(), Header.ERROR("Login failed"));
     }
 }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class WebSocketMessage {
     private String id;
     private String event;
-    private String wantGrade;
-    private String wantMajor;
+    private String grade;
+    private String major;
     private Object data;
 }

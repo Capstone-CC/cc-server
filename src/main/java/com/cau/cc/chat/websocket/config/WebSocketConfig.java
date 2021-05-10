@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         /** root path : ~/api 이므로 ~/api/chat **/
-        registry.addHandler(new SocketHandler(), "/chat")
-                .setAllowedOrigins("*");
+        //registry.addHandler(new SocketHandler(), "/chat")
+        //        .setAllowedOrigins("*");
     }
 }

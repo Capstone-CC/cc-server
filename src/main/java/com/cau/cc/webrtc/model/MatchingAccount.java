@@ -21,6 +21,7 @@ public class MatchingAccount {
     private MajorEnum majorName;
     private GenderEnum gender;
     private int count;
+    private String nickName;
 
     //매칭된 상대방 sessionId
     private String peerSessionId;

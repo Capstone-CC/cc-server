@@ -1,5 +1,6 @@
 package com.cau.cc.webrtc.model;
 
+import com.cau.cc.model.entity.MajorEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,9 @@ import lombok.NoArgsConstructor;
 public class WebSocketMessage {
     private String id;
     private String event;
-    private String grade;
-    private String major;
+    private Option option;
     private Object data;
 }
+
+
+

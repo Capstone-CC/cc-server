@@ -14,6 +14,7 @@ import org.springframework.web.socket.WebSocketSession;
 @Builder
 public class MatchingAccount {
 
+    private Long id;
     private WebSocketSession mySession;
     private int grade; // 학년
     private String email;

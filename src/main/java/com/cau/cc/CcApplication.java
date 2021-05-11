@@ -19,11 +19,13 @@ public class CcApplication {
         SpringApplication.run(CcApplication.class, args);
     }
 
-//    @Bean
-//    MultipartConfigElement multipartConfigElement() {
-//        MultipartConfigFactory factory = new MultipartConfigFactory();
-//        factory.setMaxFileSize(DataSize.ofMegabytes(5));
-//        factory.setMaxRequestSize(DataSize.ofMegabytes(5));
-//        return factory.createMultipartConfig();
-//    }
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize(DataSize.ofMegabytes(5));
+        factory.setMaxRequestSize(DataSize.ofMegabytes(5));
+        return factory.createMultipartConfig();
+    }
+
+
 }

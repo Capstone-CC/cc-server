@@ -1,10 +1,6 @@
 package com.cau.cc;
 
-import com.cau.cc.model.entity.Account;
-import com.cau.cc.model.entity.GenderEnum;
-import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.repository.AccountRepository;
-//import com.cau.cc.model.repository.MajorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -25,11 +21,10 @@ public class Runner implements ApplicationRunner {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    //@Autowired
-    //MajorRepository majorRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+
         try(Connection connection = dataSource.getConnection()){
 
             /**

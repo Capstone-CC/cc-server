@@ -20,6 +20,7 @@ public class MatchingAccount {
     private String email;
     private MajorEnum majorName;
     private GenderEnum gender;
+    private int count;
 
     //매칭된 상대방 sessionId
     private String peerSessionId;

@@ -81,6 +81,9 @@ public class SocketHandler extends TextWebSocketHandler {
 
             //TODO: offer, answer, candidate 일때 상대방 찾아서 찾은 상대방에게 보내기
             case "offer":
+                //TODO : COUNT가 0이면 매칭 시도 불가
+
+
                 /**자신이 대기룸에 없으면 입장**/
                 myMatchingAccount = matchingRoom.get(session.getId());
                 if(myMatchingAccount == null){
@@ -90,6 +93,7 @@ public class SocketHandler extends TextWebSocketHandler {
                             .mySession(session)
                             .email(account.getEmail())
                             .grade(account.getGrade())
+                            .count(account.getCount())
                             .majorName(account.getMajorName())
                             .gender(account.getGender())
                             .matchingState(false)
@@ -191,6 +195,17 @@ public class SocketHandler extends TextWebSocketHandler {
                 //TODO: 상대방 stete 확인
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
                 if (otherMatchingAccount.isMatchingState()){
+
+                    /**각각 count 값 1씩 감소**/
+                    Account tmp = accountRepository.findByEmail(myMatchingAccount.getEmail());
+                    tmp.setCount(tmp.getCount()-1);
+                    accountRepository.save(tmp);
+                    Account tmp2 = accountRepository.findByEmail(otherMatchingAccount.getEmail());
+                    tmp2.setCount(tmp2.getCount()-1);
+                    accountRepository.save(tmp2);
+
+                    myMatchingAccount.setCount(myMatchingAccount.getCount()-1);
+                    otherMatchingAccount.setCount(otherMatchingAccount.getCount()-1);
 
                     //TODO : 매칭룸 생성
                     MatchingApiRequest request = MatchingApiRequest.builder()

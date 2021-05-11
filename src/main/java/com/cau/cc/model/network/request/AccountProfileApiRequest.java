@@ -17,6 +17,7 @@ public class AccountProfileApiRequest {
     @ApiModelProperty(example = "푸앙이")
     private String nickName;
 
+    @ApiModelProperty(example = "이미지경로")
     private String image;
 
     @ApiModelProperty(example = "남")

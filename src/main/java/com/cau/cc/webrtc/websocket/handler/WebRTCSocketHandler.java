@@ -26,10 +26,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -59,6 +56,22 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         this.matchingApiLogicService = matchingApiLogicService;
         this.accountRepository = accountRepository;
         this.chatroomApiLogicService = chatroomApiLogicService;
+
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if(matchingRoom.size() != 0){
+                    for( Map.Entry<String,WebSocketSession> session : sessions.entrySet()){
+                        sendMessage(session.getValue(),new WebSocketMessage(session.getKey(),"client",null,matchingRoom.size()));
+                    }
+                }
+            }
+        };
+
+        Timer timer = new Timer(true);
+        //지정한 시간(firstTime)부터 일정 간격(period)으로 지정한 작업(task)을 수행한다.
+        timer.scheduleAtFixedRate(timerTask,0,1*1000);
     }
 
     /**
@@ -131,6 +144,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
 
                         /**4.매칭안된 사용자이고 자신과 다른 성별이면 ㄴ조건의 맞는지 확인**/
+                        /**grade가 0이면 전체선택, MajorName이 all 이면 전체선택**/
                         int myWantGrade = webSocketMessage.getOption().getGrade(); // 자신이 원하는 학년
                         MajorEnum myWantMajor = webSocketMessage.getOption().getMajorName(); // 자신이 원하지 않는 학과
 //                        if(myWantGrade.equals(otherMatchingAccount.getGrade())
@@ -323,4 +337,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
             }
         }
     }
+
+
 }

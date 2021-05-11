@@ -26,8 +26,8 @@ public class CcApplication {
     @Bean
     MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize(DataSize.ofMegabytes(5));
-        factory.setMaxRequestSize(DataSize.ofMegabytes(5));
+        factory.setMaxFileSize(DataSize.ofMegabytes(1024));
+        factory.setMaxRequestSize(DataSize.ofMegabytes(1024));
         return factory.createMultipartConfig();
     }
 

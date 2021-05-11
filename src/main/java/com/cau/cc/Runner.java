@@ -46,30 +46,30 @@ public class Runner implements ApplicationRunner {
             //Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
 
 
-            //test db
-            Account account2 = Account.builder()
-            //        .id(2l)
-                    .email("test")
-                    .password(passwordEncoder.encode("123123"))
-                    .gender(GenderEnum.남)
-                    .majorName(MajorEnum.경영경제대학)
-                    .grade(1)
-                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
-                    .build();
-
-            accountRepository.save(account2);
-
-            Account account3 = Account.builder()
-                    //        .id(2l)
-                    .email("test")
-                    .password(passwordEncoder.encode("123123"))
-                    .gender(GenderEnum.여)
-                    .majorName(MajorEnum.컴퓨터공학과)
-                    .grade(3)
-                    .image("https://caucampuscontact.s3.amazonaws.com/images/다른.png")
-                    .build();
-
-            accountRepository.save(account3);
+//            //test db
+//            Account account2 = Account.builder()
+//            //        .id(2l)
+//                    .email("test")
+//                    .password(passwordEncoder.encode("123123"))
+//                    .gender(GenderEnum.남)
+//                    .majorName(MajorEnum.경영경제대학)
+//                    .grade(1)
+//                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+//                    .build();
+//
+//            accountRepository.save(account2);
+//
+//            Account account3 = Account.builder()
+//                    //        .id(2l)
+//                    .email("test")
+//                    .password(passwordEncoder.encode("123123"))
+//                    .gender(GenderEnum.여)
+//                    .majorName(MajorEnum.컴퓨터공학과)
+//                    .grade(3)
+//                    .image("https://caucampuscontact.s3.amazonaws.com/images/다른.png")
+//                    .build();
+//
+//            accountRepository.save(account3);
 
 
 

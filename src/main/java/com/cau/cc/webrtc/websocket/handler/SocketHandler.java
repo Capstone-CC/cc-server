@@ -86,6 +86,7 @@ public class SocketHandler extends TextWebSocketHandler {
                 if(myMatchingAccount == null){
                     /**대기룸 입장**/
                     myMatchingAccount = MatchingAccount.builder()
+                            .id(account.getId())
                             .mySession(session)
                             .email(account.getEmail())
                             .grade(account.getGrade())
@@ -190,11 +191,16 @@ public class SocketHandler extends TextWebSocketHandler {
                 //TODO: 상대방 stete 확인
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
                 if (otherMatchingAccount.isMatchingState()){
+
                     //TODO : 매칭룸 생성
-//                    MatchingApiRequest request = MatchingApiRequest.builder()
-//                            .manUserState(0)
-//                            .womanUserState(0)
-//                            .time(LocalDateTime.now())
+                    MatchingApiRequest request = MatchingApiRequest.builder()
+                            .manUserState(0)
+                            .womanUserState(0)
+                            .time(LocalDateTime.now())
+                            .manId(myMatchingAccount.getId())
+                            .womanId(otherMatchingAccount.getId())
+                            .build();
+                    matchingApiLogicService.create(request);
                 }
                 break;
 

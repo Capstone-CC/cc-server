@@ -23,7 +23,7 @@ public class AccountApiController {
     /**
      * 비밀번호 변경
      */
-    @ApiOperation(value = "비밀번호 변경",notes = "필수 정보 : PW, ConfirmPw")
+    @ApiOperation(value = "비밀번호 변경",notes = "필수 정보 : 현재 비밀번호 , 변경 할 비밀번호, 변경 할 비밀번호 확인")
     @PostMapping("/password")
     public Header modify(@RequestBody AccountModifyRequest request){
         Account account = null;

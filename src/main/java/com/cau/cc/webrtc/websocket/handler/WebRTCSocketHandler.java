@@ -2,8 +2,14 @@ package com.cau.cc.webrtc.websocket.handler;
 
 import com.amazonaws.transform.MapEntry;
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.model.entity.MajorEnum;
+import com.cau.cc.model.network.Header;
+import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.request.MatchingApiRequest;
+import com.cau.cc.model.network.response.MatchingApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
+import com.cau.cc.service.ChatroomApiLogicService;
 import com.cau.cc.service.MatchingApiLogicService;
 import com.cau.cc.webrtc.model.MatchingAccount;
 import com.cau.cc.webrtc.model.WebSocketMessage;
@@ -28,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class SocketHandler extends TextWebSocketHandler {
+public class WebRTCSocketHandler extends TextWebSocketHandler {
 
     /**소켓 연결된 세션 저장**/
     Map<String,WebSocketSession> sessions = new ConcurrentHashMap<>();
@@ -44,10 +50,15 @@ public class SocketHandler extends TextWebSocketHandler {
 
     private AccountRepository accountRepository;
 
+    private ChatroomApiLogicService chatroomApiLogicService;
+
     @Autowired
-    public SocketHandler(MatchingApiLogicService matchingApiLogicService, AccountRepository accountRepository) {
+    public WebRTCSocketHandler(MatchingApiLogicService matchingApiLogicService,
+                               AccountRepository accountRepository,
+                               ChatroomApiLogicService chatroomApiLogicService) {
         this.matchingApiLogicService = matchingApiLogicService;
         this.accountRepository = accountRepository;
+        this.chatroomApiLogicService = chatroomApiLogicService;
     }
 
     /**
@@ -69,7 +80,7 @@ public class SocketHandler extends TextWebSocketHandler {
         }catch (Exception e){
             synchronized( sessions ) {
                 /**없으면 쿠기없다는 메세지 보내기**/
-                sendMessage(session,new WebSocketMessage(session.getId(),"NotCookie",null,null,null));
+                sendMessage(session,new WebSocketMessage(session.getId(),"NotCookie",null,null));
                 sessions.remove( session );
             }
         }
@@ -96,6 +107,7 @@ public class SocketHandler extends TextWebSocketHandler {
                             .count(account.getCount())
                             .majorName(account.getMajorName())
                             .gender(account.getGender())
+                            .nickName(account.getNickName())
                             .matchingState(false)
                             .build();
                     matchingRoom.put(session.getId(),myMatchingAccount);
@@ -112,15 +124,15 @@ public class SocketHandler extends TextWebSocketHandler {
                     /**if 체크 순서 중요! **/
                     if( otherMatchingAccount != null && !session.getId().equals(otherMatchingAccount.getMySession().getId())) {
 
-                        /**3. 찾은 상대방이 이미 매칭된 상태 또는 자신과 같은 성별라면 continue**/
+                        /**3. 찾은 상대방이 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
                         if(otherMatchingAccount.getPeerSessionId() != null
                         || otherMatchingAccount.getGender().equals(myMatchingAccount.getGender())){
                             continue;
                         }
 
-                        /**4.매칭안된 사용자이고 자신과 다른 성별이면 조건의 맞는지 확인**/
-//                        String myWantGrade = webSocketMessage.getGrade(); // 자신이 원하는 학년
-//                        String myWantMajor = webSocketMessage.getGrade(); // 자신이 원하지 않는 학과
+                        /**4.매칭안된 사용자이고 자신과 다른 성별이면 ㄴ조건의 맞는지 확인**/
+                        int myWantGrade = webSocketMessage.getOption().getGrade(); // 자신이 원하는 학년
+                        MajorEnum myWantMajor = webSocketMessage.getOption().getMajorName(); // 자신이 원하지 않는 학과
 //                        if(myWantGrade.equals(otherMatchingAccount.getGrade())
 //                                && !myWantMajor.equals(otherMatchingAccount.getMajorName())){
 //                            //둘다 맞는 경우
@@ -148,7 +160,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
                 if(check == 0){
                     /**없으면 대기하라는 메세지 보내기**/
-                    sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null,null));
+                    sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null));
                     break;
                 } else{
                     break;
@@ -177,7 +189,7 @@ public class SocketHandler extends TextWebSocketHandler {
                 myMatchingAccount = matchingRoom.get(session.getId());
                 /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
                 if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null){
-                    sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null,null));
+                    sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null));
                     break;
                 }
                 /**3. 자신과 연결된 상대방에게 answer 전달 **/
@@ -222,21 +234,39 @@ public class SocketHandler extends TextWebSocketHandler {
 
                 /**수락 요청시**/
             case "accept":
-                //TODO : 1. 생성된 매칭 테이블에서 세션에 해당하는 ID의 state 바꾸고
 
                 /**1. 수락을 보낸 사용자**/
                 myMatchingAccount = matchingRoom.get(session.getId());
 
-                /** 2.매칭 테이블에서 자신의 이메일에 해당하는 recore 받아와서 **/
-
+                /** 2.매칭 테이블에서 자신의 이메일에 해당하는 record 받아와서 **/
+                MatchingApiResponse matching = matchingApiLogicService.read(myMatchingAccount.getId()).getValue();
 
                 /**3. 자신이 남자이면 남자 state 변경, 여자이면 여자 state 변경**/
+                if(myMatchingAccount.getGender().equals(GenderEnum.남)){
+                    matching.setManUserState(1);
+                } else {
+                    matching.setWomanUserState(1);
+                }
 
+                /**4. 수락상태 확인 - 둘다 수락 상태이면 채팅 룸 생성**/
+                if(matching.getWomanUserState()==1 && matching.getManUserState() == 1){
 
-                /**4. 상대방의 수락상태 확인 **/
-                //if(){
-                    //TODO : 상대방도 수락이므로 chatroom record 만들기
-                //}
+                    otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
+
+                    ChatroomApiRequest request = ChatroomApiRequest.builder()
+                            .name(otherMatchingAccount.getNickName())
+                            .build();
+                    /**내가 남자라면**/
+                    if(myMatchingAccount.getGender().equals(GenderEnum.남)){
+                        request.setManId(myMatchingAccount.getId());
+                        request.setWomanId(otherMatchingAccount.getId());
+                    } else { /**내가 여자라면**/
+                        request.setWomanId(myMatchingAccount.getId());
+                        request.setManId(otherMatchingAccount.getId());
+                    }
+
+                    chatroomApiLogicService.create(request);
+                }
 
                 /**수락 안했으므로 패스**/
                 break;

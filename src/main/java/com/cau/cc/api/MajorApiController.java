@@ -21,7 +21,9 @@ public class MajorApiController  {
         MajorApiResponse majorApiResponse = new MajorApiResponse();
 
         for(MajorEnum m : MajorEnum.values()){
-            majorApiResponse.getMajorEnums().add(m);
+            if(m != MajorEnum.ALL){
+                majorApiResponse.getMajorEnums().add(m);
+            }
         }
         return Header.OK(majorApiResponse);
     }

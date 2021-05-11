@@ -14,7 +14,7 @@ public class WebSocketMessage {
     private String id;
     private String event;
     private Option option;
-    private Object data;
+    private Object data; // 현재 offer 사용자
 }
 
 

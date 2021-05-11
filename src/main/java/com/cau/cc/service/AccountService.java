@@ -27,7 +27,7 @@ public class AccountService {
      */
     public Account create(RegisterApiRequest request) {
 
-        //verify
+        //veri
         if(!emailCheck(request.getEmail())){
             return null;
         }

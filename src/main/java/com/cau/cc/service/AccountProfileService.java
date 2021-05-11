@@ -33,6 +33,7 @@ public class AccountProfileService {
 // 이멜, 닉네임, 성별, 학과, 학년, 자기소개
     private AccountProfileApiResponse response(Account account) {
         AccountProfileApiResponse accountProfileApiResponse = AccountProfileApiResponse.builder()
+                .image(account.getImage())
                 .email(account.getEmail())
                 .gender(account.getGender())
                 .grade(account.getGrade())
@@ -65,7 +66,8 @@ public class AccountProfileService {
                     .setGender(request.getGender())
                     .setGrade(request.getGrade())
                     .setMajorName(request.getMajorName())
-                    .setContent(request.getContent());
+                    .setContent(request.getContent())
+                    .setImage(request.getImage());
 
             Account updateAccount = accountRepository.save(account);
             AccountProfileApiResponse accountApiResponse = response(updateAccount);

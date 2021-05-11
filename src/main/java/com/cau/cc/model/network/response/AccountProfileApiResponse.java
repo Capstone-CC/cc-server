@@ -17,6 +17,8 @@ public class AccountProfileApiResponse {
 
     private String email;
 
+    private String image;
+
     private GenderEnum gender;
 
     private MajorEnum majorName;

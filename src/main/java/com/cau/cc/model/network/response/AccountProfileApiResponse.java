@@ -32,6 +32,6 @@ public class AccountProfileApiResponse {
 
     private String content;
 
-    private List<Chatroom> chatroomApiResponseList;
+    private List<ChatroomApiResponse> chatroomApiResponseList;
 
 }

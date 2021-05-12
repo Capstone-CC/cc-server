@@ -5,6 +5,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.AccountProfileApiResponse;
 import com.cau.cc.service.AccountProfileService;
 import io.swagger.annotations.Api;
@@ -49,6 +50,17 @@ public class AccountProfileApiController {
     @DeleteMapping("{id}") // /api/profile/id
     public Header delete(@PathVariable Long id) {
         return accountProfileService.delete(id);
+    }
+
+    /**
+     * chat list api
+     */
+    @GetMapping("/chat/list")
+    public Header<AccountChatListApiResponse> chatInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) auth.getPrincipal();
+
+        return accountProfileService.chatInfo(account.getEmail());
     }
 
 

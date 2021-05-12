@@ -1,5 +1,6 @@
 package com.cau.cc.model.network;
 
+import com.cau.cc.page.Pagination;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,8 @@ public class Header<T> {
     //api 결과
     private boolean result;
 
+    private Pagination pagination;
+
     // OK
     public static <T> Header<T> OK() {
         return (Header<T>) Header.builder()
@@ -47,6 +50,15 @@ public class Header<T> {
                 .result(false)
                 .transactionTime(LocalDateTime.now())
                 .description(description)
+                .build();
+    }
+
+    public static <T> Header<T> OK(T data, Pagination pagination) {
+        return (Header<T>) Header.builder()
+                .transactionTime(LocalDateTime.now())
+                .description("OK")
+                .value(data)
+                .pagination(pagination)
                 .build();
     }
 

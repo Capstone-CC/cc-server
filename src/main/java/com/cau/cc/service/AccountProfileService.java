@@ -1,21 +1,32 @@
 package com.cau.cc.service;
 
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.Chatroom;
+import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
+import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.AccountProfileApiResponse;
+import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 //import com.cau.cc.model.repository.MajorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class AccountProfileService {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private ChatroomApiLogicService chatroomApiLogicService;
 
     public Header<AccountProfileApiResponse> create(AccountProfileApiRequest request) {
         return null;

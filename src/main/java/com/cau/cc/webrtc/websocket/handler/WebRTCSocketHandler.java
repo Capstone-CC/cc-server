@@ -49,6 +49,9 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
     private ChatroomApiLogicService chatroomApiLogicService;
 
+    private int[] randomNum = {3,5,7,10};
+
+
     @Autowired
     public WebRTCSocketHandler(MatchingApiLogicService matchingApiLogicService,
                                AccountRepository accountRepository,
@@ -73,6 +76,14 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 //        //지정한 시간(firstTime)부터 3초 간격(period) 으로 지정한 작업(task)을 수행한다.
 //        timer.scheduleAtFixedRate(timerTask,0,3*1000);
     }
+
+
+    public int random(){
+        Random random = new Random();
+        int randomIdx = random.nextInt(4);
+        return this.randomNum[randomIdx];
+    }
+
 
     /**
      * 클라이언트로부터 메시지를 받으면 실행됨
@@ -129,7 +140,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 //매칭상대 찾은 상태값 0: 몾찾음, 1: 찾음
                 int check = 0;
                 int start = 1;
-                //TODO: 상대방 찾기 추후 수정 필요
+
                 /** 1. 전체 웹소켓 세션을 돌면서 **/
                 for( Map.Entry<String,WebSocketSession> otherSession : sessions.entrySet()){
 
@@ -234,6 +245,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 }
                 break;
 
+
             case "connect":
                 /** connect를 보낸 사용자 state를 1로 바꾸기**/
                 myMatchingAccount = matchingRoom.get(session.getId());
@@ -263,6 +275,31 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .womanId(otherMatchingAccount.getId())
                             .build();
                     matchingApiLogicService.create(request);
+
+                    //TODO: 타임 내리는 쓰레드 생성
+                    TimerTask timerTask = new TimerTask() {
+
+                        /** 1. 랜덤값 받아서 **/
+                        int randomMin = random();
+                        MatchingAccount my = matchingRoom.get(session.getId());
+                        MatchingAccount peer = matchingRoom.get(my.getPeerSessionId());
+
+                        @Override
+                        public void run() {
+                            if(randomMin >= 0){
+                                randomMin --;
+                            } else{ /** 0보다 작은경우 task 종료 **/
+                                cancel();
+                            }
+                            /** 2, 매칭된 사용자 두명에게 초단위로 메세지 보내기 **/
+                            sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"StopTime",null,randomMin--));
+                            sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"StopTime",null,randomMin--));
+                        }
+                    };
+
+                    Timer timer = new Timer(true);
+                    //지정한 시간(firstTime)부터 1초 간격(period) 으로 지정한 작업(task)을 수행한다.
+                    timer.scheduleAtFixedRate(timerTask,0,1*1000);
                 }
                 break;
 
@@ -369,6 +406,5 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
             }
         }
     }
-
 
 }

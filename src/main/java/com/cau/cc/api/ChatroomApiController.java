@@ -52,11 +52,4 @@ public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, 
         return chatroomApiLogicService.search(pageable);
     }
 
-    @GetMapping("/chatlist")
-    public Header<AccountChatListApiResponse> chatlist() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Account account = (Account) auth.getPrincipal();
-
-        return chatroomApiLogicService.chatList(account.getEmail());
-    }
 }

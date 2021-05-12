@@ -67,35 +67,6 @@ public class ChatroomApiLogicService {
                 .orElseGet(()->Header.ERROR("데이터 없음"));
     }
 
-    public Header<AccountChatListApiResponse> chatList(String email) {
-        Account account = accountRepository.findByEmail(email);
-        AccountApiResponse accountApiResponse = resp(account);
-
-        if(account.getGender()== GenderEnum.남) {
-            List<Chatroom> chatroomList = account.getManList_chat();
-
-            List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
-                    .map(detail -> res(detail))
-                    .collect(Collectors.toList());
-            accountApiResponse.setChatroomApiResponseList(chatroomList);
-        }
-        else {
-            List<Chatroom> chatroomList = account.getWomanList_chat();
-
-            List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
-                    .map(detail -> response(detail).getValue())
-                    .collect(Collectors.toList());
-            accountApiResponse.setChatroomApiResponseList(chatroomList);
-        }
-
-        AccountChatListApiResponse accountChatListApiResponse = AccountChatListApiResponse.builder()
-                .accountApiResponse(accountApiResponse)
-                .build();
-
-        return Header.OK(accountChatListApiResponse);
-
-    }
-
     private AccountApiResponse resp(Account user) {
         // user -> userApiResponse
 
@@ -133,7 +104,7 @@ public class ChatroomApiLogicService {
                 .orElseGet(()->Header.ERROR("데이터 없음"));
     }
 
-    private Header<ChatroomApiResponse> response(Chatroom chatroom) {
+    public Header<ChatroomApiResponse> response(Chatroom chatroom) {
         ChatroomApiResponse body = ChatroomApiResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getName())

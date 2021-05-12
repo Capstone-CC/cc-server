@@ -1,5 +1,6 @@
 package com.cau.cc.service;
 
+import com.amazonaws.services.s3.model.GetS3AccountOwnerRequest;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.GenderEnum;
@@ -93,4 +94,45 @@ public class AccountProfileService {
         return null;
     }
 
+    public Header<AccountChatListApiResponse> chatInfo(String email) {
+
+        // user
+        Account account = accountRepository.findByEmail(email);
+        AccountProfileApiResponse accountApiResponse = response(account);
+        // chatlist
+        /**
+         * 남자유저일 경우 챗리스트 출력
+         */
+        if(account.getGender()==GenderEnum.남) {
+            List<Chatroom> chatroomList = account.getWomanList_chat();
+
+            List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
+                    .map(chatroom -> {
+                        return chatroomApiLogicService.response(chatroom);
+                    })
+                    .map(response -> (response).getValue())
+                    .collect(Collectors.toList());
+            accountApiResponse.setChatroomApiResponseList(chatroomApiResponseList);
+        }
+        /**
+         * 여자유저일 경우 챗리스트 출력
+         */
+        else {
+            List<Chatroom> chatroomList = account.getManList_chat();
+
+            List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
+                    .map(chatroom -> {
+                        return chatroomApiLogicService.response(chatroom);
+                    })
+                    .map(response -> (response).getValue())
+                    .collect(Collectors.toList());
+            accountApiResponse.setChatroomApiResponseList(chatroomApiResponseList);
+        }
+
+
+        AccountChatListApiResponse accountChatListApiResponse = AccountChatListApiResponse.builder()
+                .accountProfileApiResponse(accountApiResponse)
+                .build();
+        return Header.OK(accountChatListApiResponse);
+    }
 }

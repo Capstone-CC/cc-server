@@ -1,12 +1,20 @@
 package com.cau.cc.api;
 
 import com.cau.cc.ifs.CrudInterface;
+import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
+import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.service.ChatroomApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/chatroom")
@@ -37,5 +45,18 @@ public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, 
     @DeleteMapping("{id}")
     public Header delete(@PathVariable Long id) {
         return chatroomApiLogicService.delete(id);
+    }
+
+    @GetMapping("/list")
+    public Header<List<ChatroomApiResponse>> search(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
+        return chatroomApiLogicService.search(pageable);
+    }
+
+    @GetMapping("/chatlist")
+    public Header<AccountChatListApiResponse> chatlist() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) auth.getPrincipal();
+
+        return chatroomApiLogicService.chatList(account.getEmail());
     }
 }

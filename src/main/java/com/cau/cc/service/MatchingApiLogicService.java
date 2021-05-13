@@ -87,10 +87,11 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
 
         return Header.OK(body);
     }
-    
+
     /**매칭 남자id,매칭 여자id, 시간으로 찾기**/
     public Header<MatchingApiResponse> findByManIdAndWomanIdAndTime(MatchingApiRequest request){
         Matching matching = matchingRepository.findByManIdAndWomanIdAndTime(request.getManId(),request.getWomanId(),request.getTime());
+
         return response(matching);
     }
 }

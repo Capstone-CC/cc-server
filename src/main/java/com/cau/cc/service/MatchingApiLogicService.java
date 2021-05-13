@@ -55,7 +55,7 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
                 .map(entityMatching -> {
                     entityMatching.setManUserState(body.getManUserState())
                     .setWomanUserState(body.getWomanUserState())
-                    .setTime(LocalDateTime.now())
+        //            .setTime(LocalDateTime.now()) 매칭된 시간은 Update 하면 안되서 주석처리
                     ;
 
                     return entityMatching;
@@ -85,5 +85,11 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
                 .build();
 
         return Header.OK(body);
+    }
+    
+    /**매칭 남자id,매칭 여자id, 시간으로 찾기**/
+    public Header<MatchingApiResponse> findByManIdAndWomanIdAndTime(MatchingApiRequest request){
+        Matching matching = matchingRepository.findByManIdAndWomanIdAndTime(request.getManId(),request.getWomanId(),request.getTime());
+        return response(matching);
     }
 }

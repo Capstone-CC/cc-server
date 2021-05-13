@@ -120,7 +120,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
             //TODO: offer, answer, candidate 일때 상대방 찾아서 찾은 상대방에게 보내기
             case "offer":
                 //TODO : COUNT가 0이면 매칭 시도 불가
-
+                if(account.getCount() <= 0){
+                    sendMessage(session,new WebSocketMessage(session.getId(),"fail",null,null));
+                    break;
+                }
 
                 /**자신이 대기룸에 없으면 입장**/
                 myMatchingAccount = matchingRoom.get(session.getId());
@@ -355,6 +358,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .womanId(myMatchingAccount.getId())
                             .build();
                     matching = matchingApiLogicService.findByManIdAndWomanIdAndTime(matchingApiRequest).getValue();
+                }
+
+                if(matching == null){
+                    break;
+                    //TODO : 로그추가필요
                 }
 
                 /**3. 자신이 남자이면 남자 state 변경, 여자이면 여자 state 변경**/

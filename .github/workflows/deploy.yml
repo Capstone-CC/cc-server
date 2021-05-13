@@ -24,7 +24,7 @@ jobs:
             git fetch
             git pull
             chmod +x gradlew
-            ./gradlew clean bootjar
+            sudo ./gradlew clean bootjar
             pm2 stop server
             pm2 delete server
             pm2 start java --name "server" -- -jar build/libs/cc-0.0.1-SNAPSHOT.jar

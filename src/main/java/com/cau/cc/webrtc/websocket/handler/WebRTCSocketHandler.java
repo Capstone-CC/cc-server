@@ -108,7 +108,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         }catch (Exception e){
             synchronized( sessions ) {
                 /**없으면 쿠기없다는 메세지 보내기**/
-                sendMessage(session,new WebSocketMessage(session.getId(),"NotCookie",null,null));
+                sendMessage(session,new WebSocketMessage(session.getId(),"notcookie",null,null));
                 sessions.remove( session );
             }
         }
@@ -320,8 +320,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             }
                             try {
                                 /** 2, 매칭된 사용자 두명에게 초단위로 메세지 보내기 **/
-                                sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"Timer",null,randomMin--));
-                                sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"Timer",null,randomMin--));
+                                sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"timer",null,randomMin--));
+                                sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"timer",null,randomMin--));
                             } catch (Exception e) {
                                 //TODO: 로그 필요
                             }
@@ -390,7 +390,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
 
                     ChatroomApiRequest request = ChatroomApiRequest.builder()
-                            .name(otherMatchingAccount.getNickName())
+                            .name(otherMatchingAccount.getNickName()) //TODO : 채팅방 제목 설정 논의필요
                             .build();
                     /**내가 남자라면**/
                     if(myMatchingAccount.getGender().equals(GenderEnum.남)){
@@ -403,8 +403,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                     chatroomApiLogicService.create(request);
 
-                    sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),"Matching",null,otherMatchingAccount.getNickName()));
-                    sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"Matching",null,myMatchingAccount.getNickName()));
+                    sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),"matching",null,otherMatchingAccount.getNickName()));
+                    sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"matching",null,myMatchingAccount.getNickName()));
                 }
 
                 /**수락 안했으므로 패스**/

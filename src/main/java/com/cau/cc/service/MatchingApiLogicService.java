@@ -80,6 +80,7 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
                 .id(matching.getId())
                 .manUserState(matching.getManUserState())
                 .womanUserState(matching.getWomanUserState())
+                .time(matching.getTime())
                 .manId(matching.getManId().getId())
                 .womanId(matching.getWomanId().getId())
                 .build();

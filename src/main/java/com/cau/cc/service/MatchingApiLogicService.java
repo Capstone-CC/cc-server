@@ -29,7 +29,7 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
         Matching matching = Matching.builder()
                 .manUserState(body.getManUserState())
                 .womanUserState(body.getWomanUserState())
-                .time(LocalDateTime.now())
+                .time(body.getTime())
                 .manId(accountRepository.getOne(body.getManId()))
                 .womanId(accountRepository.getOne(body.getWomanId()))
                 .build();
@@ -55,7 +55,7 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
                 .map(entityMatching -> {
                     entityMatching.setManUserState(body.getManUserState())
                     .setWomanUserState(body.getWomanUserState())
-        //            .setTime(LocalDateTime.now()) 매칭된 시간은 Update 하면 안되서 주석처리
+                    .setTime(body.getTime()) // 현재 시간으로 하면 x
                     ;
 
                     return entityMatching;
@@ -91,7 +91,6 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
     /**매칭 남자id,매칭 여자id, 시간으로 찾기**/
     public Header<MatchingApiResponse> findByManIdAndWomanIdAndTime(MatchingApiRequest request){
         Matching matching = matchingRepository.findByManIdAndWomanIdAndTime(request.getManId(),request.getWomanId(),request.getTime());
-
         return response(matching);
     }
 }

@@ -26,6 +26,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -283,7 +284,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     MatchingApiRequest request = MatchingApiRequest.builder()
                             .manUserState(0)
                             .womanUserState(0)
-                            .time(LocalDateTime.now())
+                            .time(LocalDateTime.now().withNano(0))
                             .build();
 
                     /**각각 매칭 시간 찾기**/

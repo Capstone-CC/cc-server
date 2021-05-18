@@ -1,5 +1,8 @@
 package com.cau.cc;
 
+import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.model.entity.MajorEnum;
 import com.cau.cc.model.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -48,7 +51,9 @@ public class Runner implements ApplicationRunner {
 //                    .password(passwordEncoder.encode("123123"))
 //                    .gender(GenderEnum.남)
 //                    .majorName(MajorEnum.생명과학과)
+//                    .nickName("푸앙이")
 //                    .grade(1)
+//                    .count(4)
 //                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
 //                    .build();
 //
@@ -61,6 +66,8 @@ public class Runner implements ApplicationRunner {
 //                    .gender(GenderEnum.여)
 //                    .majorName(MajorEnum.수학과)
 //                    .grade(3)
+//                    .count(4)
+//                    .nickName("푸앙이")
 //                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
 //                    .build();
 //

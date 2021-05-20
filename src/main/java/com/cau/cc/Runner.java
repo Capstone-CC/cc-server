@@ -32,7 +32,7 @@ public class Runner implements ApplicationRunner {
 
             /**
              * DB init
-             */
+//             */
 //            Major major1 = null;
 //            long i=0l;
 //            for(MajorEnum m : MajorEnum.values()){
@@ -40,13 +40,13 @@ public class Runner implements ApplicationRunner {
 //                major1.setMajorName(m);
 //                major1.setId(++i);
 //            }
-
-            //Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
-
-
-            //test db
+//
+//            Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
+//
+//
+//            test db
 //            Account account2 = Account.builder()
-//            //        .id(2l)
+//
 //                    .email("test1")
 //                    .password(passwordEncoder.encode("123123"))
 //                    .gender(GenderEnum.남)
@@ -71,7 +71,7 @@ public class Runner implements ApplicationRunner {
 //                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
 //                    .build();
 //
-//            accountRepository.save(account3);
+//            accountRepository.save(account3);           //        .id(2l)
 
 
 

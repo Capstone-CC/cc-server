@@ -1,5 +1,6 @@
 package com.cau.cc.model.entity;
 
+import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -66,6 +67,9 @@ public class Account {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportedId")
     private List<Report> reportedList = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
+    private List<ChatMessage> chatMessageList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private MajorEnum majorName; // 학과

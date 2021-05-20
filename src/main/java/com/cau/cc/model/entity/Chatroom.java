@@ -26,6 +26,7 @@
 //}
 package com.cau.cc.model.entity;
 
+import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -39,7 +40,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@ToString(exclude = {"manId","womanId"})
+@ToString(exclude = {"manId","womanId", "chatMessageList"})
 @Accessors(chain = true)
 public class Chatroom {
 
@@ -59,5 +60,7 @@ public class Chatroom {
     @ManyToOne
     private Account womanId;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroomId")
+    private List<ChatMessage> chatMessageList = new ArrayList<>();
 
 }

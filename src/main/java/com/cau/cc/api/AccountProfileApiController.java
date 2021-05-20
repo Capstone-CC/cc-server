@@ -4,16 +4,19 @@ import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
-import com.cau.cc.model.network.response.AccountApiResponse;
-import com.cau.cc.model.network.response.AccountChatListApiResponse;
-import com.cau.cc.model.network.response.AccountProfileApiResponse;
+import com.cau.cc.model.network.response.*;
 import com.cau.cc.service.AccountProfileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Api(tags = "프로필 Read & Update")
@@ -52,16 +55,7 @@ public class AccountProfileApiController {
         return accountProfileService.delete(id);
     }
 
-    /**
-     * chat list api
-     */
-    @GetMapping("/chat/list")
-    public Header<AccountChatListApiResponse> chatInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Account account = (Account) auth.getPrincipal();
 
-        return accountProfileService.chatInfo(account.getEmail());
-    }
 
 
 }

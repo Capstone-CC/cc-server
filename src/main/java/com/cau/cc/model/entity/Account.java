@@ -1,6 +1,5 @@
 package com.cau.cc.model.entity;
 
-import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -13,7 +12,7 @@ import java.util.*;
 @Entity
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"manList","womanList","manList_chat","womanList_chat","reporterList","reportedList"})
+@ToString(exclude = {"manList","womanList","manList_chat","womanList_chat","reporterList","reportedList","chatMessageList"})
 public class Account {
 
     @Id

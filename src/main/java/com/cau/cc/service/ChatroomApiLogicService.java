@@ -1,23 +1,20 @@
 package com.cau.cc.service;
 
-import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
-import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
-import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatRoomRepository;
-import com.cau.cc.model.repository.MatchingRepository;
 import com.cau.cc.page.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.*;
+
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,6 +57,15 @@ public class ChatroomApiLogicService {
                 .build();
 
         return Header.OK(chatroomApiResponseList, pagination);
+    }
+    private ChatroomApiResponse res(Chatroom chatroom) {
+        ChatroomApiResponse body = ChatroomApiResponse.builder()
+                .id(chatroom.getId())
+                .name(chatroom.getName())
+                .manId(chatroom.getManId().getId())
+                .womanId(chatroom.getWomanId().getId())
+                .build();
+        return body;
     }
 
     public Header<ChatroomApiResponse> read(Long id) {
@@ -115,14 +121,6 @@ public class ChatroomApiLogicService {
         return Header.OK(body);
     }
 
-    private ChatroomApiResponse res(Chatroom chatroom) {
-        ChatroomApiResponse body = ChatroomApiResponse.builder()
-                .id(chatroom.getId())
-                .name(chatroom.getName())
-                .manId(chatroom.getManId().getId())
-                .womanId(chatroom.getWomanId().getId())
-                .build();
-        return body;
-    }
+
 
 }

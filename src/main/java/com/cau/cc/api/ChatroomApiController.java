@@ -5,8 +5,12 @@ import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.AccountChatListApiResponse;
+import com.cau.cc.model.network.response.ChatMessageApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
+import com.cau.cc.service.AccountProfileService;
 import com.cau.cc.service.ChatroomApiLogicService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,47 +18,37 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.util.*;
 
 @RestController
+@Api(tags = "Chatting Room API")
 @RequestMapping("/chatroom")
-public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, ChatroomApiResponse> {
+public class ChatroomApiController  {
 
     @Autowired
-    private ChatroomApiLogicService chatroomApiLogicService;
+    AccountProfileService accountProfileService;
 
-    @Override
-    @PostMapping("")
-    public Header<ChatroomApiResponse> create(@RequestBody ChatroomApiRequest request) {
-        return chatroomApiLogicService.create(request);
-    }
-
-    @Override
-    @GetMapping("{id}")
-    public Header<ChatroomApiResponse> read(@PathVariable Long id) {
-        return chatroomApiLogicService.read(id);
-    }
-
-    @Override
-    @PutMapping("")
-    public Header<ChatroomApiResponse> update(@RequestBody ChatroomApiRequest request) {
-        return chatroomApiLogicService.update(request);
-    }
-
-    @Override
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return chatroomApiLogicService.delete(id);
-    }
-
+    /**
+     * chat list api
+     */
+    @ApiOperation(value = "채팅 목록",notes = " ")
     @GetMapping("/list")
-    public Header<List<ChatroomApiResponse>> search(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
-        return chatroomApiLogicService.search(pageable);
+    public Header<AccountChatListApiResponse> chatInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) auth.getPrincipal();
+
+        return accountProfileService.chatInfo(account.getEmail());
     }
 
     /**
-     * 채팅방 ID에 해당하는 메세지 LIST 읽어오기
+     * chat room 클릭시 저장된 db page로 불러오기.
      */
-
+    @ApiOperation(value = "채팅 내용",notes = "필수정보 : roomId 값")
+    @GetMapping("/list/{id}")
+    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id, @ApiIgnore @PageableDefault(sort = "time", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
+        return accountProfileService.search(id, pageable);
+    }
 
 }

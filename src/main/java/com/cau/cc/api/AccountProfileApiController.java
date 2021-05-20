@@ -55,24 +55,7 @@ public class AccountProfileApiController {
         return accountProfileService.delete(id);
     }
 
-    /**
-     * chat list api
-     */
-    @GetMapping("/chat/list")
-    public Header<AccountChatListApiResponse> chatInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Account account = (Account) auth.getPrincipal();
 
-        return accountProfileService.chatInfo(account.getEmail());
-    }
-
-    /**
-     * chat room 클릭시 저장된 db page로 불러오기.
-     */
-    @GetMapping("/chat/list/{id}")
-    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,@PageableDefault(sort = "time", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
-        return accountProfileService.search(id, pageable);
-    }
 
 
 }

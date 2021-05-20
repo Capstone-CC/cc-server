@@ -3,6 +3,8 @@ package com.cau.cc.model.network.response;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.MessageType;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.Example;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -17,6 +19,7 @@ public class ChatMessageApiResponse {
 
     private Long id;
 
+    @ApiModelProperty(example = "푸앙이")
     private String sender;
 
     private MessageType type; // 메시지 타입

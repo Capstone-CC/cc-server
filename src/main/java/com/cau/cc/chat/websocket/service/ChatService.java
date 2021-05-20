@@ -1,6 +1,5 @@
 package com.cau.cc.chat.websocket.service;
 
-import com.cau.cc.chat.websocket.ChatRoom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

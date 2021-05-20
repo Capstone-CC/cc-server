@@ -1,15 +1,11 @@
 package com.cau.cc.chat.websocket.controller;
 
-import com.cau.cc.chat.websocket.ChatRoom;
 import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import com.cau.cc.chat.websocket.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
 
 @RequiredArgsConstructor
 @RestController

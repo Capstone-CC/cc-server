@@ -47,6 +47,7 @@ public class Runner implements ApplicationRunner {
 //            test db
 //            Account account2 = Account.builder()
 //            //        .id(2l)
+//
 //                    .email("test1")
 //                    .password(passwordEncoder.encode("123123"))
 //                    .gender(GenderEnum.남)
@@ -72,7 +73,7 @@ public class Runner implements ApplicationRunner {
 //                    .build();
 //
 //            accountRepository.save(account3);
-
+//            accountRepository.save(account3);           //        .id(2l)
 
 
             System.out.println(connection.getMetaData().getURL());

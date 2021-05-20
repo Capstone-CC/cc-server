@@ -17,9 +17,7 @@ public class ChatMessageApiResponse {
 
     private Long id;
 
-    private Chatroom chatroomId;
-
-    private Account userId;
+    private String sender;
 
     private MessageType type; // 메시지 타입
     private String message; // 메시지

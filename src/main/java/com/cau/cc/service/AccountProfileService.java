@@ -141,7 +141,7 @@ public class AccountProfileService {
         return Header.OK(accountChatListApiResponse);
     }
 
-    public Header<List<ChatMessageApiResponse>> search(Long id,Pageable pageable) {
+    public Header<List<ChatMessageApiResponse>> search(Long id, Pageable pageable) {
         Page<ChatMessage> chatMessages = chatMessageRepository.findByChatMessage(id, pageable);
 
         List<ChatMessageApiResponse> chatMessageApiResponseList = chatMessages.stream()
@@ -161,8 +161,7 @@ public class AccountProfileService {
     private ChatMessageApiResponse res(ChatMessage chatMessage) {
         ChatMessageApiResponse body = ChatMessageApiResponse.builder()
                 .id(chatMessage.getId())
-                .userId(chatMessage.getUserId())
-                .chatroomId(chatMessage.getChatroomId())
+                .sender(chatMessage.getUserId().getNickName())
                 .message(chatMessage.getMessage())
                 .time(chatMessage.getTime())
                 .type(chatMessage.getType())

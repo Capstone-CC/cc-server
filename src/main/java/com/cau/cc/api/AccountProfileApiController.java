@@ -70,7 +70,7 @@ public class AccountProfileApiController {
      * chat room 클릭시 저장된 db page로 불러오기.
      */
     @GetMapping("/chat/list/{id}")
-    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
+    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,@PageableDefault(sort = "time", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         return accountProfileService.search(id, pageable);
     }
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    @Query("SELECT u FROM ChatMessage u  WHERE u.chatroomId = ?1")
+    @Query("SELECT u FROM ChatMessage u  WHERE u.chatroomId.id = ?1")
     Page<ChatMessage> findByChatMessage(Long id, Pageable pageable);
 
 }

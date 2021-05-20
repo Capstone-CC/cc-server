@@ -1,18 +1,8 @@
 package com.cau.cc.chat.websocket.controller;
 
-<<<<<<< HEAD
-import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
-import com.cau.cc.model.entity.Account;
-import com.cau.cc.model.entity.Chatroom;
-import com.cau.cc.model.entity.Report;
-import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.response.AccountProfileApiResponse;
 import com.cau.cc.model.repository.ChatMessageRepository;
-=======
-import com.cau.cc.model.entity.ChatMessage;
 import com.cau.cc.model.entity.ChatMessage;
 import com.cau.cc.model.entity.MessageType;
->>>>>>> 6fabe23565d341f9f1fd5b5170061674bd26f64b
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -29,8 +19,7 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/message")
     public void message(ChatMessage message){
-<<<<<<< HEAD
-        if(ChatMessage.MessageType.TALK.equals(message.getType())){
+        if(MessageType.TALK.equals(message.getType())){
 
             //TODO : DB의 메세지 저장
             ChatMessage chatMessage = ChatMessage.builder()
@@ -41,11 +30,7 @@ public class ChatMessageController {
                     .time(LocalDateTime.now())
                     .build();
             ChatMessage newChatMessage = chatMessageRepository.save(chatMessage);
-=======
         if(MessageType.TALK.equals(message.getType())){
-            //TODO : DB의 메세지 저장
-
->>>>>>> 6fabe23565d341f9f1fd5b5170061674bd26f64b
 
             messagingTemplate.convertAndSend("/sub/chat/room/"+message.getChatroomId(),message);
         }

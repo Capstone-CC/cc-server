@@ -1,20 +1,22 @@
 package com.cau.cc.service;
 
 import com.amazonaws.services.s3.model.GetS3AccountOwnerRequest;
+import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
-import com.cau.cc.model.network.response.AccountApiResponse;
-import com.cau.cc.model.network.response.AccountChatListApiResponse;
-import com.cau.cc.model.network.response.AccountProfileApiResponse;
-import com.cau.cc.model.network.response.ChatroomApiResponse;
+import com.cau.cc.model.network.response.*;
 import com.cau.cc.model.repository.AccountRepository;
 //import com.cau.cc.model.repository.MajorRepository;
+import com.cau.cc.model.repository.ChatMessageRepository;
+import com.cau.cc.page.Pagination;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +30,8 @@ public class AccountProfileService {
     private AccountRepository accountRepository;
     @Autowired
     private ChatroomApiLogicService chatroomApiLogicService;
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     public Header<AccountProfileApiResponse> create(AccountProfileApiRequest request) {
         return null;
@@ -104,7 +108,7 @@ public class AccountProfileService {
          * 남자유저일 경우 챗리스트 출력
          */
         if(account.getGender()==GenderEnum.남) {
-            List<Chatroom> chatroomList = account.getWomanList_chat();
+            List<Chatroom> chatroomList = account.getManList_chat();
 
             List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
                     .map(chatroom -> {
@@ -118,7 +122,7 @@ public class AccountProfileService {
          * 여자유저일 경우 챗리스트 출력
          */
         else {
-            List<Chatroom> chatroomList = account.getManList_chat();
+            List<Chatroom> chatroomList = account.getWomanList_chat();
 
             List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
                     .map(chatroom -> {
@@ -135,4 +139,34 @@ public class AccountProfileService {
                 .build();
         return Header.OK(accountChatListApiResponse);
     }
+
+    public Header<List<ChatMessageApiResponse>> search(Long id,Pageable pageable) {
+        Page<ChatMessage> chatMessages = chatMessageRepository.findByChatMessage(id, pageable);
+
+        List<ChatMessageApiResponse> chatMessageApiResponseList = chatMessages.stream()
+                .map(chatMessage -> res(chatMessage))
+                .collect(Collectors.toList());
+
+        Pagination pagination = Pagination.builder()
+                .totalPages(chatMessages.getTotalPages())
+                .totalElements(chatMessages.getTotalElements())
+                .currentPage(chatMessages.getNumber())
+                .currentElements(chatMessages.getNumberOfElements())
+                .build();
+
+        return Header.OK(chatMessageApiResponseList, pagination);
+    }
+
+    private ChatMessageApiResponse res(ChatMessage chatMessage) {
+        ChatMessageApiResponse body = ChatMessageApiResponse.builder()
+                .id(chatMessage.getId())
+                .userId(chatMessage.getUserId())
+                .chatroomId(chatMessage.getChatroomId())
+                .message(chatMessage.getMessage())
+                .time(chatMessage.getTime())
+                .type(chatMessage.getType())
+                .build();
+        return body;
+    }
+
 }

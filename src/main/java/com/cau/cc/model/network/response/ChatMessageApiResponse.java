@@ -1,12 +1,11 @@
 package com.cau.cc.model.network.response;
 
-import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
+import com.cau.cc.model.entity.MessageType;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,7 +21,7 @@ public class ChatMessageApiResponse {
 
     private Account userId;
 
-    private com.cau.cc.chat.websocket.chatmessage.ChatMessage.MessageType type; // 메시지 타입
+    private MessageType type; // 메시지 타입
     private String message; // 메시지
     private LocalDateTime time;
 

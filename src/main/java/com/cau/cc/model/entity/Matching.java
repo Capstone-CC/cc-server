@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@ToString(exclude = {"manId","womanId","chatroomList"})
+@ToString(exclude = {"manId","womanId"})
 @Accessors(chain = true)
 public class Matching {
 

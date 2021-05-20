@@ -1,16 +1,16 @@
 package com.cau.cc.service;
 
-import com.amazonaws.services.s3.model.GetS3AccountOwnerRequest;
-import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.ChatMessage;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.request.AccountApiRequest;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
-import com.cau.cc.model.network.response.*;
+import com.cau.cc.model.network.response.AccountChatListApiResponse;
+import com.cau.cc.model.network.response.AccountProfileApiResponse;
+import com.cau.cc.model.network.response.ChatMessageApiResponse;
+import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
-//import com.cau.cc.model.repository.MajorRepository;
 import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.page.Pagination;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor

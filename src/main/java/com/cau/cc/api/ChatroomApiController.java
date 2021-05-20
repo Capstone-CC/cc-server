@@ -52,4 +52,9 @@ public class ChatroomApiController implements CrudInterface<ChatroomApiRequest, 
         return chatroomApiLogicService.search(pageable);
     }
 
+    /**
+     * 채팅방 ID에 해당하는 메세지 LIST 읽어오기
+     */
+
+
 }

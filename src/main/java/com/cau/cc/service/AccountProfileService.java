@@ -12,7 +12,6 @@ import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.AccountProfileApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
-//import com.cau.cc.model.repository.MajorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

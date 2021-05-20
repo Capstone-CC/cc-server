@@ -30,21 +30,6 @@ public class Runner implements ApplicationRunner {
 
         try(Connection connection = dataSource.getConnection()){
 
-            /**
-             * DB init
-//             */
-//            Major major1 = null;
-//            long i=0l;
-//            for(MajorEnum m : MajorEnum.values()){
-//                major1 = new Major();
-//                major1.setMajorName(m);
-//                major1.setId(++i);
-//            }
-//
-//            Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
-//
-//
-//            test db
 //            Account account2 = Account.builder()
 //
 //                    .email("test1")

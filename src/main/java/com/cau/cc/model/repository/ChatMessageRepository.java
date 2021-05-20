@@ -1,6 +1,6 @@
 package com.cau.cc.model.repository;
 
-import com.cau.cc.chat.websocket.chatmessage.ChatMessage;
+import com.cau.cc.model.entity.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

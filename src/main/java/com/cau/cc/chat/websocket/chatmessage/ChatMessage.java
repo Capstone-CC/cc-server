@@ -18,11 +18,13 @@ import java.time.LocalDateTime;
 public class ChatMessage {
     // 메시지 타입 : 입장, 채팅
     public enum MessageType {
-        TALK
+        ENTER,TALK,LEAVE
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @JoinColumn(name = "chatroom_id")
     @ManyToOne
     private Chatroom chatroomId;
@@ -32,8 +34,6 @@ public class ChatMessage {
     private Account userId;
 
     private MessageType type; // 메시지 타입
-    private String roomId; // 방번호
-    private String sender; // 메시지 보낸사람
     private String message; // 메시지
     private LocalDateTime time;
 }

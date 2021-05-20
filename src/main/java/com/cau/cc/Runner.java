@@ -32,7 +32,7 @@ public class Runner implements ApplicationRunner {
 
             /**
              * DB init
-             */
+//             */
 //            Major major1 = null;
 //            long i=0l;
 //            for(MajorEnum m : MajorEnum.values()){
@@ -40,38 +40,38 @@ public class Runner implements ApplicationRunner {
 //                major1.setMajorName(m);
 //                major1.setId(++i);
 //            }
-
-            //Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
-
-
-            //test db
-//            Account account2 = Account.builder()
-//            //        .id(2l)
-//                    .email("test1")
-//                    .password(passwordEncoder.encode("123123"))
-//                    .gender(GenderEnum.남)
-//                    .majorName(MajorEnum.생명과학과)
-//                    .nickName("푸앙이")
-//                    .grade(1)
-//                    .count(4)
-//                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
-//                    .build();
 //
-//            accountRepository.save(account2);
+//            Major major = majorRepository.findByMajorName(MajorEnum.경영경제대학);
 //
-//            Account account3 = Account.builder()
-//                    //        .id(2l)
-//                    .email("test2")
-//                    .password(passwordEncoder.encode("123123"))
-//                    .gender(GenderEnum.여)
-//                    .majorName(MajorEnum.수학과)
-//                    .grade(3)
-//                    .count(4)
-//                    .nickName("푸앙이")
-//                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
-//                    .build();
 //
-//            accountRepository.save(account3);
+//            test db
+            Account account2 = Account.builder()
+            //        .id(2l)
+                    .email("test1")
+                    .password(passwordEncoder.encode("123123"))
+                    .gender(GenderEnum.남)
+                    .majorName(MajorEnum.생명과학과)
+                    .nickName("푸앙이")
+                    .grade(1)
+                    .count(4)
+                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+                    .build();
+
+            accountRepository.save(account2);
+
+            Account account3 = Account.builder()
+                    //        .id(2l)
+                    .email("test2")
+                    .password(passwordEncoder.encode("123123"))
+                    .gender(GenderEnum.여)
+                    .majorName(MajorEnum.수학과)
+                    .grade(3)
+                    .count(4)
+                    .nickName("푸앙이")
+                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+                    .build();
+
+            accountRepository.save(account3);
 
 
 

@@ -34,6 +34,7 @@ public class ChatroomApiLogicService {
 
         Chatroom chatroom = Chatroom.builder()
                 .name(body.getName())
+                .time(request.getTime())
                 .manId(accountRepository.getOne(body.getManId()))
                 .womanId(accountRepository.getOne(body.getWomanId()))
                 .build();

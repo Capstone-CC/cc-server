@@ -27,17 +27,17 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     @Autowired
     ChatroomApiLogicService chatroomApiLogicService;
 
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//    @Autowired
-//    private ChatService chatService;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private ChatService chatService;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         /** root path : ~/api 이므로 ~/api/socket **/
         registry.addHandler(new WebRTCSocketHandler(matchingApiLogicService,accountRepository,chatroomApiLogicService), "/socket")
                 .setAllowedOrigins("*");
-        //registry.addHandler(new WebChatHandler(objectMapper, chatService), "/chat").setAllowedOrigins("*");
+        registry.addHandler(new WebChatHandler(objectMapper, chatService), "/chatSocket").setAllowedOrigins("*");
     }
 
 

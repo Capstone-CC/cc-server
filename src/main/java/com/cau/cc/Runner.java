@@ -31,6 +31,7 @@ public class Runner implements ApplicationRunner {
         try(Connection connection = dataSource.getConnection()){
 
 //            Account account2 = Account.builder()
+//            //        .id(2l)
 //
 //                    .email("test1")
 //                    .password(passwordEncoder.encode("123123"))
@@ -56,8 +57,8 @@ public class Runner implements ApplicationRunner {
 //                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
 //                    .build();
 //
+//            accountRepository.save(account3);
 //            accountRepository.save(account3);           //        .id(2l)
-
 
 
             System.out.println(connection.getMetaData().getURL());

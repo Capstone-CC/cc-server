@@ -26,8 +26,11 @@ public class MatchingAccount {
     private String nickName;
 
     //원하는 상대방 정보
-    private MajorEnum hateMajor;
+    private MajorEnum selectMajor;
+    private int majorState;
     private int wantGrade;
+
+
 
     //매칭된 상대방 sessionId, 매칭된 시간
     private String peerSessionId;

@@ -126,7 +126,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .nickName(account.getNickName())
                             .matchingState(false)
                             .wantGrade(webSocketMessage.getOption().getGrade())
-                            .hateMajor(webSocketMessage.getOption().getMajorName())
+                            .selectMajor(webSocketMessage.getOption().getMajorName())
+                            .majorState(webSocketMessage.getOption().getMajorState())
                             .build();
                     matchingRoom.put(session.getId(),myMatchingAccount);
                 }
@@ -154,70 +155,97 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                         /**4.매칭안된 사용자이고 자신과 다른 성별이면 조건의 맞는지 확인**/
 
-                        /**grade가 0이면 전체선택, MajorName이 all 이면 전체선택**/
-                        if(myMatchingAccount.getWantGrade() != 0 && myMatchingAccount.getHateMajor() != MajorEnum.ALL){ // 학년, 학과모두 상관 있으면
-                            /**상대방의 정보와 내가 원하는 정보 비교 **/
-                            if(otherMatchingAccount.getGrade() != myMatchingAccount.getWantGrade() // 내가 원하는 학과가 아니거나
-                            || otherMatchingAccount.getMajorName() == myMatchingAccount.getHateMajor()){ // 내가 만나기 싫은 학과 라면 pass
+                        /**grade가 0이면 전체선택, Majorstate가 0이면 전체선택**/
+                        if(myMatchingAccount.getWantGrade() != 0 && myMatchingAccount.getMajorState() != 0){ // 학년, 학과모두 상관 있으면
+
+                            if(!compareToWantGrade(myMatchingAccount,otherMatchingAccount)
+                            || !compareToMajor(myMatchingAccount, otherMatchingAccount)){
+                                //둘중 하나라도 해당 안되면
                                 start = 0;
                                 continue;
                             }
 
-                            //TODO : 나의 조건이 상대방에게 맞는 경우 이므로 상대방의 조건이 나와 맞는지 확인
-                            /** 1. 상대방의 grade가 전체선택(0)이 아니고 나랑 맞지 않으면 pass **/
-                            if(otherMatchingAccount.getWantGrade() != myMatchingAccount.getGrade()
-                                    && otherMatchingAccount.getWantGrade() != 0){
-                                start = 0;
-                                continue;
+                            //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                            //상대방 기준
+                            if(otherMatchingAccount.getWantGrade() != 0 && otherMatchingAccount.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                if(!compareToWantGrade(otherMatchingAccount, myMatchingAccount)
+                                        || !compareToMajor(otherMatchingAccount, myMatchingAccount)){
+                                    //둘중 하나라도 해당 안되면
+                                    start = 0;
+                                    continue;
+                                }
                             }
-                            /** 2. 상대방의 Major가 전체선택(all)이 아니고 나랑 같으면 pass **/
-                            if (otherMatchingAccount.getHateMajor() != MajorEnum.ALL
-                            && otherMatchingAccount.getHateMajor() == myMatchingAccount.getMajorName()){
+                            else if(otherMatchingAccount.getWantGrade() == 0 && otherMatchingAccount.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                if(!compareToMajor(otherMatchingAccount,myMatchingAccount)){ //state에 따른 학과 매칭 실패
+                                    start = 0;
+                                    continue;
+                                }
+                            } else if(otherMatchingAccount.getWantGrade() != 0 && otherMatchingAccount.getMajorState() == 0){//학과 상관X, 학년 상관
+                                if (!compareToWantGrade(otherMatchingAccount,myMatchingAccount)) { //학년 불일치 pass
+                                    start = 0;
+                                    continue;
+                                }
+                            }
+
+                            /**grade가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
+                        } else if(myMatchingAccount.getWantGrade() == 0 && myMatchingAccount.getMajorState() != 0) { //학년 상관X, 학과 상관O
+                            if(!compareToMajor(myMatchingAccount,otherMatchingAccount)){ //state에 따른 학과 매칭 실패
                                 start = 0;
                                 continue;
                             }
 
-                        } else if(myMatchingAccount.getWantGrade() == 0) { //학년 상관X, 학과 상관
-                            /**상대방의 학과와 내가 원하는 학과가 틀린지 비교 **/
-                            if (otherMatchingAccount.getMajorName() == myMatchingAccount.getHateMajor()) { // 학과 일치하면 안되는데 일치함 pass
-                                start = 0;
-                                continue;
+                            //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                            //상대방 기준
+                            if(otherMatchingAccount.getWantGrade() != 0 && otherMatchingAccount.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                if(!compareToWantGrade(otherMatchingAccount, myMatchingAccount)
+                                        || !compareToMajor(otherMatchingAccount, myMatchingAccount)){
+                                    //둘중 하나라도 해당 안되면
+                                    start = 0;
+                                    continue;
+                                }
+                            }
+                            else if(otherMatchingAccount.getWantGrade() == 0 && otherMatchingAccount.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                if(!compareToMajor(otherMatchingAccount,myMatchingAccount)){ //state에 따른 학과 매칭 실패
+                                    start = 0;
+                                    continue;
+                                }
+                            } else if(otherMatchingAccount.getWantGrade() != 0 && otherMatchingAccount.getMajorState() == 0){//학과 상관X, 학년 상관
+                                if (!compareToWantGrade(otherMatchingAccount,myMatchingAccount)) { //학년 불일치 pass
+                                    start = 0;
+                                    continue;
+                                }
                             }
 
-                            //TODO : 나의 조건이 상대방에게 맞는 경우 이므로 상대방의 조건이 나와 맞는지 확인
-                            /** 1. 상대방의 grade가 전체선택(0)이 아니고 나랑 맞지 않으면 pass **/
-                            if(otherMatchingAccount.getWantGrade() != myMatchingAccount.getGrade()
-                                    && otherMatchingAccount.getWantGrade() != 0){
-                                start = 0;
-                                continue;
-                            }
-                            /** 2. 상대방의 Major가 전체선택(all)이 아니고 나랑 같으면 pass **/
-                            if (otherMatchingAccount.getHateMajor() != MajorEnum.ALL
-                                    && otherMatchingAccount.getHateMajor() == myMatchingAccount.getMajorName()){
-                                start = 0;
-                                continue;
-                            }
-
-                        } else if (myMatchingAccount.getHateMajor() == MajorEnum.ALL) { //학과 상관X, 학년 상관
+                            /**grade가 0 전체선택 아니고 Majorstate가 0인 상황**/
+                        } else if (myMatchingAccount.getWantGrade() != 0 && myMatchingAccount.getMajorState() == 0) { //학과 상관X, 학년 상관
                             /**상대방의 학년과 내가 원하는 학년이 맞는지 비교 **/
-                            if (otherMatchingAccount.getGrade() != myMatchingAccount.getWantGrade()) { //학년 불일치 pass
+                            if (!compareToWantGrade(myMatchingAccount,otherMatchingAccount)) { //학년 불일치 pass
                                 start = 0;
                                 continue;
                             }
 
-                            //TODO : 나의 조건이 상대방에게 맞는 경우 이므로 상대방의 조건이 나와 맞는지 확인
-                            /** 1. 상대방의 grade가 전체선택(0)이 아니고 나랑 맞지 않으면 pass **/
-                            if(otherMatchingAccount.getWantGrade() != myMatchingAccount.getGrade()
-                                    && otherMatchingAccount.getWantGrade() != 0){
-                                start = 0;
-                                continue;
+                            //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                            //상대방 기준
+                            if(otherMatchingAccount.getWantGrade() != 0 && otherMatchingAccount.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                if(!compareToWantGrade(otherMatchingAccount, myMatchingAccount)
+                                        || !compareToMajor(otherMatchingAccount, myMatchingAccount)){
+                                    //둘중 하나라도 해당 안되면
+                                    start = 0;
+                                    continue;
+                                }
                             }
-                            /** 2. 상대방의 Major가 전체선택(all)이 아니고 나랑 같으면 pass **/
-                            if (otherMatchingAccount.getHateMajor() != MajorEnum.ALL
-                                    && otherMatchingAccount.getHateMajor() == myMatchingAccount.getMajorName()){
-                                start = 0;
-                                continue;
+                            else if(otherMatchingAccount.getWantGrade() == 0 && otherMatchingAccount.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                if(!compareToMajor(otherMatchingAccount,myMatchingAccount)){ //state에 따른 학과 매칭 실패
+                                    start = 0;
+                                    continue;
+                                }
+                            } else if(otherMatchingAccount.getWantGrade() != 0 && otherMatchingAccount.getMajorState() == 0){//학과 상관X, 학년 상관
+                                if (!compareToWantGrade(otherMatchingAccount,myMatchingAccount)) { //학년 불일치 pass
+                                    start = 0;
+                                    continue;
+                                }
                             }
+
                         }
 
                         /**조건 불일치**/
@@ -512,4 +540,25 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         }
     }
 
+
+    /** 내가 원하는 학년이 상대방과 같은지 **/
+    private boolean compareToWantGrade(MatchingAccount my, MatchingAccount other){
+        return my.getWantGrade() == other.getGrade();
+    }
+
+    /** 나의 majorState가 0이 아닌 상황에서 비교**/
+    private boolean compareToMajor(MatchingAccount my, MatchingAccount other){
+
+        /** 나의 state 가 1이면 나와 상대방이 원하는 상대인지 비교 **/
+        if(my.getMajorState() == 1){
+            return my.getSelectMajor() == other.getMajorName();
+        }
+        else if(my.getMajorState() == 2){
+            return my.getSelectMajor() != other.getMajorName();
+        }
+        return false;
+    }
 }
+
+
+

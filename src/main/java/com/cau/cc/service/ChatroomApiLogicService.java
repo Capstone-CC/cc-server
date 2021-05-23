@@ -129,14 +129,14 @@ public class ChatroomApiLogicService {
     public Header<ChatroomImageResponse> womanResponse(Chatroom chatroom) {
         Account man = accountRepository.findById(chatroom.getManId().getId())
                 .orElseGet(null);
-        //ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
+        ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(man.getImage())
-         //       .lastMessage(chatMessage.getMessage())
+                .lastMessage(chatMessage.getMessage())
                 .build();
         return Header.OK(body);
     }
@@ -144,7 +144,7 @@ public class ChatroomApiLogicService {
     public Header<ChatroomImageResponse> manResponse(Chatroom chatroom) {
         Account woman = accountRepository.findById(chatroom.getWomanId().getId())
                 .orElseGet(null);
-        //ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
+        ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
 
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
@@ -152,7 +152,7 @@ public class ChatroomApiLogicService {
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(woman.getImage())
-                //.lastMessage(chatMessage.getMessage())
+                .lastMessage(chatMessage.getMessage())
                 .build();
         return Header.OK(body);
     }

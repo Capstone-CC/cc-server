@@ -6,6 +6,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
+import com.cau.cc.model.network.response.ChatroomImageResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.page.Pagination;
@@ -68,11 +69,11 @@ public class ChatroomApiLogicService {
         return body;
     }
 
-    public Header<ChatroomApiResponse> read(Long id) {
-        return chatRoomRepository.findById(id)
-                .map(this::response)
-                .orElseGet(()->Header.ERROR("데이터 없음"));
-    }
+//    public Header<ChatroomApiResponse> read(Long id) {
+//        return chatRoomRepository.findById(id)
+//                .map(this::response)
+//                .orElseGet(()->Header.ERROR("데이터 없음"));
+//    }
 
     private AccountApiResponse resp(Account user) {
         // user -> userApiResponse
@@ -89,18 +90,18 @@ public class ChatroomApiLogicService {
         return userApiResponse;
     }
 
-    public Header<ChatroomApiResponse> update(ChatroomApiRequest request) {
-        ChatroomApiRequest body = request;
-
-        return chatRoomRepository.findById(body.getId())
-                .map(chatroom -> {
-                    chatroom.setName(body.getName());
-                    return chatroom;
-                })
-                .map(newChatroom -> chatRoomRepository.save(newChatroom))
-                .map(this::response)
-                .orElseGet(()->Header.ERROR("데이터 없음"));
-    }
+//    public Header<ChatroomApiResponse> update(ChatroomApiRequest request) {
+//        ChatroomApiRequest body = request;
+//
+//        return chatRoomRepository.findById(body.getId())
+//                .map(chatroom -> {
+//                    chatroom.setName(body.getName());
+//                    return chatroom;
+//                })
+//                .map(newChatroom -> chatRoomRepository.save(newChatroom))
+//                .map(this::response)
+//                .orElseGet(()->Header.ERROR("데이터 없음"));
+//    }
 
     public Header delete(Long id) {
         return chatRoomRepository.findById(id)
@@ -117,6 +118,32 @@ public class ChatroomApiLogicService {
                 .name(chatroom.getName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
+                .build();
+        return Header.OK(body);
+    }
+
+    public Header<ChatroomImageResponse> womanResponse(Chatroom chatroom) {
+        Account man = accountRepository.findById(chatroom.getManId().getId())
+                .orElseGet(null);
+        ChatroomImageResponse body = ChatroomImageResponse.builder()
+                .id(chatroom.getId())
+                .name(chatroom.getName())
+                .manId(chatroom.getManId().getId())
+                .womanId(chatroom.getWomanId().getId())
+                .otherImg(man.getImage())
+                .build();
+        return Header.OK(body);
+    }
+
+    public Header<ChatroomImageResponse> manResponse(Chatroom chatroom) {
+        Account woman = accountRepository.findById(chatroom.getWomanId().getId())
+                .orElseGet(null);
+        ChatroomImageResponse body = ChatroomImageResponse.builder()
+                .id(chatroom.getId())
+                .name(chatroom.getName())
+                .manId(chatroom.getManId().getId())
+                .womanId(chatroom.getWomanId().getId())
+                .otherImg(woman.getImage())
                 .build();
         return Header.OK(body);
     }

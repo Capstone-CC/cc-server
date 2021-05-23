@@ -1,14 +1,10 @@
 package com.cau.cc.api;
 
-import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.ChatMessageApiResponse;
-import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.service.AccountProfileService;
-import com.cau.cc.service.ChatroomApiLogicService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +43,7 @@ public class ChatroomApiController  {
      */
     @ApiOperation(value = "채팅 내용",notes = "필수정보 : roomId 값")
     @GetMapping("/list/{id}")
-    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id, @ApiIgnore @PageableDefault(sort = "time", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
+    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id, @ApiIgnore @PageableDefault(sort = "time", direction = Sort.Direction.DESC, size = 30) Pageable pageable) {
         return accountProfileService.search(id, pageable);
     }
 

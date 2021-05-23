@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AccountChatListApiResponse {
-    private AccountProfileApiResponse accountProfileApiResponse;
+    private AccountProfileChatApiResponse accountProfileApiResponse;
 }

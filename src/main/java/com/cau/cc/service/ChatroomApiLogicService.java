@@ -1,6 +1,7 @@
 package com.cau.cc.service;
 
 import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.ChatMessage;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
@@ -8,6 +9,7 @@ import com.cau.cc.model.network.response.AccountApiResponse;
 import com.cau.cc.model.network.response.ChatroomApiResponse;
 import com.cau.cc.model.network.response.ChatroomImageResponse;
 import com.cau.cc.model.repository.AccountRepository;
+import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.page.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class ChatroomApiLogicService {
     private ChatRoomRepository chatRoomRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     public Header<ChatroomApiResponse> create(ChatroomApiRequest request) {
 
@@ -125,12 +129,14 @@ public class ChatroomApiLogicService {
     public Header<ChatroomImageResponse> womanResponse(Chatroom chatroom) {
         Account man = accountRepository.findById(chatroom.getManId().getId())
                 .orElseGet(null);
+        ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
-                .name(chatroom.getName())
+                .name(chatroom.getManId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(man.getImage())
+                .lastMessage(chatMessage.getMessage())
                 .build();
         return Header.OK(body);
     }
@@ -138,12 +144,15 @@ public class ChatroomApiLogicService {
     public Header<ChatroomImageResponse> manResponse(Chatroom chatroom) {
         Account woman = accountRepository.findById(chatroom.getWomanId().getId())
                 .orElseGet(null);
+        ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
+
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
-                .name(chatroom.getName())
+                .name(chatroom.getWomanId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(woman.getImage())
+                .lastMessage(chatMessage.getMessage())
                 .build();
         return Header.OK(body);
     }

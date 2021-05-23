@@ -1,5 +1,7 @@
 package com.cau.cc.chat.websocket.controller;
 
+import com.cau.cc.model.entity.Account;
+import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.model.entity.ChatMessage;
 import com.cau.cc.model.entity.MessageType;
@@ -27,9 +29,11 @@ public class ChatMessageController {
                 messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId(), message);
             }
             //TODO : DB의 메세지 저장
+            Chatroom chatroom = message.getChatroomId();
+            Account account = message.getUserId();
             ChatMessage chatMessage = ChatMessage.builder()
-                    .chatroomId(message.getChatroomId())
-                    .userId(message.getUserId())
+                    .chatroomId(chatroom)
+                    .userId(account)
                     .type(message.getType())
                     .message(message.getMessage())
                     .time(LocalDateTime.now())

@@ -9,7 +9,7 @@ import com.cau.cc.model.network.request.AccountProfileApiRequest;
 import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.AccountProfileApiResponse;
 import com.cau.cc.model.network.response.ChatMessageApiResponse;
-import com.cau.cc.model.network.response.ChatroomApiResponse;
+import com.cau.cc.model.network.response.ChatroomImageResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.page.Pagination;
@@ -111,9 +111,9 @@ public class AccountProfileService {
         if(account.getGender()==GenderEnum.남) {
             List<Chatroom> chatroomList = account.getManList_chat();
 
-            List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
+            List<ChatroomImageResponse> chatroomApiResponseList = chatroomList.stream()
                     .map(chatroom -> {
-                        return chatroomApiLogicService.response(chatroom);
+                        return chatroomApiLogicService.manResponse(chatroom);
                     })
                     .map(response -> (response).getValue())
                     .collect(Collectors.toList());
@@ -125,9 +125,9 @@ public class AccountProfileService {
         else {
             List<Chatroom> chatroomList = account.getWomanList_chat();
 
-            List<ChatroomApiResponse> chatroomApiResponseList = chatroomList.stream()
+            List<ChatroomImageResponse> chatroomApiResponseList = chatroomList.stream()
                     .map(chatroom -> {
-                        return chatroomApiLogicService.response(chatroom);
+                        return chatroomApiLogicService.womanResponse(chatroom);
                     })
                     .map(response -> (response).getValue())
                     .collect(Collectors.toList());

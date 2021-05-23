@@ -23,7 +23,9 @@ public class ChatMessageController {
 
     public void message(ChatMessage message) {
         if (MessageType.TALK.equals(message.getType())) {
-
+            if(MessageType.TALK.equals(message.getType())){
+                messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId(), message);
+            }
             //TODO : DB의 메세지 저장
             ChatMessage chatMessage = ChatMessage.builder()
                     .chatroomId(message.getChatroomId())
@@ -31,12 +33,10 @@ public class ChatMessageController {
                     .type(message.getType())
                     .message(message.getMessage())
                     .time(LocalDateTime.now())
+                    .senderId(message.getUserId().getId())
                     .build();
-            ChatMessage newChatMessage = chatMessageRepository.save(chatMessage);
+            chatMessageRepository.save(chatMessage);
 
-        if(MessageType.TALK.equals(message.getType())){
-                messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId(), message);
-            }
         }
     }
 }

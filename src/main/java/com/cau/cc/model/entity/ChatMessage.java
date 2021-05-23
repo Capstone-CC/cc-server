@@ -27,6 +27,7 @@ public class ChatMessage {
     @ManyToOne
     private Account userId;
 
+    private Long senderId;
 
     @Enumerated(EnumType.STRING)
     private MessageType type; // 메시지 타입

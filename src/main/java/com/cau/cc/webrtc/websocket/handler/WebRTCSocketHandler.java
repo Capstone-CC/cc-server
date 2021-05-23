@@ -369,8 +369,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             }
                             try {
                                 /** 2, 매칭된 사용자 두명에게 초단위로 메세지 보내기 **/
-                                sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"timer",null,randomMin--));
-                                sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"timer",null,randomMin--));
+                                sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"timer",null,randomMin));
+                                sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"timer",null,randomMin));
                             } catch (Exception e) {
                                 //TODO: 로그 필요
                             }

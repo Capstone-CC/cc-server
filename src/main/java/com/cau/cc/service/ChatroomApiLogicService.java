@@ -130,6 +130,9 @@ public class ChatroomApiLogicService {
         Account man = accountRepository.findById(chatroom.getManId().getId())
                 .orElseGet(null);
         ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
+        if (chatMessage == null) {
+            chatMessage.setMessage(" ");
+        }
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getManId().getNickName())
@@ -145,14 +148,20 @@ public class ChatroomApiLogicService {
         Account woman = accountRepository.findById(chatroom.getWomanId().getId())
                 .orElseGet(null);
         ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
-
+        String lastMessage = null;
+        if (chatMessage == null) {
+            lastMessage = " ";
+        }
+        else {
+            lastMessage = chatMessage.getMessage();
+        }
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getWomanId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(woman.getImage())
-                .lastMessage(chatMessage.getMessage())
+                .lastMessage(lastMessage)
                 .build();
         return Header.OK(body);
     }

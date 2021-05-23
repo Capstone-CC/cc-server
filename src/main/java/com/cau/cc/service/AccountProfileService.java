@@ -179,7 +179,7 @@ public class AccountProfileService {
         ChatMessageApiResponse body = ChatMessageApiResponse.builder()
                 .id(chatMessage.getId())
                 .sender(chatMessage.getUserId().getNickName())
-                .senderId(chatMessage.getUserId().getId())
+                .userId(chatMessage.getUserId().getId())
                 .message(chatMessage.getMessage())
                 .time(chatMessage.getTime())
                 .type(chatMessage.getType())

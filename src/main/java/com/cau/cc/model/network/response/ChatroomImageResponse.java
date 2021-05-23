@@ -20,4 +20,6 @@ public class ChatroomImageResponse {
     private Long womanId;
 
     private String otherImg;
+
+    private String lastMessage;
 }

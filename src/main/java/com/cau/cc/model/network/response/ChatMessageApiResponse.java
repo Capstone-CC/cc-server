@@ -22,6 +22,8 @@ public class ChatMessageApiResponse {
     @ApiModelProperty(example = "푸앙이")
     private String sender;
 
+    private Long senderId;
+
     private MessageType type; // 메시지 타입
     private String message; // 메시지
     private LocalDateTime time;

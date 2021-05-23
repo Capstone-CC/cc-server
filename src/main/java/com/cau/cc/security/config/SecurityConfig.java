@@ -148,7 +148,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/socket",
                         "/major/**",
                         "/logout",
-                        "/account/password",
+                        "/account/password/**",
                         "/chatroom/**",
                         "/chat/**",
                         "/chatSocket").permitAll()

@@ -43,7 +43,7 @@ public class ChatroomApiController  {
      */
     @ApiOperation(value = "채팅 내용",notes = "필수정보 : roomId 값")
     @GetMapping("/list/{id}")
-    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id, @ApiIgnore @PageableDefault(sort = "time", direction = Sort.Direction.DESC, size = 30) Pageable pageable) {
+    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id, @ApiIgnore @PageableDefault(sort = "time", direction = Sort.Direction.ASC, size = 30) Pageable pageable) {
         return accountProfileService.search(id, pageable);
     }
 

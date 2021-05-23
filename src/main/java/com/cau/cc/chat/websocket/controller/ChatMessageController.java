@@ -33,7 +33,6 @@ public class ChatMessageController {
                     .type(message.getType())
                     .message(message.getMessage())
                     .time(LocalDateTime.now())
-                    .senderId(message.getUserId().getId())
                     .build();
             chatMessageRepository.save(chatMessage);
 

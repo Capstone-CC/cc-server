@@ -6,10 +6,7 @@ import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
-import com.cau.cc.model.network.response.AccountChatListApiResponse;
-import com.cau.cc.model.network.response.AccountProfileApiResponse;
-import com.cau.cc.model.network.response.ChatMessageApiResponse;
-import com.cau.cc.model.network.response.ChatroomImageResponse;
+import com.cau.cc.model.network.response.*;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.page.Pagination;
@@ -67,6 +64,26 @@ public class AccountProfileService {
         return accountProfileApiResponse;
     }
 
+    private AccountProfileChatApiResponse ChatResponse(Account account) {
+        AccountProfileChatApiResponse accountProfileChatApiResponse = AccountProfileChatApiResponse.builder()
+                .id(account.getId())
+                .image(account.getImage())
+                .email(account.getEmail())
+                .gender(account.getGender())
+                .grade(account.getGrade())
+                .majorName(account.getMajorName())
+                .nickName(account.getNickName())
+                .content(account.getContent())
+                .build();
+//
+//        if(account.getMajorName() != null){
+//            accountApiResponse.setMajor(account.getMajorName());
+//        }
+//
+
+        return accountProfileChatApiResponse;
+    }
+
 //    @Autowired
 //    MajorRepository majorRepository;
 
@@ -103,7 +120,7 @@ public class AccountProfileService {
 
         // user
         Account account = accountRepository.findByEmail(email);
-        AccountProfileApiResponse accountApiResponse = response(account);
+        AccountProfileChatApiResponse accountApiResponse = ChatResponse(account);
         // chatlist
         /**
          * 남자유저일 경우 챗리스트 출력
@@ -162,6 +179,7 @@ public class AccountProfileService {
         ChatMessageApiResponse body = ChatMessageApiResponse.builder()
                 .id(chatMessage.getId())
                 .sender(chatMessage.getUserId().getNickName())
+                .senderId(chatMessage.getUserId().getId())
                 .message(chatMessage.getMessage())
                 .time(chatMessage.getTime())
                 .type(chatMessage.getType())

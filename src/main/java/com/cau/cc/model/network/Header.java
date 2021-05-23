@@ -55,6 +55,7 @@ public class Header<T> {
 
     public static <T> Header<T> OK(T data, Pagination pagination) {
         return (Header<T>) Header.builder()
+                .result(true)
                 .transactionTime(LocalDateTime.now())
                 .description("OK")
                 .value(data)

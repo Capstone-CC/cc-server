@@ -132,7 +132,7 @@ public class ChatroomApiLogicService {
         ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
-                .name(chatroom.getName())
+                .name(chatroom.getManId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(man.getImage())
@@ -148,7 +148,7 @@ public class ChatroomApiLogicService {
 
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
-                .name(chatroom.getName())
+                .name(chatroom.getWomanId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
                 .otherImg(woman.getImage())

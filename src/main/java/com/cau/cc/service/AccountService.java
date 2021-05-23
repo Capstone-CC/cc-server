@@ -2,6 +2,7 @@ package com.cau.cc.service;
 
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
+import com.cau.cc.model.network.request.AccountFindRequest;
 import com.cau.cc.model.network.request.AccountModifyRequest;
 import com.cau.cc.model.network.request.RegisterApiRequest;
 import com.cau.cc.model.repository.AccountRepository;
@@ -45,8 +46,13 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
+    /**
+     * 이메일이 존재하면 false
+     * 이메일이 존재하지 않으면 true
+     * @param email
+     * @return
+     */
     public boolean emailCheck(String email){
-        //validateDuplicateMember
         Account findAccount = accountRepository.findByEmail(email);
 
         if(findAccount != null){ // 이미존재하는 email
@@ -55,6 +61,9 @@ public class AccountService {
         return true;
     }
 
+    /**
+     * 로그인 사용자 비밀번호 변경
+     */
     public Header modify(AccountModifyRequest request){
 
         Account origin = accountRepository.findByEmail(request.getEmail());
@@ -71,6 +80,25 @@ public class AccountService {
         
         /**변경 할 비번 동일**/
         String newPassword = passwordEncoder.encode(request.getPassword());
+        origin.setPassword(newPassword);
+        accountRepository.save(origin);
+        return Header.OK();
+    }
+
+    /**
+     * 비 로그인 사용자 비밀번호 변경
+     */
+    public Header modifyAfterVerify(AccountFindRequest request){
+
+        Account origin = accountRepository.findByEmail(request.getEmail());
+
+        /** 변경할 비번 동일 한지 확인 **/
+        if(!request.getChangePw().equals(request.getConfirmPw())){
+            return Header.ERROR("변경 할 비밀번호가 서로 틀립니다.");
+        }
+
+        /**변경 할 비번 동일**/
+        String newPassword = passwordEncoder.encode(request.getChangePw());
         origin.setPassword(newPassword);
         accountRepository.save(origin);
         return Header.OK();

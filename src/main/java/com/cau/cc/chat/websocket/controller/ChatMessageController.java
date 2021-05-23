@@ -4,17 +4,15 @@ import com.cau.cc.chat.websocket.chatmessage.ChatMessageDto;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.repository.AccountRepository;
+
 import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.model.entity.ChatMessage;
 import com.cau.cc.model.entity.MessageType;
 import com.cau.cc.model.repository.ChatRoomRepository;
-import com.cau.cc.webrtc.model.WebSocketMessage;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -39,7 +37,6 @@ public class ChatMessageController {
         Optional<Chatroom> chatroom = chatRoomRepository.findById(message.getChatroomId());
         Optional<Account> account = accountRepository.findById(message.getUserId());
 
-
         if(!chatroom.isEmpty() && !account.isEmpty()){
             //TODO : DB의 메세지 저장
             ChatMessage chatMessage = ChatMessage.builder()
@@ -50,8 +47,6 @@ public class ChatMessageController {
                     .time(LocalDateTime.now())
                     .build();
             chatMessageRepository.save(chatMessage);
-
         }
-
     }
 }

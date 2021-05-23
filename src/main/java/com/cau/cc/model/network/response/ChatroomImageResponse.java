@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatroomApiResponse {
+public class ChatroomImageResponse {
 
     private Long id;
 
@@ -19,4 +19,5 @@ public class ChatroomApiResponse {
 
     private Long womanId;
 
+    private String otherImg;
 }

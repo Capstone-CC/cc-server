@@ -123,15 +123,12 @@ public class AccountProfileService {
         Account account = accountRepository.findByEmail(email);
         Optional<Chatroom> chatroom = chatRoomRepository.findById(id);
         Chatroom newChatroom = chatroom.get();
-        ChatMessageDto message = null;
+        ChatMessageDto message = ChatMessageDto.builder()
+                .type(MessageType.LEAVE).build();
 
         if(account.getGender() == GenderEnum.남) {
             newChatroom.setManStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            message.setUserId(account.getId());
-            message.setChatroomId(id);
-            message.setType(MessageType.LEAVE);
-            message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
             chatMessageController.message(message);
             if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
                 chatMessageRepository.deleteAllByChatroomId(id);
@@ -141,10 +138,6 @@ public class AccountProfileService {
         else if (account.getGender() == GenderEnum.여) {
             newChatroom.setWomanStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            message.setUserId(account.getId());
-            message.setChatroomId(id);
-            message.setType(MessageType.LEAVE);
-            message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
             chatMessageController.message(message);
             chatMessageController.message(message);
             if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {

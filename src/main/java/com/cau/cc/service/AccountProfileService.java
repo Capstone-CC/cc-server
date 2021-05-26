@@ -124,27 +124,33 @@ public class AccountProfileService {
         Optional<Chatroom> chatroom = chatRoomRepository.findById(id);
         Chatroom newChatroom = chatroom.get();
         ChatMessageDto message = null;
-
-
+        message.setType(MessageType.LEAVE);
+        message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
 
         if(account.getGender() == GenderEnum.남) {
             newChatroom.setManStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            message.setType(MessageType.LEAVE);
-            message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
             messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getId(), message);
             if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
-                chatRoomRepository.deleteById(chat.getId());
+                chatRoomRepository.findById(id)
+                        .map(c -> {
+                            chatRoomRepository.delete(c);
+                            return Header.OK();
+                        })
+                        .orElseGet(()->Header.ERROR("데이터 없음"));
             }
         }
         else if (account.getGender() == GenderEnum.여) {
             newChatroom.setWomanStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            message.setType(MessageType.LEAVE);
-            message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
             messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getId(), message);
             if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
-                chatRoomRepository.deleteById(chat.getId());
+                chatRoomRepository.findById(id)
+                        .map(c -> {
+                            chatRoomRepository.delete(c);
+                            return Header.OK();
+                        })
+                        .orElseGet(()->Header.ERROR("데이터 없음"));
             }
         }
 

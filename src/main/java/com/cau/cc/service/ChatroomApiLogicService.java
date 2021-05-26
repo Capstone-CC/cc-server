@@ -39,6 +39,8 @@ public class ChatroomApiLogicService {
                 .time(request.getTime())
                 .manId(accountRepository.getOne(body.getManId()))
                 .womanId(accountRepository.getOne(body.getWomanId()))
+                .manStatus(0)
+                .womanStatus(0)
                 .build();
 
         Chatroom newChatroom = chatRoomRepository.save(chatroom);
@@ -130,18 +132,25 @@ public class ChatroomApiLogicService {
         Account man = accountRepository.findById(chatroom.getManId().getId())
                 .orElseGet(null);
         ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
+        String lastMessage = null;
         if (chatMessage == null) {
-            chatMessage.setMessage(" ");
+            lastMessage = " ";
         }
-        ChatroomImageResponse body = ChatroomImageResponse.builder()
-                .id(chatroom.getId())
-                .name(chatroom.getManId().getNickName())
-                .manId(chatroom.getManId().getId())
-                .womanId(chatroom.getWomanId().getId())
-                .otherImg(man.getImage())
-                .lastMessage(chatMessage.getMessage())
-                .build();
-        return Header.OK(body);
+        else {
+            lastMessage = chatMessage.getMessage();
+        }
+        if (chatroom.getWomanStatus() == 0) {
+            ChatroomImageResponse body = ChatroomImageResponse.builder()
+                    .id(chatroom.getId())
+                    .name(chatroom.getManId().getNickName())
+                    .manId(chatroom.getManId().getId())
+                    .womanId(chatroom.getWomanId().getId())
+                    .otherImg(man.getImage())
+                    .lastMessage(lastMessage)
+                    .build();
+            return Header.OK(body);
+        }
+        return null;
     }
 
     public Header<ChatroomImageResponse> manResponse(Chatroom chatroom) {
@@ -155,15 +164,18 @@ public class ChatroomApiLogicService {
         else {
             lastMessage = chatMessage.getMessage();
         }
-        ChatroomImageResponse body = ChatroomImageResponse.builder()
-                .id(chatroom.getId())
-                .name(chatroom.getWomanId().getNickName())
-                .manId(chatroom.getManId().getId())
-                .womanId(chatroom.getWomanId().getId())
-                .otherImg(woman.getImage())
-                .lastMessage(lastMessage)
-                .build();
-        return Header.OK(body);
+        if (chatroom.getManStatus() == 0) {
+            ChatroomImageResponse body = ChatroomImageResponse.builder()
+                    .id(chatroom.getId())
+                    .name(chatroom.getWomanId().getNickName())
+                    .manId(chatroom.getManId().getId())
+                    .womanId(chatroom.getWomanId().getId())
+                    .otherImg(woman.getImage())
+                    .lastMessage(lastMessage)
+                    .build();
+            return Header.OK(body);
+        }
+        else return null;
     }
 
 

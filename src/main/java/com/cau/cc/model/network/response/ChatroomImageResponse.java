@@ -19,6 +19,10 @@ public class ChatroomImageResponse {
 
     private Long womanId;
 
+    private int manStatus = 0;
+
+    private int womanStatus = 0;
+
     private String otherImg;
 
     private String lastMessage;

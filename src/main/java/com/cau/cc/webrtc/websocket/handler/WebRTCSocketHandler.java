@@ -146,8 +146,9 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     /**if 체크 순서 중요! **/
                     if( otherMatchingAccount != null && !session.getId().equals(otherMatchingAccount.getMySession().getId())) {
 
-                        /**3. 찾은 상대방이 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
+                        /**3. 매칭된 상대방이 없거나 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
                         if(otherMatchingAccount.getPeerSessionId() != null
+                                || otherMatchingAccount.isMatchingState()
                                 || otherMatchingAccount.getGender().equals(myMatchingAccount.getGender())){
                             start = 0;
                             continue;
@@ -361,10 +362,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                         @Override
                         public void run() {
-                            if(randomMin >= 0){ /**
-                             2. 1씩 값 내리고 **/
+                            if(randomMin >= 0 && matchingRoom.get(my.getMySession().getId()) != null
+                                    && matchingRoom.get(peer.getMySession().getId()) != null){
+                                /** 2. 1씩 값 내리고 **/
                                 randomMin --;
-                            } else{ /** 0보다 작은경우 task 종료 **/
+                            } else{ /** 0보다 작거나 세션에 없는 경우 task 종료 **/
                                 cancel();
                             }
                             try {
@@ -462,12 +464,23 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 //TODO : 매칭 시도 후 취소하는 경우
             case "cancel":
+                /**1. 취소를 보낸 사용자와 상대 사용자 꺼내서**/
+                myMatchingAccount = matchingRoom.get(session.getId());
+                otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
+                /**2. 상태 변경**/
+                myMatchingAccount.setMatchingState(false);
+                otherMatchingAccount.setMatchingState(false);
 
                 break;
 
                 //TODO : 매칭이 종료된 경우 - 한쪽이 거절하기 누른경우
             case "disconnect" :
+                /** 자신이 매칭대기룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
+
                 myMatchingAccount = matchingRoom.get(session.getId());
+                if(myMatchingAccount == null){
+                    break;
+                }
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
 
                 try{

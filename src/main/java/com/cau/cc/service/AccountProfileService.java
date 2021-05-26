@@ -132,12 +132,8 @@ public class AccountProfileService {
             Chatroom chat = chatRoomRepository.save(newChatroom);
             messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getId(), message);
             if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
-                chatRoomRepository.findById(id)
-                        .map(c -> {
-                            chatRoomRepository.delete(c);
-                            return Header.OK();
-                        })
-                        .orElseGet(()->Header.ERROR("데이터 없음"));
+                Optional<Chatroom> chatroom1 = chatRoomRepository.findById(id);
+                chatRoomRepository.delete(chatroom1.get());
             }
         }
         else if (account.getGender() == GenderEnum.여) {
@@ -145,12 +141,8 @@ public class AccountProfileService {
             Chatroom chat = chatRoomRepository.save(newChatroom);
             messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getId(), message);
             if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
-                chatRoomRepository.findById(id)
-                        .map(c -> {
-                            chatRoomRepository.delete(c);
-                            return Header.OK();
-                        })
-                        .orElseGet(()->Header.ERROR("데이터 없음"));
+                Optional<Chatroom> chatroom1 = chatRoomRepository.findById(id);
+                chatRoomRepository.delete(chatroom1.get());
             }
         }
 

@@ -549,8 +549,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
     /**메시지 보내기**/
     private synchronized void sendMessage(WebSocketSession webSocketSession, WebSocketMessage webSocketMessage) {
         try {
-            String json = mapper.writeValueAsString(webSocketMessage);
-            webSocketSession.sendMessage(new TextMessage(json));
+            if(webSocketSession.isOpen()){
+                String json = mapper.writeValueAsString(webSocketMessage);
+                webSocketSession.sendMessage(new TextMessage(json));
+            }
         } catch (IOException e) {
             //TODO : 로그 필요
         }

@@ -29,7 +29,10 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.*;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
+import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.security.web.session.SimpleRedirectSessionInformationExpiredStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
@@ -135,12 +138,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CompositeSessionAuthenticationStrategy sessionAuthenticationStrategy(){
         ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy=
+
                 new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
+
         concurrentSessionControlAuthenticationStrategy.setMaximumSessions(1);
+
         concurrentSessionControlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
+
         SessionFixationProtectionStrategy sessionFixationProtectionStrategy=new SessionFixationProtectionStrategy();
+
         ChangeSessionIdAuthenticationStrategy changeSessionIdAuthenticationStrategy = new ChangeSessionIdAuthenticationStrategy();
+
         RegisterSessionAuthenticationStrategy registerSessionStrategy = new RegisterSessionAuthenticationStrategy(sessionRegistry());
+
         CompositeSessionAuthenticationStrategy sessionAuthenticationStrategy=new CompositeSessionAuthenticationStrategy(
                 Arrays.asList(concurrentSessionControlAuthenticationStrategy,
                         changeSessionIdAuthenticationStrategy,sessionFixationProtectionStrategy,registerSessionStrategy));
@@ -148,16 +158,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    @Bean
+    public ConcurrentSessionFilter concurrentSessionFilter(){
+        ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry(), new SimpleRedirectSessionInformationExpiredStrategy("/account/expired"));
+
+        return concurrentSessionFilter;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        http
-                .sessionManagement()
-                .maximumSessions(1)
-                .expiredUrl("/account/expried")
-                .and()
-                .invalidSessionUrl("/account/expired");
 
         http
                 .csrf().disable()
@@ -204,7 +213,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessHandler(new CustomLogourSuccessHandler());
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(concurrentSessionFilter(), RequestCacheAwareFilter.class);
         //this will allow frames withsame origin which is much more safe
         http.headers().frameOptions().disable();
     }

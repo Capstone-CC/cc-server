@@ -35,13 +35,20 @@ public class AccountProfileApiController {
     @ApiOperation(value = "프로필 Read",notes = "프로필 Read")
     public Header<AccountProfileApiResponse> read() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Account account = (Account) auth.getPrincipal();
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Account account = (Account) auth.getPrincipal();
 
-        if(account.getEmail() == null) {
-            return Header.ERROR("로그인이 필요합니다.");
+            if(account.getEmail() == null) {
+                return Header.ERROR("로그인이 필요합니다.");
+            }
+            return accountProfileService.read(account.getEmail());
+
+        }catch (Exception e){
+            return Header.ERROR("로그인 필요");
         }
-        return accountProfileService.read(account.getEmail());
+
+
     }
 
     @PutMapping("") // /api/profile
@@ -52,7 +59,7 @@ public class AccountProfileApiController {
 
     @DeleteMapping("{id}") // /api/profile/id
     public Header delete(@PathVariable Long id) {
-        return accountProfileService.delete(id);
+        return null;
     }
 
 

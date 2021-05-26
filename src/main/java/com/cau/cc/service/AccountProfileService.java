@@ -1,6 +1,7 @@
 package com.cau.cc.service;
 
 import com.cau.cc.chat.websocket.chatmessage.ChatMessageDto;
+import com.cau.cc.chat.websocket.controller.ChatMessageController;
 import com.cau.cc.model.entity.*;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
@@ -115,34 +116,40 @@ public class AccountProfileService {
 
 
     }
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final ChatMessageController chatMessageController;
 
-    @MessageMapping("/chat/message")
     public Header delete(String email, Long id) {
 
         Account account = accountRepository.findByEmail(email);
         Optional<Chatroom> chatroom = chatRoomRepository.findById(id);
         Chatroom newChatroom = chatroom.get();
         ChatMessageDto message = null;
-        message.setType(MessageType.LEAVE);
-        message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
 
         if(account.getGender() == GenderEnum.남) {
             newChatroom.setManStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getId(), message);
-            if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
-                Optional<Chatroom> chatroom1 = chatRoomRepository.findById(id);
-                chatRoomRepository.delete(chatroom1.get());
+            message.setUserId(account.getId());
+            message.setChatroomId(id);
+            message.setType(MessageType.LEAVE);
+            message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
+            chatMessageController.message(message);
+            if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
+                chatMessageRepository.deleteAllByChatroomId(id);
+                chatRoomRepository.delete(newChatroom);
             }
         }
         else if (account.getGender() == GenderEnum.여) {
             newChatroom.setWomanStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getId(), message);
-            if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
-                Optional<Chatroom> chatroom1 = chatRoomRepository.findById(id);
-                chatRoomRepository.delete(chatroom1.get());
+            message.setUserId(account.getId());
+            message.setChatroomId(id);
+            message.setType(MessageType.LEAVE);
+            message.setMessage(account.getNickName() + "님이 채팅방을 떠났습니다.");
+            chatMessageController.message(message);
+            chatMessageController.message(message);
+            if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
+                chatMessageRepository.deleteAllByChatroomId(id);
+                chatRoomRepository.delete(newChatroom);
             }
         }
 

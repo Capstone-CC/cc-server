@@ -20,4 +20,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("SELECT u FROM ChatMessage u where u.id = (select max(s.id) from ChatMessage s where s.chatroomId.id = ?1 )")
     ChatMessage findLastMessage(Long id);
 
+    @Query("delete from ChatMessage u where u.chatroomId = ?1")
+    void deleteAllByChatroomId(Long id);
+
 }

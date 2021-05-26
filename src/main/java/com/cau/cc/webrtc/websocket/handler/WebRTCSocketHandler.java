@@ -466,12 +466,13 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 myMatchingAccount = matchingRoom.get(session.getId());
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
 
-                /**대기룸 제거**/
-                matchingRoom.remove(myMatchingAccount.getMySession().getId());
-                matchingRoom.remove(otherMatchingAccount.getMySession().getId());
-                /**세션 제거**/
-                sessions.remove(myMatchingAccount.getMySession().getId());
-                sessions.remove(otherMatchingAccount.getMySession().getId());
+                try{
+                    /**대기룸 제거**/
+                    matchingRoom.remove(myMatchingAccount.getMySession().getId());
+                    matchingRoom.remove(otherMatchingAccount.getMySession().getId());
+                }catch (Exception e){
+                    //TODO: 로그 추가
+                }
                 break;
         }
     }

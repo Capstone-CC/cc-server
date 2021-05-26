@@ -467,7 +467,9 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**1. 취소를 보낸 사용자와 상대 사용자 꺼내서**/
                 myMatchingAccount = matchingRoom.get(session.getId());
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
-                /**2. 상태 변경**/
+//                /**2. 상대방에게 내가 취소 했다고 알리기**/
+//                sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"cancel",null,null));
+                /**3. 상태 변경**/
                 myMatchingAccount.setMatchingState(false);
                 otherMatchingAccount.setMatchingState(false);
 

@@ -124,7 +124,10 @@ public class AccountProfileService {
         Optional<Chatroom> chatroom = chatRoomRepository.findById(id);
         Chatroom newChatroom = chatroom.get();
         ChatMessageDto message = ChatMessageDto.builder()
-                .type(MessageType.LEAVE).build();
+                .type(MessageType.LEAVE)
+                .chatroomId(id)
+                .userId(account.getId())
+                .build();
 
         if(account.getGender() == GenderEnum.남) {
             newChatroom.setManStatus(1);
@@ -138,7 +141,6 @@ public class AccountProfileService {
         else if (account.getGender() == GenderEnum.여) {
             newChatroom.setWomanStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
-            chatMessageController.message(message);
             chatMessageController.message(message);
             if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
                 chatMessageRepository.deleteAllByChatroomId(id);

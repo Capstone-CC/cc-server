@@ -552,9 +552,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
             String json = mapper.writeValueAsString(webSocketMessage);
             webSocketSession.sendMessage(new TextMessage(json));
         } catch (IOException e) {
-            synchronized( sessions ) {
-                sessions.remove( webSocketSession );
-            }
+            //TODO : 로그 필요
         }
     }
 

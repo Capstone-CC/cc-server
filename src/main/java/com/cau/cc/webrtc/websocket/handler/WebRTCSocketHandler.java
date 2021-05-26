@@ -460,6 +460,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**수락 안했으므로 패스**/
                 break;
 
+                //TODO : 매칭 시도 후 취소하는 경우
+            case "cancel":
+
+                break;
 
                 //TODO : 매칭이 종료된 경우 - 한쪽이 거절하기 누른경우
             case "disconnect" :
@@ -530,7 +534,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
     }
 
     /**메시지 보내기**/
-    private void sendMessage(WebSocketSession webSocketSession, WebSocketMessage webSocketMessage) {
+    private synchronized void sendMessage(WebSocketSession webSocketSession, WebSocketMessage webSocketMessage) {
         try {
             String json = mapper.writeValueAsString(webSocketMessage);
             webSocketSession.sendMessage(new TextMessage(json));

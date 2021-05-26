@@ -26,6 +26,11 @@ public class Chatroom {
 
     private LocalDateTime time;
 
+    private int manStatus = 0;
+
+    private int womanStatus = 0;
+
+
     @JoinColumn(name = "man_id")
     @ManyToOne
     private Account manId;

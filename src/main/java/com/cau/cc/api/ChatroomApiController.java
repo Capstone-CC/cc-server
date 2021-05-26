@@ -57,7 +57,6 @@ public class ChatroomApiController  {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Account account = (Account) auth.getPrincipal();
 
-
             return accountProfileService.delete(account.getEmail(), id);
 
         }catch (Exception e){

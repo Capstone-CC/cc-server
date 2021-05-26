@@ -39,6 +39,8 @@ public class ChatroomApiLogicService {
                 .time(request.getTime())
                 .manId(accountRepository.getOne(body.getManId()))
                 .womanId(accountRepository.getOne(body.getWomanId()))
+                .manStatus(0)
+                .womanStatus(0)
                 .build();
 
         Chatroom newChatroom = chatRoomRepository.save(chatroom);
@@ -130,18 +132,25 @@ public class ChatroomApiLogicService {
         Account man = accountRepository.findById(chatroom.getManId().getId())
                 .orElseGet(null);
         ChatMessage chatMessage = chatMessageRepository.findLastMessage(chatroom.getId());
+        String lastMessage = null;
         if (chatMessage == null) {
-            chatMessage.setMessage(" ");
+            lastMessage = " ";
+        }
+        else {
+            lastMessage = chatMessage.getMessage();
         }
         ChatroomImageResponse body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getManId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
+                .manStatus(chatroom.getManStatus())
+                .womanStatus(chatroom.getWomanStatus())
                 .otherImg(man.getImage())
-                .lastMessage(chatMessage.getMessage())
+                .lastMessage(lastMessage)
                 .build();
         return Header.OK(body);
+
     }
 
     public Header<ChatroomImageResponse> manResponse(Chatroom chatroom) {
@@ -155,15 +164,21 @@ public class ChatroomApiLogicService {
         else {
             lastMessage = chatMessage.getMessage();
         }
-        ChatroomImageResponse body = ChatroomImageResponse.builder()
+
+        ChatroomImageResponse body = null;
+
+        body = ChatroomImageResponse.builder()
                 .id(chatroom.getId())
                 .name(chatroom.getWomanId().getNickName())
                 .manId(chatroom.getManId().getId())
                 .womanId(chatroom.getWomanId().getId())
+                .manStatus(chatroom.getManStatus())
+                .womanStatus(chatroom.getWomanStatus())
                 .otherImg(woman.getImage())
                 .lastMessage(lastMessage)
                 .build();
         return Header.OK(body);
+
     }
 
 

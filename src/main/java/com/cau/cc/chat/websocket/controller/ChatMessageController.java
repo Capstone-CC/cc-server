@@ -32,6 +32,12 @@ public class ChatMessageController {
         if(MessageType.TALK.equals(message.getType())){
             messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId(), message);
         }
+        else if(MessageType.LEAVE.equals(message.getType())){
+            Optional<Account> account = accountRepository.findById(message.getUserId());
+            message.setType(MessageType.LEAVE);
+            message.setMessage(account.get().getNickName() + "님이 채팅방을 떠났습니다.");
+            messagingTemplate.convertAndSend("/sub/chat/room/" + message.getChatroomId(), message);
+        }
 
         Optional<Chatroom> chatroom = chatRoomRepository.findById(message.getChatroomId());
         Optional<Account> account = accountRepository.findById(message.getUserId());

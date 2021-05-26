@@ -7,6 +7,7 @@ import com.cau.cc.model.network.response.ChatMessageApiResponse;
 import com.cau.cc.service.AccountProfileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,8 +44,25 @@ public class ChatroomApiController  {
      */
     @ApiOperation(value = "채팅 내용",notes = "필수정보 : roomId 값")
     @GetMapping("/list/{id}")
-    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id, @ApiIgnore @PageableDefault(sort = "time", direction = Sort.Direction.ASC, size = 30) Pageable pageable) {
+    public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,
+                                                       @ApiIgnore @PageableDefault(sort = "time",
+                                                               direction = Sort.Direction.ASC, size = 30) Pageable pageable) {
         return accountProfileService.search(id, pageable);
+    }
+
+    @ApiOperation(value = "채팅 삭제",notes = "필수정보 : roomId 값")
+    @DeleteMapping("/list/{id}")
+    public Header delete(@PathVariable Long id) {
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Account account = (Account) auth.getPrincipal();
+
+            return accountProfileService.delete(account.getEmail(), id);
+
+        }catch (Exception e){
+            return Header.ERROR("로그인 필요");
+        }
+
     }
 
 }

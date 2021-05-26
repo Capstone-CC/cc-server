@@ -1,22 +1,25 @@
 package com.cau.cc.service;
 
-import com.cau.cc.model.entity.Account;
-import com.cau.cc.model.entity.ChatMessage;
-import com.cau.cc.model.entity.Chatroom;
-import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.chat.websocket.chatmessage.ChatMessageDto;
+import com.cau.cc.chat.websocket.controller.ChatMessageController;
+import com.cau.cc.model.entity.*;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.AccountProfileApiRequest;
 import com.cau.cc.model.network.response.*;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatMessageRepository;
+import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.page.Pagination;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -30,6 +33,8 @@ public class AccountProfileService {
     private ChatroomApiLogicService chatroomApiLogicService;
     @Autowired
     private ChatMessageRepository chatMessageRepository;
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
     public Header<AccountProfileApiResponse> create(AccountProfileApiRequest request) {
         return null;
@@ -111,9 +116,40 @@ public class AccountProfileService {
 
 
     }
+    private final ChatMessageController chatMessageController;
 
-    public Header delete(Long id) {
-        return null;
+    public Header delete(String email, Long id) {
+
+        Account account = accountRepository.findByEmail(email);
+        Optional<Chatroom> chatroom = chatRoomRepository.findById(id);
+        Chatroom newChatroom = chatroom.get();
+        ChatMessageDto message = ChatMessageDto.builder()
+                .type(MessageType.LEAVE)
+                .chatroomId(id)
+                .userId(account.getId())
+                .build();
+
+        if(account.getGender() == GenderEnum.남) {
+            newChatroom.setManStatus(1);
+            Chatroom chat = chatRoomRepository.save(newChatroom);
+            chatMessageController.message(message);
+            if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
+                chatMessageRepository.deleteAllByChatroomId(id);
+                chatRoomRepository.delete(newChatroom);
+            }
+        }
+        else if (account.getGender() == GenderEnum.여) {
+            newChatroom.setWomanStatus(1);
+            Chatroom chat = chatRoomRepository.save(newChatroom);
+            chatMessageController.message(message);
+            if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
+                chatMessageRepository.deleteAllByChatroomId(id);
+                chatRoomRepository.delete(newChatroom);
+            }
+        }
+
+        return Header.OK();
+
     }
 
     public Header<AccountChatListApiResponse> chatInfo(String email) {
@@ -132,6 +168,7 @@ public class AccountProfileService {
                     .map(chatroom -> {
                         return chatroomApiLogicService.manResponse(chatroom);
                     })
+                    .filter(response -> (response).getValue().getManStatus() == 0)
                     .map(response -> (response).getValue())
                     .collect(Collectors.toList());
             accountApiResponse.setChatroomApiResponseList(chatroomApiResponseList);
@@ -146,6 +183,7 @@ public class AccountProfileService {
                     .map(chatroom -> {
                         return chatroomApiLogicService.womanResponse(chatroom);
                     })
+                    .filter(response -> (response).getValue().getWomanStatus() == 0)
                     .map(response -> (response).getValue())
                     .collect(Collectors.toList());
             accountApiResponse.setChatroomApiResponseList(chatroomApiResponseList);

@@ -20,12 +20,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.*;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
+import org.springframework.security.web.session.ConcurrentSessionFilter;
+import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.security.web.session.SimpleRedirectSessionInformationExpiredStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
@@ -61,7 +68,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new AjaxAuthenticationFailureHandler();
     }
 
-
     /**
      * 내가 만든 필터 생성
      * 제공되는 authenticationManagerBean 사용
@@ -72,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         loginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
         loginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
         loginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
+        loginProcessingFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy());
         return loginProcessingFilter;
     }
 
@@ -90,6 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider ajaxAuthenticationProvider() {
         return new AjaxAuthenticationProvider();
     }
+
 
 
     /**
@@ -115,13 +123,57 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
+    @Autowired
+    private SessionRegistry sessionRegistry;
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        if (sessionRegistry == null) {
+            sessionRegistry = new SessionRegistryImpl();
+        }
+        return sessionRegistry;
+    }
+
+
+    @Bean
+    public CompositeSessionAuthenticationStrategy sessionAuthenticationStrategy(){
+        ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlAuthenticationStrategy=
+
+                new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
+
+        concurrentSessionControlAuthenticationStrategy.setMaximumSessions(1);
+
+        concurrentSessionControlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
+
+        SessionFixationProtectionStrategy sessionFixationProtectionStrategy=new SessionFixationProtectionStrategy();
+
+        ChangeSessionIdAuthenticationStrategy changeSessionIdAuthenticationStrategy = new ChangeSessionIdAuthenticationStrategy();
+
+        RegisterSessionAuthenticationStrategy registerSessionStrategy = new RegisterSessionAuthenticationStrategy(sessionRegistry());
+
+        CompositeSessionAuthenticationStrategy sessionAuthenticationStrategy=new CompositeSessionAuthenticationStrategy(
+                Arrays.asList(concurrentSessionControlAuthenticationStrategy,
+                        changeSessionIdAuthenticationStrategy,sessionFixationProtectionStrategy,registerSessionStrategy));
+        return sessionAuthenticationStrategy;
+    }
+
+
+    @Bean
+    public ConcurrentSessionFilter concurrentSessionFilter(){
+        ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry(), new SimpleRedirectSessionInformationExpiredStrategy("/account/expired"));
+
+        return concurrentSessionFilter;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers("/","/profile/**","/register",
+                        "/account/expired",
                         "/login","/h2-console/**",
 //                        "/api/swagger",
 //                        "/api/v2/api-docs","/api/configuration/ui",
@@ -161,7 +213,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessHandler(new CustomLogourSuccessHandler());
         //필터 Username filter 앞에 등록
         http.addFilterBefore(loginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(concurrentSessionFilter(), RequestCacheAwareFilter.class);
         //this will allow frames withsame origin which is much more safe
         http.headers().frameOptions().disable();
     }

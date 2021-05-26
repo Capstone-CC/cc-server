@@ -150,4 +150,11 @@ public class AccountApiController {
         return accountService.modifyAfterVerify(request);
     }
 
+    /**
+     * session 1개 제한
+     */
+    @GetMapping("/expired")
+    public Header expired(){
+        return Header.ERROR("세션 만료");
+    }
 }

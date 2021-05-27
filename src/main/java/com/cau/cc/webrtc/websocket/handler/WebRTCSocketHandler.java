@@ -11,6 +11,7 @@ import com.cau.cc.model.network.response.MatchingApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.service.ChatroomApiLogicService;
 import com.cau.cc.service.MatchingApiLogicService;
+import com.cau.cc.webrtc.model.DelayObject;
 import com.cau.cc.webrtc.model.MatchingAccount;
 import com.cau.cc.webrtc.model.WebSocketMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -118,6 +119,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**자신이 대기룸에 없으면 입장**/
                 myMatchingAccount = matchingRoom.get(session.getId());
                 if(myMatchingAccount == null){
+
                     /**대기룸 입장**/
                     myMatchingAccount = MatchingAccount.builder()
                             .id(account.getId())
@@ -131,6 +133,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .matchingState(false)
                             .myMessage(webSocketMessage)
                             .startTime(System.currentTimeMillis())
+                            .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
                             .wantGrade(webSocketMessage.getOption().getGrade())
                             .selectMajor(webSocketMessage.getOption().getMajorName())
                             .majorState(webSocketMessage.getOption().getMajorState())
@@ -150,7 +153,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         if(my == null){
                             cancel();
                         }
-                        //TODO : 추후 삭제
+                        //TODO : 찾는중 (10초마다 run이 실행되므로 10초마다 보냄)
                         sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(),"searching",null,null));
 
 
@@ -171,7 +174,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         //매칭상대 찾은 상태값 0: 몾찾음, 1: 찾음
                         int start = 0;
 
-                        //TODO : 매칭알고리즘
+                        //매칭 기록 있는지 확인
+                        DelayObject delayPeerObject = new DelayObject();
+
+                        /**
+                         * 매칭 알고리즘
+                         */
                         /** 1. 전체 웹소켓 세션을 돌면서 **/
                         for( Map.Entry<String,WebSocketSession> otherSession : sessions.entrySet()){
 
@@ -181,6 +189,25 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             peer = matchingRoom.get(otherSession.getKey());
                             /**if 체크 순서 중요! **/
                             if( peer != null && !my.getMySession().getId().equals(peer.getMySession().getId())) {
+
+                                delayPeerObject.setId(peer.getId());
+
+                                /**
+                                 * Delay는 내가 이전에 매칭된 상대방을 찾는경우 나와 상대방 count 모두 +1 된다
+                                 * 즉 매칭되었던 2명의 사용자가 반복적으로 3번 매칭 되는 경우만 매칭된다.
+                                 */
+                                /** 이전에 매칭된 사람 만나면 delayCount++ 하는데 3이상이면 그냥 매칭 **/
+                                if(my.getDelayObjects().contains(delayPeerObject)){//peer가 자신과 이전에 매칭 된 사람이고
+                                    DelayObject myDelayObject = my.getDelayObjects().get(my.getDelayObjects().indexOf(delayPeerObject));
+                                    if(myDelayObject.getDelayCount() <= 2){ //delayCount가 2이하라면
+                                        /** 자신의 객체의 있는 해당 사람과의 delayCount ++ 하고 상대방도 ++ 한 후 continue **/
+                                        myDelayObject.setDelayCount(myDelayObject.getDelayCount()+1);
+                                        DelayObject peerRealDelayObject = peer.getDelayObjects().get(peer.getDelayObjects().indexOf(myDelayObject));
+                                        peerRealDelayObject.setDelayCount(peerRealDelayObject.getDelayCount()+1);
+                                        start = 0;
+                                        continue;
+                                    }
+                                }
 
                                 /**3. 매칭된 상대방이 없거나 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
                                 if(peer.isMatchingState()
@@ -374,6 +401,15 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                     myMatchingAccount.setCount(myMatchingAccount.getCount()-1);
                     otherMatchingAccount.setCount(otherMatchingAccount.getCount()-1);
+
+
+                    /**서로 매칭 DelayObject의 넣기**/
+                    DelayObject delayPeerObject = new DelayObject(otherMatchingAccount.getId(),0);
+                    if(!myMatchingAccount.getDelayObjects().contains(delayPeerObject)) {
+                        /**peer가 자신과 이전에 매칭 된 사람이 아니면서로 추가하기 **/
+                        myMatchingAccount.getDelayObjects().add(new DelayObject(otherMatchingAccount.getId(),0));
+                        otherMatchingAccount.getDelayObjects().add(new DelayObject(myMatchingAccount.getId(), 0));
+                    }
 
                     /** 매칭 룸 생성 **/
                     MatchingApiRequest request = MatchingApiRequest.builder()

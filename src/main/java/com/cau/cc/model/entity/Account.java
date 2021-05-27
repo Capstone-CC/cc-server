@@ -50,8 +50,9 @@ public class Account {
 
     private int count;
 
-    private int reportCount;
+    private int reporterCount;
 
+    private int reportedCount;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "manId")
     private List<Matching> manList = new ArrayList<>();

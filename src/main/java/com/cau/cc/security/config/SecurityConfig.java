@@ -203,7 +203,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/account/password/**",
                         "/chatroom/**",
                         "/chat/**",
-                        "/chatSocket").permitAll()
+                        "/chatSocket",
+                        "/report").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

@@ -24,6 +24,7 @@ public class MatchingAccount {
     private GenderEnum gender;
     private int count;
     private String nickName;
+    private long startTime;
 
     //원하는 상대방 정보
     private MajorEnum selectMajor;

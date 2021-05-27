@@ -125,6 +125,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .gender(account.getGender())
                             .nickName(account.getNickName())
                             .matchingState(false)
+                            .startTime(System.currentTimeMillis())
                             .wantGrade(webSocketMessage.getOption().getGrade())
                             .selectMajor(webSocketMessage.getOption().getMajorName())
                             .majorState(webSocketMessage.getOption().getMajorState())

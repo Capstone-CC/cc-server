@@ -348,8 +348,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 if (otherMatchingAccount.isMatchingState()){
 
                     /**각각 대기룸에서 나오기**/
-                    matchingRoom.remove(myMatchingAccount.getMyMessage().getId());
-                    matchingRoom.remove(otherMatchingAccount.getMyMessage().getId());
+                    matchingRoom.remove(myMatchingAccount.getMySession().getId());
+                    matchingRoom.remove(otherMatchingAccount.getMySession().getId());
 
                     /**연결 방으로 들어가기**/
                     connectRoom.put(myMatchingAccount.getMySession().getId(),myMatchingAccount);

@@ -2,13 +2,15 @@ package com.cau.cc.model.entity;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.*;
 import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @Accessors(chain = true)
@@ -80,4 +82,16 @@ public class Account {
     private Major majorId;
 */
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(email, account.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
 }

@@ -190,6 +190,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             /**if 체크 순서 중요! **/
                             if( peer != null && !my.getMySession().getId().equals(peer.getMySession().getId())) {
 
+                                //나와 연결되었던 상대의 아이디를 찾을 임시 객체
                                 delayPeerObject.setId(peer.getId());
 
                                 /**
@@ -198,11 +199,16 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                                  */
                                 /** 이전에 매칭된 사람 만나면 delayCount++ 하는데 3이상이면 그냥 매칭 **/
                                 if(my.getDelayObjects().contains(delayPeerObject)){//peer가 자신과 이전에 매칭 된 사람이고
-                                    DelayObject myDelayObject = my.getDelayObjects().get(my.getDelayObjects().indexOf(delayPeerObject));
-                                    if(myDelayObject.getDelayCount() <= 2){ //delayCount가 2이하라면
+                                    //나와 연결되었던 상대의 아이디가 담긴 객체
+                                    DelayObject mypeerDelayObject = my.getDelayObjects().get(my.getDelayObjects().indexOf(delayPeerObject));
+                                    if(mypeerDelayObject.getDelayCount() <= 2){ //delayCount가 2이하라면
                                         /** 자신의 객체의 있는 해당 사람과의 delayCount ++ 하고 상대방도 ++ 한 후 continue **/
-                                        myDelayObject.setDelayCount(myDelayObject.getDelayCount()+1);
-                                        DelayObject peerRealDelayObject = peer.getDelayObjects().get(peer.getDelayObjects().indexOf(myDelayObject));
+                                        mypeerDelayObject.setDelayCount(mypeerDelayObject.getDelayCount()+1);
+
+                                        //상대방의 연결되었던 객체의 나의 아이디를 이용해서 찾고
+                                        delayPeerObject.setId(my.getId());
+                                        // 이를 통해 상대방의 매칭되었던(=my)의 아이디가 담긴 객체 가져와서 count++
+                                        DelayObject peerRealDelayObject = peer.getDelayObjects().get(peer.getDelayObjects().indexOf(delayPeerObject));
                                         peerRealDelayObject.setDelayCount(peerRealDelayObject.getDelayCount()+1);
                                         start = 0;
                                         continue;
@@ -409,6 +415,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         /**peer가 자신과 이전에 매칭 된 사람이 아니면서로 추가하기 **/
                         myMatchingAccount.getDelayObjects().add(new DelayObject(otherMatchingAccount.getId(),0));
                         otherMatchingAccount.getDelayObjects().add(new DelayObject(myMatchingAccount.getId(), 0));
+                        delayPeerObject = null; //사용 안하는 객체명시
                     }
 
                     /** 매칭 룸 생성 **/
@@ -606,6 +613,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         }
 
         sendMessage(session,new WebSocketMessage(session.getId(),"ticket",null,countNum));
+        account = null; //사용 안하는 객체명시
 
 
 

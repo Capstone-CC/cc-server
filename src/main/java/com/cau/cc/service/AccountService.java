@@ -40,6 +40,8 @@ public class AccountService {
                 .grade(request.getGrade())
                 .nickName("푸앙이")
                 .majorName(request.getMajorName())
+                .reportedCount(0)
+                .reporterCount(3)
                 .build();
 
 

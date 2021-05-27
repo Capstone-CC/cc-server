@@ -20,6 +20,4 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
     @Query("SELECT m from Matching m join fetch m.womanId where m.womanId.id = :wId")
     List<Matching> findByWomanId(@Param("wId") Long id);
-
-
 }

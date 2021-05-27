@@ -138,6 +138,7 @@ public class AccountProfileService {
                 chatRoomRepository.delete(newChatroom);
             }
         }
+
         else if (account.getGender() == GenderEnum.여) {
             newChatroom.setWomanStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);

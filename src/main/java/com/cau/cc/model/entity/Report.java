@@ -19,7 +19,8 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
+    @Enumerated(EnumType.STRING)
+    private ReportEnum contents;
 
     private LocalDateTime reportTime;
 

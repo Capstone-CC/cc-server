@@ -1,5 +1,6 @@
 package com.cau.cc.model.network.response;
 
+import com.cau.cc.model.entity.ReportEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class ReportApiResponse {
 
     private Long id;
 
-    private String content;
+    private ReportEnum contents;
 
     private LocalDateTime reportTime;
 

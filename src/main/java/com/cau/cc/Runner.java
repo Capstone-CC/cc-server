@@ -59,6 +59,89 @@ public class Runner implements ApplicationRunner {
 //
 //            accountRepository.save(account3);
 //            accountRepository.save(account3);           //        .id(2l)
+            Account account4 = Account.builder()
+                    //        .id(2l)
+                    .email("test4")
+                    .password(passwordEncoder.encode("123123"))
+                    .gender(GenderEnum.남)
+                    .majorName(MajorEnum.수학과)
+                    .grade(3)
+                    .count(4)
+                    .nickName("푸앙이")
+                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+                    .build();
+
+            accountRepository.save(account4);
+//
+//            Account account3 = Account.builder()
+//                    //        .id(2l)
+//                    .email("test4")
+//                    .password(passwordEncoder.encode("123123"))
+//                    .gender(GenderEnum.여)
+//                    .majorName(MajorEnum.수학과)
+//                    .grade(3)
+//                    .count(4)
+//                    .nickName("푸앙이")
+//                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+//                    .build();
+//
+//            accountRepository.save(account4);
+//
+//            Account account5 = Account.builder()
+//                    //        .id(2l)
+//                    .email("test5")
+//                    .password(passwordEncoder.encode("123123"))
+//                    .gender(GenderEnum.남)
+//                    .majorName(MajorEnum.수학과)
+//                    .grade(3)
+//                    .count(4)
+//                    .nickName("푸앙이")
+//                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+//                    .build();
+//
+//            accountRepository.save(account5);
+//
+//            Account account6 = Account.builder()
+//                    //        .id(2l)
+//                    .email("test6")
+//                    .password(passwordEncoder.encode("123123"))
+//                    .gender(GenderEnum.여)
+//                    .majorName(MajorEnum.수학과)
+//                    .grade(3)
+//                    .count(4)
+//                    .nickName("푸앙이")
+//                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+//                    .build();
+//
+//            accountRepository.save(account6);
+
+            Account account7 = Account.builder()
+                    //        .id(2l)
+                    .email("test7")
+                    .password(passwordEncoder.encode("123123"))
+                    .gender(GenderEnum.남)
+                    .majorName(MajorEnum.수학과)
+                    .grade(3)
+                    .count(4)
+                    .nickName("푸앙이")
+                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+                    .build();
+
+            accountRepository.save(account7);
+
+            Account account8 = Account.builder()
+                    //        .id(2l)
+                    .email("test8")
+                    .password(passwordEncoder.encode("123123"))
+                    .gender(GenderEnum.여)
+                    .majorName(MajorEnum.수학과)
+                    .grade(3)
+                    .count(4)
+                    .nickName("푸앙이")
+                    .image("https://caucampuscontact.s3.amazonaws.com/images/logo.png")
+                    .build();
+
+            accountRepository.save(account8);
 
 
             System.out.println(connection.getMetaData().getURL());

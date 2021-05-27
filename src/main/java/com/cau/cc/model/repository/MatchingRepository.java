@@ -13,4 +13,10 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
     @Query("SELECT m FROM Matching m join fetch m.manId join fetch m.womanId WHERE m.manId.id = :mId and m.womanId.id = :wId and m.time = :time")
     Matching findByManIdAndWomanIdAndTime(@Param("mId") Long mId,@Param("wId") Long wId,@Param("time") LocalDateTime time);
+
+    @Query("select m from Matching m where m.manId =?1")
+    Matching findbyManId(Long id);
+
+    @Query("select m from Matching m where m.womanId =?1")
+    Matching findbyWomanId(Long id);
 }

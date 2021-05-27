@@ -48,6 +48,8 @@ public class Account {
 
     private int count;
 
+    private int reportCount;
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "manId")
     private List<Matching> manList = new ArrayList<>();

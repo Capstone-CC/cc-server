@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @Service
@@ -117,14 +119,17 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
         if (matching == null){
             return null;
         }
-        List<DelayObject> delayObjects = new ArrayList<>();
+        Set<DelayObject> set = new HashSet<>();
+
         for(Matching o : matching){
             if(gender == GenderEnum.남){
-                delayObjects.add(new DelayObject(o.getWomanId().getId(),0));
+                set.add(new DelayObject(o.getWomanId().getId(),0));
             } else{
-                delayObjects.add(new DelayObject(o.getManId().getId(),0));
+                set.add(new DelayObject(o.getManId().getId(),0));
             }
         }
+        //중복제거된 DelayObject를 list로 저장
+        List<DelayObject> delayObjects = new ArrayList<>(set);
         return delayObjects;
     }
 }

@@ -143,7 +143,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 //TODO: 매칭 시도하는 쓰레드 생성
                 TimerTask matchingThread = new TimerTask() {
-
+                    /** Task 실행시 session에서 값 꺼내 my를 고정시켜준다!!! **/
                     MatchingAccount my = matchingRoom.get(session.getId());
                     MatchingAccount peer = null;
 

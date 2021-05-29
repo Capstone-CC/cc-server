@@ -35,7 +35,8 @@ public class MatchingAccount {
     //원하는 상대방 정보
     private MajorEnum selectMajor;
     private int majorState;
-    private int wantGrade;
+    private int gradeState;
+    private int selectGrade;
 
     //매칭된 상대방 sessionId, userId, 매칭된 시간
     private String peerSessionId; //offer에서 매칭시 저장됨

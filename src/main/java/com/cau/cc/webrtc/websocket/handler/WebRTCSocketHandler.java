@@ -707,11 +707,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
     private boolean compareToGrade(MatchingAccount my, MatchingAccount other){
         
         /** 나의 state 가 1이면 상대방이 내가 매칭되고 싶은 grade가 맞는지 **/
-        if(my.getSelectGrade() == 1){
+        if(my.getGradeState() == 1){
             return my.getSelectGrade() == other.getSelectGrade();
         }
         /** 나의 state가 2이면 상대방이 내가 매칭되기 싫은 grade가 맞는지**/
-        else if(my.getSelectGrade() == 2){
+        else if(my.getGradeState() == 2){
             return my.getSelectGrade() != other.getSelectGrade();
         }
         return false;

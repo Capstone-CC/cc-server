@@ -37,9 +37,10 @@ public class MatchingAccount {
     private int majorState;
     private int wantGrade;
 
-    //매칭된 상대방 sessionId, 매칭된 시간
-    private String peerSessionId;
-    private LocalDateTime matchingTime;
+    //매칭된 상대방 sessionId, userId, 매칭된 시간
+    private String peerSessionId; //offer에서 매칭시 저장됨
+    private Long peerId; //connect시 저장됨
+    private LocalDateTime matchingTime; //매칭룸 만들때 저장됨
 
     //매칭상태
     private boolean matchingState;

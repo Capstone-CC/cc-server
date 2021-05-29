@@ -4,13 +4,16 @@ import com.amazonaws.transform.MapEntry;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.entity.MajorEnum;
+import com.cau.cc.model.entity.ReportEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.request.MatchingApiRequest;
+import com.cau.cc.model.network.request.ReportApiRequest;
 import com.cau.cc.model.network.response.MatchingApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.service.ChatroomApiLogicService;
 import com.cau.cc.service.MatchingApiLogicService;
+import com.cau.cc.service.ReportApiLogicService;
 import com.cau.cc.webrtc.model.DelayObject;
 import com.cau.cc.webrtc.model.MatchingAccount;
 import com.cau.cc.webrtc.model.WebSocketMessage;
@@ -57,6 +60,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
     private ChatroomApiLogicService chatroomApiLogicService;
 
+    private ReportApiLogicService reportApiLogicService;
+
     // 3분, 5분, 7분, 10분을 초단위로
     private int[] randomNum = {180,300,420,600};
 
@@ -64,10 +69,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
     @Autowired
     public WebRTCSocketHandler(MatchingApiLogicService matchingApiLogicService,
                                AccountRepository accountRepository,
-                               ChatroomApiLogicService chatroomApiLogicService) {
+                               ChatroomApiLogicService chatroomApiLogicService,
+                               ReportApiLogicService reportApiLogicService) {
         this.matchingApiLogicService = matchingApiLogicService;
         this.accountRepository = accountRepository;
         this.chatroomApiLogicService = chatroomApiLogicService;
+        this.reportApiLogicService = reportApiLogicService;
 
     }
 
@@ -380,6 +387,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
                 if (otherMatchingAccount.isMatchingState()){
 
+                    /**연결되었으므로 각각 상대방의 id를 저장**/
+                    myMatchingAccount.setPeerId(otherMatchingAccount.getId());
+                    otherMatchingAccount.setPeerId(myMatchingAccount.getId());
+
                     /**각각 대기룸에서 나오기**/
                     matchingRoom.remove(myMatchingAccount.getMySession().getId());
                     matchingRoom.remove(otherMatchingAccount.getMySession().getId());
@@ -405,9 +416,9 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"ticket",null,otherCount));
 
 
+                    /**각 객체의 감소된 Count 저장**/
                     myMatchingAccount.setCount(myMatchingAccount.getCount()-1);
                     otherMatchingAccount.setCount(otherMatchingAccount.getCount()-1);
-
 
                     /**서로 매칭 DelayObject의 넣기**/
                     DelayObject delayPeerObject = new DelayObject(otherMatchingAccount.getId(),0);
@@ -568,7 +579,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 //TODO : 매칭이 종료된 경우 - 한쪽이 거절하기 누른경우
             case "disconnect" :
-                /** 자신이 매칭대기룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
+                /** 자신이 매칭룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
                 try{
                     myMatchingAccount = connectRoom.get(session.getId());
                     if(myMatchingAccount != null){
@@ -578,6 +589,25 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 }catch (Exception e){
                     //TODO : 로그필요
                 }
+                break;
+
+                //TODO : 매칭된 상태에서 신고
+            case "report":
+                myMatchingAccount = connectRoom.get(session.getId());
+                if(myMatchingAccount == null){
+                    myMatchingAccount = matchingRoom.get(session.getId());
+                }
+                ReportEnum reportMsg = ReportEnum.valueOf((String)(webSocketMessage.getData()));
+
+                //신고서 작성
+                ReportApiRequest request = ReportApiRequest.builder()
+                        .contents(reportMsg)
+                        .reporterId(myMatchingAccount.getId())
+                        .reportedId(myMatchingAccount.getPeerId())
+                        .build();
+
+                reportApiLogicService.create(request);
+                break;
         }
     }
 

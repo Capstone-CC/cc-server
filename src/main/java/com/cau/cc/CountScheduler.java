@@ -21,7 +21,7 @@ public class CountScheduler {
         List<Account> list = accountRepository.findAll();
         list.forEach(
                 list1 -> {
-                    list1.setCount(4);
+                    list1.setCount(100);
                     accountRepository.save(list1);
                 });
 

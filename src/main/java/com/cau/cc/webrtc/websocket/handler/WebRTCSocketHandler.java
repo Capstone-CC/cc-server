@@ -141,7 +141,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .myMessage(webSocketMessage)
                             .startTime(System.currentTimeMillis())
                             .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
-                            .wantGrade(webSocketMessage.getOption().getGrade())
+                            .selectGrade(webSocketMessage.getOption().getGrade())
+                            .gradeState(webSocketMessage.getOption().getGradeState())
                             .selectMajor(webSocketMessage.getOption().getMajorName())
                             .majorState(webSocketMessage.getOption().getMajorState())
                             .build();
@@ -231,10 +232,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                                 /**4.매칭안된 사용자이고 자신과 다른 성별이면 조건의 맞는지 확인**/
 
-                                /**grade가 0이면 전체선택, Majorstate가 0이면 전체선택**/
-                                if(my.getWantGrade() != 0 && my.getMajorState() != 0){ // 학년, 학과모두 상관 있으면
+                                /**gradeState가 0이 아니면 전체선택, Majorstate가 0이면 전체선택**/
+                                if(my.getGradeState() != 0 && my.getMajorState() != 0){ // 학년, 학과모두 상관 있으면
 
-                                    if(!compareToWantGrade(my,peer)
+                                    if(!compareToGrade(my,peer)
                                             || !compareToMajor(my, peer)){
                                         //둘중 하나라도 해당 안되면
                                         start = 0;
@@ -243,28 +244,28 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                                     //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
                                     //상대방 기준
-                                    if(peer.getWantGrade() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToWantGrade(peer, my)
+                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                        if(!compareToGrade(peer, my)
                                                 || !compareToMajor(peer, my)){
                                             //둘중 하나라도 해당 안되면
                                             start = 0;
                                             continue;
                                         }
                                     }
-                                    else if(peer.getWantGrade() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
                                         if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
                                             start = 0;
                                             continue;
                                         }
-                                    } else if(peer.getWantGrade() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToWantGrade(peer,my)) { //학년 불일치 pass
+                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
+                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
                                             start = 0;
                                             continue;
                                         }
                                     }
 
-                                    /**grade가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
-                                } else if(my.getWantGrade() == 0 && my.getMajorState() != 0) { //학년 상관X, 학과 상관O
+                                    /**gradeState가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
+                                } else if(my.getGradeState() == 0 && my.getMajorState() != 0) { //학년 상관X, 학과 상관O
                                     if(!compareToMajor(my,peer)){ //state에 따른 학과 매칭 실패
                                         start = 0;
                                         continue;
@@ -272,51 +273,51 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                                     //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
                                     //상대방 기준
-                                    if(peer.getWantGrade() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToWantGrade(peer, my)
+                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                        if(!compareToGrade(peer, my)
                                                 || !compareToMajor(peer, my)){
                                             //둘중 하나라도 해당 안되면
                                             start = 0;
                                             continue;
                                         }
                                     }
-                                    else if(peer.getWantGrade() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
                                         if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
                                             start = 0;
                                             continue;
                                         }
-                                    } else if(peer.getWantGrade() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToWantGrade(peer,my)) { //학년 불일치 pass
+                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
+                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
                                             start = 0;
                                             continue;
                                         }
                                     }
 
-                                    /**grade가 0 전체선택 아니고 Majorstate가 0인 상황**/
-                                } else if (my.getWantGrade() != 0 && my.getMajorState() == 0) { //학과 상관X, 학년 상관
-                                    /**상대방의 학년과 내가 원하는 학년이 맞는지 비교 **/
-                                    if (!compareToWantGrade(my,peer)) { //학년 불일치 pass
+                                    /**gradeState가 0 전체 선택 아니고 Majorstate가 0인 상황**/
+                                } else if (my.getGradeState() != 0 && my.getMajorState() == 0) { //학과 상관X, 학년 상관
+                                    /**state에 따른 학년 매칭 되는지 확인 **/
+                                    if (!compareToGrade(my,peer)) { //state에 따른 학년 매칭 실패
                                         start = 0;
                                         continue;
                                     }
 
                                     //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
                                     //상대방 기준
-                                    if(peer.getWantGrade() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToWantGrade(peer, my)
+                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                        if(!compareToGrade(peer, my)
                                                 || !compareToMajor(peer, my)){
                                             //둘중 하나라도 해당 안되면
                                             start = 0;
                                             continue;
                                         }
                                     }
-                                    else if(peer.getWantGrade() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
                                         if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
                                             start = 0;
                                             continue;
                                         }
-                                    } else if(peer.getWantGrade() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToWantGrade(peer,my)) { //학년 불일치 pass
+                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
+                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
                                             start = 0;
                                             continue;
                                         }
@@ -702,10 +703,18 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         }
     }
 
-
-    /** 내가 원하는 학년이 상대방과 같은지 **/
-    private boolean compareToWantGrade(MatchingAccount my, MatchingAccount other){
-        return my.getWantGrade() == other.getGrade();
+    /** 나의 gradeState가 0이 아닌 상황에서 비교**/
+    private boolean compareToGrade(MatchingAccount my, MatchingAccount other){
+        
+        /** 나의 state 가 1이면 상대방이 내가 매칭되고 싶은 grade가 맞는지 **/
+        if(my.getGradeState() == 1){
+            return my.getSelectGrade() == other.getGrade();
+        }
+        /** 나의 state가 2이면 상대방이 내가 매칭되기 싫은 grade가 맞는지**/
+        else if(my.getGradeState() == 2){
+            return my.getSelectGrade() != other.getGrade();
+        }
+        return false;
     }
 
     /** 나의 majorState가 0이 아닌 상황에서 비교**/

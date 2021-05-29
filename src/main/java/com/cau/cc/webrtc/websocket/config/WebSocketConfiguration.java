@@ -3,6 +3,7 @@ package com.cau.cc.webrtc.websocket.config;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.service.ChatroomApiLogicService;
 import com.cau.cc.service.MatchingApiLogicService;
+import com.cau.cc.service.ReportApiLogicService;
 import com.cau.cc.webrtc.websocket.handler.WebRTCSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,14 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     private AccountRepository accountRepository;
 
     @Autowired
-    ChatroomApiLogicService chatroomApiLogicService;
+    private ChatroomApiLogicService chatroomApiLogicService;
 
+    @Autowired
+    private ReportApiLogicService reportApiLogicService;
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         /** root path : ~/api 이므로 ~/api/socket **/
-        registry.addHandler(new WebRTCSocketHandler(matchingApiLogicService,accountRepository,chatroomApiLogicService), "/socket")
+        registry.addHandler(new WebRTCSocketHandler(matchingApiLogicService,accountRepository,chatroomApiLogicService,reportApiLogicService), "/socket")
                 .setAllowedOrigins("*");
     }
 

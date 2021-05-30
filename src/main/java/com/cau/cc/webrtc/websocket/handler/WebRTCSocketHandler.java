@@ -617,6 +617,13 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         connectRoom.remove(myMatchingAccount.getMySession().getId());
                         connectRoom.remove(myMatchingAccount.getPeerSessionId());
                     }
+                    /**연결이 종료된 사용자들 현재 남은 인원 보내줘야하므로 **/
+                    //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
+                    if(matchingRoom.size() >= 0){
+                        for( Map.Entry<String,WebSocketSession> current : sessions.entrySet()){
+                            sendMessage(current.getValue(),new WebSocketMessage(current.getKey(),"client",null,matchingRoom.size()));
+                        }
+                    }
                 }catch (Exception e){
                     //TODO : 로그필요
                 }

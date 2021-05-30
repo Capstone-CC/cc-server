@@ -114,7 +114,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         switch (webSocketMessage.getEvent()){
 
             //TODO: offer, answer, candidate 일때 상대방 찾아서 찾은 상대방에게 보내기
-            case "offer":
+            case "find":
                 //TODO : COUNT가 0이면 매칭 시도 불가
                 if(account.getCount() <= 0){
                     sendMessage(session,new WebSocketMessage(session.getId(),"fail",null,null));
@@ -136,7 +136,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .gender(account.getGender())
                             .nickName(account.getNickName())
                             .matchingState(false)
-                            .myMessage(webSocketMessage)
                             .startTime(System.currentTimeMillis())
                             .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
                             .selectGrade(webSocketMessage.getOption().getGrade())
@@ -207,22 +206,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 matchingTimer.scheduleAtFixedRate(matchingThread,0,5*1000);
                 break;
 
+
+                /** 매칭 되고 나서 offer 보내기**/
             /**자신의 peerSessionId에 해당하는 사람에게 anwser 보내기**/
-            case "answer":
-
-                /**1. 자신의 객체 찾고**/
-                myMatchingAccount = connectRoom.get(session.getId());
-
-                /**2. 자신과 연결된 상대방에게 answer 전달 **/
-                MatchingAccount other = connectRoom.get(myMatchingAccount.getPeerSessionId());
-                if(other != null){
-                    sendMessage(other.getMySession(),webSocketMessage);
-                }
-                break;
-
-
-
             /**연결 된 상대방에게 candidate 메시지 보내기**/
+            case "offer":
+            case "answer":
             case "candidate":
 
                 /**1. 자신의 객체 찾고**/
@@ -233,7 +222,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     sendMessage(session,new WebSocketMessage(session.getId(),"notpeer",null,null));
                     break;
                 }
-                /**3. 자신과 연결된 상대방에게 answer 전달 **/
+                /**3. 자신과 연결된 상대방에게 WebRTC 필요 내용 전달 **/
                 otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
                 if(otherMatchingAccount != null){
                     sendMessage(otherMatchingAccount.getMySession(),webSocketMessage);
@@ -761,22 +750,16 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**조건 일치**/
                 if (start == 1) {
 
-                    sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견"));
-
                     //TODO : 상대가 갑자기 없어진다면?
                     if(!matchingRoom.containsKey(peer.getMySession().getId())){
                         sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견 했지만 다른 사람과 연결됨 -> research.."));
                         return false;
                     }
 
-
                     //바로 메시지 보내기
                     /**5. 조건의 맞다면 각자 자신의 상대 sessionid 저장후**/
                     my.setPeerSessionId(peer.getMySession().getId()); // 나의 객체의 상대방 id 저장
                     peer.setPeerSessionId(my.getMySession().getId()); //상대방 객체의 나의 id 저장
-
-                    /**6. 자신의 offer 보내기 **/
-                    sendMessage(peer.getMySession(), my.getMyMessage());
 
                     /**7. 대기룸에서 나가기 **/
                     /**각각 대기룸에서 나오기**/
@@ -794,7 +777,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
                     }
 
-                    sendMessage(peer.getMySession(), new WebSocketMessage(peer.getMySession().getId(), "found", null, " 매칭 상대 : " + my.getId() + " 발견"));
+                    sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견"));
 
                     /**연결 방으로 들어가기**/
                     connectRoom.put(my.getMySession().getId(), my);

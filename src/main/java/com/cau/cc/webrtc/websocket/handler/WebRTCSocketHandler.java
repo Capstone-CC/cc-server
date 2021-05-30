@@ -387,6 +387,9 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                                         }
                                     }
 
+                                    sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"found",null,"매칭 상대 발견"));
+                                    sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"found",null,"매칭 상대 발견"));
+
                                     /**연결 방으로 들어가기**/
                                     connectRoom.put(my.getMySession().getId(),my);
                                     connectRoom.put(peer.getMySession().getId(),peer);
@@ -399,7 +402,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 Timer matchingTimer = new Timer(true);
                 //지정한 시간(firstTime)부터 10초 간격(period) 으로 지정한 작업(task)을 수행한다.
-                matchingTimer.scheduleAtFixedRate(matchingThread,0,10*1000);
+                matchingTimer.scheduleAtFixedRate(matchingThread,0,5*1000);
                 break;
 
             /**자신의 peerSessionId에 해당하는 사람에게 anwser 보내기**/

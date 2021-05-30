@@ -168,6 +168,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     @Override
                     public void run() {
 
+                        if(!matchingRoom.containsKey(my.getMySession().getId())){
+                            cancel();
+                        }
+
                         if(my == null){
                             cancel();
                         }
@@ -357,8 +361,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                                         }
                                     }
                                 }
-
-
 
                                 /**조건 일치**/
                                 if(start == 1){

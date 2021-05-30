@@ -40,7 +40,7 @@ public class Chatroom {
     @ManyToOne
     private Account womanId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroomId")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroomId", cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessageList = new ArrayList<>();
 
 }

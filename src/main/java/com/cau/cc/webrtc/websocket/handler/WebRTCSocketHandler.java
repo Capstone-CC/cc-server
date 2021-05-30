@@ -387,8 +387,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                                         }
                                     }
 
-                                    sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"found",null,"매칭 상대 발견"));
-                                    sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"found",null,"매칭 상대 발견"));
+                                    sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"found",null," 매칭 상대 : "+peer.getId()+" 발견"));
+                                    sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"found",null," 매칭 상대 : "+my.getId()+" 발견"));
 
                                     /**연결 방으로 들어가기**/
                                     connectRoom.put(my.getMySession().getId(),my);

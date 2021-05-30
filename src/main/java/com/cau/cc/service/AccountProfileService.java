@@ -208,7 +208,7 @@ public class AccountProfileService {
         Pagination pagination = Pagination.builder()
                 .totalPages(chatMessages.getTotalPages())
                 .totalElements(chatMessages.getTotalElements())
-                .currentPage(chatMessages.getNumber())
+                .currentPage(chatMessages.getNumber()+1)
                 .currentElements(chatMessages.getNumberOfElements())
                 .build();
 

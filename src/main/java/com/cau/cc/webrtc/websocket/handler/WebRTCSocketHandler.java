@@ -218,21 +218,20 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 myMatchingAccount = connectRoom.get(session.getId());
 
                 /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
-                if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null){
+                if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null
+                || matchingRoom.containsKey(session.getId())) {
                     sendMessage(session,new WebSocketMessage(session.getId(),"notpeer",null,null));
                     break;
                 }
                 /**3. 자신과 연결된 상대방에게 WebRTC 필요 내용 전달 **/
                 otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
-                if(otherMatchingAccount != null){
+                if(otherMatchingAccount != null && !matchingRoom.containsKey(myMatchingAccount.getPeerSessionId())){
                     sendMessage(otherMatchingAccount.getMySession(),webSocketMessage);
 
                     sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),
-                            "request",null,myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
+                            "request",null,myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount.getId()+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
                     sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"request",null,
-                            myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
-
-
+                            myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount.getId()+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
                 }
                 break;
 

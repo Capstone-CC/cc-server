@@ -14,9 +14,7 @@ import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.service.ChatroomApiLogicService;
 import com.cau.cc.service.MatchingApiLogicService;
 import com.cau.cc.service.ReportApiLogicService;
-import com.cau.cc.webrtc.model.DelayObject;
-import com.cau.cc.webrtc.model.MatchingAccount;
-import com.cau.cc.webrtc.model.WebSocketMessage;
+import com.cau.cc.webrtc.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +38,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
     /**소켓 연결된 세션 저장**/
     /**session ID - session**/
-    Map<String,WebSocketSession> sessions = new ConcurrentHashMap<>();
+    public static Map<String,WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     /**offer를 보낸 사용자가 대기하는 대기방**/
     /**session ID - MatchingAccount**/
@@ -160,9 +158,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 }
 
                 //TODO: 매칭 시도하는 쓰레드 생성
-                TimerTask matchingThread = new TimerTask() {
+                TimerTask matchingThread = new MyTimerTask(myMatchingAccount) {
+
                     /** Task 실행시 session에서 값 꺼내 my를 고정시켜준다!!! **/
-                    MatchingAccount my = matchingRoom.get(session.getId());
+                    MatchingAccount my = this.getMyAccount();
                     MatchingAccount peer = null;
 
                     @Override
@@ -502,11 +501,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     matchingApiLogicService.create(request);
 
                     //TODO: 타임 내리는 쓰레드 생성
-                    TimerTask timerTask = new TimerTask() {
+                    TimerTask timerTask = new MyTimerTask(myMatchingAccount) {
 
                         /** 1. 랜덤값(분) 받아서 **/
                         int randomMin = random();
-                        MatchingAccount my = connectRoom.get(session.getId());
+                        MatchingAccount my = connectRoom.get(this.getMyAccount().getMySession().getId());
                         MatchingAccount peer = connectRoom.get(my.getPeerSessionId());
 
                         @Override

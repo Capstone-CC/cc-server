@@ -225,6 +225,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 /**1. 자신의 객체 찾고**/
                 myMatchingAccount = connectRoom.get(session.getId());
+
                 /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
                 if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null){
                     sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null));
@@ -443,10 +444,19 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /** 자신이 매칭룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
                 try{
                     myMatchingAccount = connectRoom.get(session.getId());
+                    otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
+
                     if(myMatchingAccount != null){
                         connectRoom.remove(myMatchingAccount.getMySession().getId());
-                        connectRoom.remove(myMatchingAccount.getPeerSessionId());
+                        myMatchingAccount.setPeerId(null);
+                        myMatchingAccount.setPeerSessionId(null);
                     }
+                    if(otherMatchingAccount != null){
+                        connectRoom.remove(otherMatchingAccount.getMySession().getId());
+                        otherMatchingAccount.setPeerId(null);
+                        otherMatchingAccount.setPeerSessionId(null);
+                    }
+
                     /**연결이 종료된 사용자들 현재 남은 인원 보내줘야하므로 **/
                     //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
                     if(matchingRoom.size() >= 0){

@@ -172,8 +172,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/","/profile/**","/register",
-                        "/account/expired",
+                .antMatchers("/","/register",
                         "/login","/h2-console/**",
 //                        "/api/swagger",
 //                        "/api/v2/api-docs","/api/configuration/ui",
@@ -192,19 +191,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/configuration/security",
                         "/v2/**",
-                        "/profile/**",
-                        "/upload",
+                        "/account/password/find",
+                        "/account/password/verify",
                         "/email","/verify",
-                        "/matching/**","/major/**",
-                        "/test",
-                        "/socket",
-                        "/major/**",
-                        "/logout",
-                        "/account/password/**",
-                        "/chatroom/**",
-                        "/chat/**",
-                        "/chatSocket",
-                        "/report").permitAll()
+                        "/test").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

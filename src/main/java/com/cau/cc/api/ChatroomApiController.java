@@ -66,7 +66,7 @@ public class ChatroomApiController  {
 
     }
 
-    @ApiOperation(value = "채팅 상대 프로필",notes = " ")
+    @ApiOperation(value = "채팅 상대 프로필",notes = "id = chatroomId")
     @GetMapping("/list/{id}/other")
     public Header<AccountOtherResponse> other(@PathVariable Long id) {
         try{

@@ -226,6 +226,13 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
                 if(otherMatchingAccount != null){
                     sendMessage(otherMatchingAccount.getMySession(),webSocketMessage);
+
+                    sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),
+                            "request",null,myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
+                    sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"request",null,
+                            myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
+
+
                 }
                 break;
 
@@ -400,6 +407,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                     sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),"matching",null,otherMatchingAccount.getNickName()));
                     sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"matching",null,myMatchingAccount.getNickName()));
+
                 }
 
                 /**수락 안했으므로 패스**/
@@ -427,7 +435,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
                     }
 
-
                 } catch (Exception e){
                     //TODO : 로그추가
                 }
@@ -452,6 +459,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         otherMatchingAccount.setPeerSessionId(null);
                         otherMatchingAccount.setMatchingState(false);
                     }
+
 
                     /**연결이 종료된 사용자들 현재 남은 인원 보내줘야하므로 **/
                     //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요

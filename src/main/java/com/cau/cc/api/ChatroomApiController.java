@@ -3,6 +3,7 @@ package com.cau.cc.api;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.response.AccountChatListApiResponse;
+import com.cau.cc.model.network.response.AccountOtherResponse;
 import com.cau.cc.model.network.response.ChatMessageApiResponse;
 import com.cau.cc.service.AccountProfileService;
 import io.swagger.annotations.Api;
@@ -63,6 +64,20 @@ public class ChatroomApiController  {
             return Header.ERROR("로그인 필요");
         }
 
+    }
+
+    @ApiOperation(value = "채팅 상대 프로필",notes = " ")
+    @GetMapping("/list/{id}/other")
+    public Header<AccountOtherResponse> other(@PathVariable Long id) {
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Account account = (Account) auth.getPrincipal();
+
+            return accountProfileService.other(account.getEmail(), id);
+
+        }catch (Exception e){
+            return Header.ERROR("로그인 필요");
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.page.Pagination;
+import com.cau.cc.webrtc.model.Option;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -226,4 +227,33 @@ public class AccountProfileService {
         return body;
     }
 
+    public Header<AccountOtherResponse> other(String email, Long id) {
+        Account account = accountRepository.findByEmail(email);
+        Optional<Chatroom> room = chatRoomRepository.findById(id);
+        Chatroom chatroom = room.get();
+        Long otherId=0L;
+        if(chatroom.getManId().getId() == account.getId())
+            otherId = chatroom.getWomanId().getId();
+        else if(chatroom.getWomanId().getId() == account.getId())
+            otherId = chatroom.getManId().getId();
+        Optional<Account> otherAccount = accountRepository.findById(otherId);
+        Account other = otherAccount.get();
+
+        if(other!=null) {
+            AccountOtherResponse accountApiResponse = otherResponse(other);
+            return Header.OK(accountApiResponse);
+        }
+        else return Header.ERROR("데이터 없음");
+    }
+
+    private AccountOtherResponse otherResponse(Account account) {
+        AccountOtherResponse accountProfileApiResponse = AccountOtherResponse.builder()
+                .image(account.getImage())
+                .gender(account.getGender())
+                .grade(account.getGrade())
+                .nickName(account.getNickName())
+                .content(account.getContent())
+                .build();
+        return accountProfileApiResponse;
+    }
 }

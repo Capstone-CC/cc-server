@@ -192,211 +192,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             cancel();
                         }
 
-                        //매칭상대 찾은 상태값 0: 몾찾음, 1: 찾음
-                        int start = 0;
+                        boolean result = matchingAlgorithm(my);
+                        if(result){
+                            cancel();
+                        }
 
-                        //매칭 기록 있는지 확인
-                        DelayObject delayPeerObject = new DelayObject();
-
-                        /**
-                         * 매칭 알고리즘
-                         */
-                        /** 1. 전체 웹소켓 세션을 돌면서 **/
-                        for( Map.Entry<String,WebSocketSession> otherSession : sessions.entrySet()){
-
-                            start = 1;
-
-                            /**2. 대기룸에 있는 사용자 중에서 자신이 아닌 상대방 찾고**/
-                            peer = matchingRoom.get(otherSession.getKey());
-                            /**if 체크 순서 중요! **/
-                            if( peer != null && !my.getMySession().getId().equals(peer.getMySession().getId())) {
-
-                                //나와 연결되었던 상대의 아이디를 찾을 임시 객체
-                                delayPeerObject.setId(peer.getId());
-
-                                /**
-                                 * Delay는 내가 이전에 매칭된 상대방을 찾는경우 나와 상대방 count 모두 +1 된다
-                                 * 즉 매칭되었던 2명의 사용자가 반복적으로 3번 매칭 되는 경우만 매칭된다.
-                                 */
-                                /** 이전에 매칭된 사람 만나면 delayCount++ 하는데 3이상이면 그냥 매칭 **/
-                                if(my.getDelayObjects().contains(delayPeerObject)){//peer가 자신과 이전에 매칭 된 사람이고
-                                    //나와 연결되었던 상대의 아이디가 담긴 객체
-                                    DelayObject mypeerDelayObject = my.getDelayObjects().get(my.getDelayObjects().indexOf(delayPeerObject));
-                                    if(mypeerDelayObject.getDelayCount() <= 2){ //delayCount가 2이하라면
-                                        /** 자신의 객체의 있는 해당 사람과의 delayCount ++ 하고 상대방도 ++ 한 후 continue **/
-                                        mypeerDelayObject.setDelayCount(mypeerDelayObject.getDelayCount()+1);
-
-                                        //상대방의 연결되었던 객체의 나의 아이디를 이용해서 찾고
-                                        delayPeerObject.setId(my.getId());
-                                        // 이를 통해 상대방의 매칭되었던(=my)의 아이디가 담긴 객체 가져와서 count++
-                                        DelayObject peerRealDelayObject = peer.getDelayObjects().get(peer.getDelayObjects().indexOf(delayPeerObject));
-                                        peerRealDelayObject.setDelayCount(peerRealDelayObject.getDelayCount()+1);
-                                        start = 0;
-                                        continue;
-                                    }
-                                }
-
-                                /**3. 매칭된 상대방이 없거나 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
-                                if(peer.isMatchingState()
-                                        || my.getGender().equals(peer.getGender())){
-                                    start = 0;
-                                    continue;
-                                }
-
-                                /**4.매칭안된 사용자이고 자신과 다른 성별이면 조건의 맞는지 확인**/
-
-                                /**gradeState가 0이 아니면 전체선택, Majorstate가 0이면 전체선택**/
-                                if(my.getGradeState() != 0 && my.getMajorState() != 0){ // 학년, 학과모두 상관 있으면
-
-                                    if(!compareToGrade(my,peer)
-                                            || !compareToMajor(my, peer)){
-                                        //둘중 하나라도 해당 안되면
-                                        start = 0;
-                                        continue;
-                                    }
-
-                                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
-                                    //상대방 기준
-                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToGrade(peer, my)
-                                                || !compareToMajor(peer, my)){
-                                            //둘중 하나라도 해당 안되면
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
-                                        if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-
-                                    /**gradeState가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
-                                } else if(my.getGradeState() == 0 && my.getMajorState() != 0) { //학년 상관X, 학과 상관O
-                                    if(!compareToMajor(my,peer)){ //state에 따른 학과 매칭 실패
-                                        start = 0;
-                                        continue;
-                                    }
-
-                                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
-                                    //상대방 기준
-                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToGrade(peer, my)
-                                                || !compareToMajor(peer, my)){
-                                            //둘중 하나라도 해당 안되면
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
-                                        if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-
-                                    /**gradeState가 0 전체 선택 아니고 Majorstate가 0인 상황**/
-                                } else if (my.getGradeState() != 0 && my.getMajorState() == 0) { //학과 상관X, 학년 상관
-                                    /**state에 따른 학년 매칭 되는지 확인 **/
-                                    if (!compareToGrade(my,peer)) { //state에 따른 학년 매칭 실패
-                                        start = 0;
-                                        continue;
-                                    }
-
-                                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
-                                    //상대방 기준
-                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToGrade(peer, my)
-                                                || !compareToMajor(peer, my)){
-                                            //둘중 하나라도 해당 안되면
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
-                                        if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-
-                                } /**내가 모두 all인경우 상대방만 확인 **/
-                                else {
-                                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
-                                    //상대방 기준
-                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToGrade(peer, my)
-                                                || !compareToMajor(peer, my)){
-                                            //둘중 하나라도 해당 안되면
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
-                                        if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
-                                            start = 0;
-                                            continue;
-                                        }
-                                    }
-                                }
-
-                                /**조건 일치**/
-                                if(start == 1){
-                                    //바로 메시지 보내기
-                                    /**5. 조건의 맞다면 각자 자신의 상대 sessionid 저장후**/
-                                    my.setPeerSessionId(peer.getMySession().getId()); // 나의 객체의 상대방 id 저장
-                                    peer.setPeerSessionId(my.getMySession().getId()); //상대방 객체의 나의 id 저장
-
-                                    /**6. 자신의 offer 보내기 **/
-                                    sendMessage(peer.getMySession(), my.getMyMessage());
-
-                                    /**7. 대기룸에서 나가기 **/
-                                    /**각각 대기룸에서 나오기**/
-                                    matchingRoom.remove(my.getMySession().getId());
-                                    matchingRoom.remove(peer.getMySession().getId());
-
-                                    /**매칭룸 자신과 상대방을 제외한 사람들에게 모두 message보내기 들어갔으므로 **/
-                                    //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
-                                    if(matchingRoom.size() >= 0){
-                                        for( Map.Entry<String,WebSocketSession> current : sessions.entrySet()){
-                                            if(!my.getMySession().getId().equals(current.getKey())
-                                                    && !peer.getMySession().getId().equals(current.getKey())){
-                                                sendMessage(current.getValue(),new WebSocketMessage(current.getKey(),"client",null,matchingRoom.size()));
-                                            }
-                                        }
-                                    }
-
-                                    sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"found",null," 매칭 상대 : "+peer.getId()+" 발견"));
-                                    sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"found",null," 매칭 상대 : "+my.getId()+" 발견"));
-
-                                    /**연결 방으로 들어가기**/
-                                    connectRoom.put(my.getMySession().getId(),my);
-                                    connectRoom.put(peer.getMySession().getId(),peer);
-                                    cancel();
-                                }
-                            }
-                        }//end for
                     }//end run
                 };
 
@@ -425,6 +225,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 /**1. 자신의 객체 찾고**/
                 myMatchingAccount = connectRoom.get(session.getId());
+
                 /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
                 if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null){
                     sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null));
@@ -643,10 +444,19 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /** 자신이 매칭룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
                 try{
                     myMatchingAccount = connectRoom.get(session.getId());
+                    otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
+
                     if(myMatchingAccount != null){
                         connectRoom.remove(myMatchingAccount.getMySession().getId());
-                        connectRoom.remove(myMatchingAccount.getPeerSessionId());
+                        myMatchingAccount.setPeerId(null);
+                        myMatchingAccount.setPeerSessionId(null);
                     }
+                    if(otherMatchingAccount != null){
+                        connectRoom.remove(otherMatchingAccount.getMySession().getId());
+                        otherMatchingAccount.setPeerId(null);
+                        otherMatchingAccount.setPeerSessionId(null);
+                    }
+
                     /**연결이 종료된 사용자들 현재 남은 인원 보내줘야하므로 **/
                     //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
                     if(matchingRoom.size() >= 0){
@@ -769,6 +579,221 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
             //TODO : 로그 필요
         }
     }
+
+
+    /**
+     * 매칭알고리즘
+     */
+    private synchronized boolean matchingAlgorithm(MatchingAccount my) {
+
+        //매칭상대 찾은 상태값 0: 몾찾음, 1: 찾음
+        int start = 0;
+
+        //매칭 기록 있는지 확인
+        DelayObject delayPeerObject = new DelayObject();
+
+        /**
+         * 매칭 알고리즘
+         */
+        /** 1. 전체 웹소켓 세션을 돌면서 **/
+        for (Map.Entry<String, WebSocketSession> otherSession : sessions.entrySet()) {
+
+            start = 1;
+
+            /**2. 대기룸에 있는 사용자 중에서 자신이 아닌 상대방 찾고**/
+            MatchingAccount peer = matchingRoom.get(otherSession.getKey());
+            /**if 체크 순서 중요! **/
+            if (peer != null && !my.getMySession().getId().equals(peer.getMySession().getId())) {
+
+                //나와 연결되었던 상대의 아이디를 찾을 임시 객체
+                delayPeerObject.setId(peer.getId());
+
+                /**
+                 * Delay는 내가 이전에 매칭된 상대방을 찾는경우 나와 상대방 count 모두 +1 된다
+                 * 즉 매칭되었던 2명의 사용자가 반복적으로 3번 매칭 되는 경우만 매칭된다.
+                 */
+                /** 이전에 매칭된 사람 만나면 delayCount++ 하는데 3이상이면 그냥 매칭 **/
+                if (my.getDelayObjects().contains(delayPeerObject)) {//peer가 자신과 이전에 매칭 된 사람이고
+                    //나와 연결되었던 상대의 아이디가 담긴 객체
+                    DelayObject mypeerDelayObject = my.getDelayObjects().get(my.getDelayObjects().indexOf(delayPeerObject));
+                    if (mypeerDelayObject.getDelayCount() <= 2) { //delayCount가 2이하라면
+                        /** 자신의 객체의 있는 해당 사람과의 delayCount ++ 하고 상대방도 ++ 한 후 continue **/
+                        mypeerDelayObject.setDelayCount(mypeerDelayObject.getDelayCount() + 1);
+
+                        //상대방의 연결되었던 객체의 나의 아이디를 이용해서 찾고
+                        delayPeerObject.setId(my.getId());
+                        // 이를 통해 상대방의 매칭되었던(=my)의 아이디가 담긴 객체 가져와서 count++
+                        DelayObject peerRealDelayObject = peer.getDelayObjects().get(peer.getDelayObjects().indexOf(delayPeerObject));
+                        peerRealDelayObject.setDelayCount(peerRealDelayObject.getDelayCount() + 1);
+                        start = 0;
+                        continue;
+                    }
+                }
+
+                /**3. 매칭된 상대방이 없거나 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
+                if (peer.isMatchingState()
+                        || my.getGender().equals(peer.getGender())) {
+                    start = 0;
+                    continue;
+                }
+
+                /**4.매칭안된 사용자이고 자신과 다른 성별이면 조건의 맞는지 확인**/
+
+                /**gradeState가 0이 아니면 전체선택, Majorstate가 0이면 전체선택**/
+                if (my.getGradeState() != 0 && my.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+
+                    if (!compareToGrade(my, peer)
+                            || !compareToMajor(my, peer)) {
+                        //둘중 하나라도 해당 안되면
+                        start = 0;
+                        continue;
+                    }
+
+                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                    //상대방 기준
+                    if (peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                        if (!compareToGrade(peer, my)
+                                || !compareToMajor(peer, my)) {
+                            //둘중 하나라도 해당 안되면
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() == 0 && peer.getMajorState() != 0) {//학년 상관X, 학과 상관O
+                        if (!compareToMajor(peer, my)) { //state에 따른 학과 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() != 0 && peer.getMajorState() == 0) {//학과 상관X, 학년 상관
+                        if (!compareToGrade(peer, my)) { //state에 따른 학년 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    }
+
+                    /**gradeState가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
+                } else if (my.getGradeState() == 0 && my.getMajorState() != 0) { //학년 상관X, 학과 상관O
+                    if (!compareToMajor(my, peer)) { //state에 따른 학과 매칭 실패
+                        start = 0;
+                        continue;
+                    }
+
+                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                    //상대방 기준
+                    if (peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                        if (!compareToGrade(peer, my)
+                                || !compareToMajor(peer, my)) {
+                            //둘중 하나라도 해당 안되면
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() == 0 && peer.getMajorState() != 0) {//학년 상관X, 학과 상관O
+                        if (!compareToMajor(peer, my)) { //state에 따른 학과 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() != 0 && peer.getMajorState() == 0) {//학과 상관X, 학년 상관
+                        if (!compareToGrade(peer, my)) { //state에 따른 학년 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    }
+
+                    /**gradeState가 0 전체 선택 아니고 Majorstate가 0인 상황**/
+                } else if (my.getGradeState() != 0 && my.getMajorState() == 0) { //학과 상관X, 학년 상관
+                    /**state에 따른 학년 매칭 되는지 확인 **/
+                    if (!compareToGrade(my, peer)) { //state에 따른 학년 매칭 실패
+                        start = 0;
+                        continue;
+                    }
+
+                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                    //상대방 기준
+                    if (peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                        if (!compareToGrade(peer, my)
+                                || !compareToMajor(peer, my)) {
+                            //둘중 하나라도 해당 안되면
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() == 0 && peer.getMajorState() != 0) {//학년 상관X, 학과 상관O
+                        if (!compareToMajor(peer, my)) { //state에 따른 학과 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() != 0 && peer.getMajorState() == 0) {//학과 상관X, 학년 상관
+                        if (!compareToGrade(peer, my)) { //state에 따른 학년 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    }
+
+                } /**내가 모두 all인경우 상대방만 확인 **/
+                else {
+                    //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
+                    //상대방 기준
+                    if (peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                        if (!compareToGrade(peer, my)
+                                || !compareToMajor(peer, my)) {
+                            //둘중 하나라도 해당 안되면
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() == 0 && peer.getMajorState() != 0) {//학년 상관X, 학과 상관O
+                        if (!compareToMajor(peer, my)) { //state에 따른 학과 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    } else if (peer.getGradeState() != 0 && peer.getMajorState() == 0) {//학과 상관X, 학년 상관
+                        if (!compareToGrade(peer, my)) { //state에 따른 학년 매칭 실패
+                            start = 0;
+                            continue;
+                        }
+                    }
+                }
+
+                /**조건 일치**/
+                if (start == 1) {
+                    //바로 메시지 보내기
+                    /**5. 조건의 맞다면 각자 자신의 상대 sessionid 저장후**/
+                    my.setPeerSessionId(peer.getMySession().getId()); // 나의 객체의 상대방 id 저장
+                    peer.setPeerSessionId(my.getMySession().getId()); //상대방 객체의 나의 id 저장
+
+                    /**6. 자신의 offer 보내기 **/
+                    sendMessage(peer.getMySession(), my.getMyMessage());
+
+                    /**7. 대기룸에서 나가기 **/
+                    /**각각 대기룸에서 나오기**/
+                    matchingRoom.remove(my.getMySession().getId());
+                    matchingRoom.remove(peer.getMySession().getId());
+
+                    /**매칭룸 자신과 상대방을 제외한 사람들에게 모두 message보내기 들어갔으므로 **/
+                    //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
+                    if (matchingRoom.size() >= 0) {
+                        for (Map.Entry<String, WebSocketSession> current : sessions.entrySet()) {
+                            if (!my.getMySession().getId().equals(current.getKey())
+                                    && !peer.getMySession().getId().equals(current.getKey())) {
+                                sendMessage(current.getValue(), new WebSocketMessage(current.getKey(), "client", null, matchingRoom.size()));
+                            }
+                        }
+                    }
+
+                    sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견"));
+                    sendMessage(peer.getMySession(), new WebSocketMessage(peer.getMySession().getId(), "found", null, " 매칭 상대 : " + my.getId() + " 발견"));
+
+                    /**연결 방으로 들어가기**/
+                    connectRoom.put(my.getMySession().getId(), my);
+                    connectRoom.put(peer.getMySession().getId(), peer);
+                    return true;
+                }
+            }
+        }//end for
+        return false;
+    }
+
+
+
+
+
 
     /** 나의 gradeState가 0이 아닌 상황에서 비교**/
     private boolean compareToGrade(MatchingAccount my, MatchingAccount other){

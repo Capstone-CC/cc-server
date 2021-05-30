@@ -27,7 +27,6 @@ public class MatchingAccount {
     private int count;
     private String nickName;
     private long startTime;
-    private WebSocketMessage myMessage;
 
     //DelayCount를 위한 정보
     private List<DelayObject> delayObjects = new ArrayList<>();

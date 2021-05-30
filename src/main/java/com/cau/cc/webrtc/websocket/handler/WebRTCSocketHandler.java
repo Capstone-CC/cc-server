@@ -114,7 +114,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         switch (webSocketMessage.getEvent()){
 
             //TODO: offer, answer, candidate 일때 상대방 찾아서 찾은 상대방에게 보내기
-            case "offer":
+            case "find":
                 //TODO : COUNT가 0이면 매칭 시도 불가
                 if(account.getCount() <= 0){
                     sendMessage(session,new WebSocketMessage(session.getId(),"fail",null,null));
@@ -136,7 +136,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .gender(account.getGender())
                             .nickName(account.getNickName())
                             .matchingState(false)
-                            .myMessage(webSocketMessage)
                             .startTime(System.currentTimeMillis())
                             .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
                             .selectGrade(webSocketMessage.getOption().getGrade())
@@ -172,6 +171,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
 
                         if(my == null){
+                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(),"Thread",null,"null이어서 Die"));
                             cancel();
                         }
                         //TODO : 찾는중 (10초마다 run이 실행되므로 10초마다 보냄)
@@ -181,6 +181,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         /** 자신이 매칭 된 상태이면 STOP**/
                         if(my.isMatchingState()){
                             matchingRoom.remove(my.getMySession().getId());
+                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(),"Thread",null,my.getId()+"번 이미 매칭 되었으므로 Die"));
                             cancel();
                         }
 
@@ -205,22 +206,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 matchingTimer.scheduleAtFixedRate(matchingThread,0,5*1000);
                 break;
 
+
+                /** 매칭 되고 나서 offer 보내기**/
             /**자신의 peerSessionId에 해당하는 사람에게 anwser 보내기**/
-            case "answer":
-
-                /**1. 자신의 객체 찾고**/
-                myMatchingAccount = connectRoom.get(session.getId());
-
-                /**2. 자신과 연결된 상대방에게 answer 전달 **/
-                MatchingAccount other = connectRoom.get(myMatchingAccount.getPeerSessionId());
-                if(other != null){
-                    sendMessage(other.getMySession(),webSocketMessage);
-                }
-                break;
-
-
-
             /**연결 된 상대방에게 candidate 메시지 보내기**/
+            case "offer":
+            case "answer":
             case "candidate":
 
                 /**1. 자신의 객체 찾고**/
@@ -228,10 +219,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
                 if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null){
-                    sendMessage(session,new WebSocketMessage(session.getId(),"wait",null,null));
+                    sendMessage(session,new WebSocketMessage(session.getId(),"notpeer",null,null));
                     break;
                 }
-                /**3. 자신과 연결된 상대방에게 answer 전달 **/
+                /**3. 자신과 연결된 상대방에게 WebRTC 필요 내용 전달 **/
                 otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
                 if(otherMatchingAccount != null){
                     sendMessage(otherMatchingAccount.getMySession(),webSocketMessage);
@@ -417,11 +408,16 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 //TODO : 매칭 시도 후 취소하는 경우
             case "cancel":
                 try{
-                    /**1. 취소를 보낸 사용자와 상대 사용자 꺼내서**/
+                    /**1. 취소를 보낸 사용자꺼내서**/
                     myMatchingAccount = matchingRoom.get(session.getId());
 
                     /**2. 매칭 취소 했으므로 대기방에서 지우기**/
                     matchingRoom.remove(myMatchingAccount.getMySession().getId());
+
+                    /**3. 상태 변경**/
+                    myMatchingAccount.setMatchingState(false);
+                    myMatchingAccount.setPeerId(null);
+                    myMatchingAccount.setPeerSessionId(null);
 
                     /**매칭룸 인원 변경되었으므로 모두 message보내기 **/
                     //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
@@ -431,9 +427,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
                     }
 
-                    /**3. 상태 변경**/
-                    myMatchingAccount.setMatchingState(false);
-                    otherMatchingAccount.setMatchingState(false);
+
                 } catch (Exception e){
                     //TODO : 로그추가
                 }
@@ -450,11 +444,13 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         connectRoom.remove(myMatchingAccount.getMySession().getId());
                         myMatchingAccount.setPeerId(null);
                         myMatchingAccount.setPeerSessionId(null);
+                        myMatchingAccount.setMatchingState(false);
                     }
                     if(otherMatchingAccount != null){
                         connectRoom.remove(otherMatchingAccount.getMySession().getId());
                         otherMatchingAccount.setPeerId(null);
                         otherMatchingAccount.setPeerSessionId(null);
+                        otherMatchingAccount.setMatchingState(false);
                     }
 
                     /**연결이 종료된 사용자들 현재 남은 인원 보내줘야하므로 **/
@@ -753,13 +749,17 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 /**조건 일치**/
                 if (start == 1) {
+
+                    //TODO : 상대가 갑자기 없어진다면?
+                    if(!matchingRoom.containsKey(peer.getMySession().getId())){
+                        sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견 했지만 다른 사람과 연결됨 -> research.."));
+                        return false;
+                    }
+
                     //바로 메시지 보내기
                     /**5. 조건의 맞다면 각자 자신의 상대 sessionid 저장후**/
                     my.setPeerSessionId(peer.getMySession().getId()); // 나의 객체의 상대방 id 저장
                     peer.setPeerSessionId(my.getMySession().getId()); //상대방 객체의 나의 id 저장
-
-                    /**6. 자신의 offer 보내기 **/
-                    sendMessage(peer.getMySession(), my.getMyMessage());
 
                     /**7. 대기룸에서 나가기 **/
                     /**각각 대기룸에서 나오기**/
@@ -778,7 +778,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     }
 
                     sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견"));
-                    sendMessage(peer.getMySession(), new WebSocketMessage(peer.getMySession().getId(), "found", null, " 매칭 상대 : " + my.getId() + " 발견"));
 
                     /**연결 방으로 들어가기**/
                     connectRoom.put(my.getMySession().getId(), my);

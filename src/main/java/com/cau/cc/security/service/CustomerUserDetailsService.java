@@ -2,6 +2,7 @@ package com.cau.cc.security.service;
 
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.repository.AccountRepository;
+import com.cau.cc.security.exception.UserSuspensionException;
 import com.cau.cc.security.model.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +30,10 @@ public class CustomerUserDetailsService implements UserDetailsService {
         Account account = accountRepository.findByEmail(username);
         if (account == null) {
             throw new UsernameNotFoundException("account not found");
+        }
+
+        if (account.getReportedCount() >= 3) {
+            throw new UserSuspensionException("Suspended account");
         }
 
         // 해당프로젝트에서 roles은 설정 안했으므로 null

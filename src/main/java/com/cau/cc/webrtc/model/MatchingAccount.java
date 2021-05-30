@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,16 +29,19 @@ public class MatchingAccount {
     private long startTime;
     private WebSocketMessage myMessage;
 
+    //DelayCount를 위한 정보
+    private List<DelayObject> delayObjects = new ArrayList<>();
+
     //원하는 상대방 정보
     private MajorEnum selectMajor;
     private int majorState;
-    private int wantGrade;
+    private int gradeState;
+    private int selectGrade;
 
-
-
-    //매칭된 상대방 sessionId, 매칭된 시간
-    private String peerSessionId;
-    private LocalDateTime matchingTime;
+    //매칭된 상대방 sessionId, userId, 매칭된 시간
+    private String peerSessionId; //offer에서 매칭시 저장됨
+    private Long peerId; //connect시 저장됨
+    private LocalDateTime matchingTime; //매칭룸 만들때 저장됨
 
     //매칭상태
     private boolean matchingState;

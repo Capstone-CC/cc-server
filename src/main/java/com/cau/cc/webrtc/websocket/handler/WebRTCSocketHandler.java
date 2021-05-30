@@ -4,13 +4,17 @@ import com.amazonaws.transform.MapEntry;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.entity.MajorEnum;
+import com.cau.cc.model.entity.ReportEnum;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.request.MatchingApiRequest;
+import com.cau.cc.model.network.request.ReportApiRequest;
 import com.cau.cc.model.network.response.MatchingApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.service.ChatroomApiLogicService;
 import com.cau.cc.service.MatchingApiLogicService;
+import com.cau.cc.service.ReportApiLogicService;
+import com.cau.cc.webrtc.model.DelayObject;
 import com.cau.cc.webrtc.model.MatchingAccount;
 import com.cau.cc.webrtc.model.WebSocketMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +60,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
     private ChatroomApiLogicService chatroomApiLogicService;
 
+    private ReportApiLogicService reportApiLogicService;
+
     // 3분, 5분, 7분, 10분을 초단위로
     private int[] randomNum = {180,300,420,600};
 
@@ -63,10 +69,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
     @Autowired
     public WebRTCSocketHandler(MatchingApiLogicService matchingApiLogicService,
                                AccountRepository accountRepository,
-                               ChatroomApiLogicService chatroomApiLogicService) {
+                               ChatroomApiLogicService chatroomApiLogicService,
+                               ReportApiLogicService reportApiLogicService) {
         this.matchingApiLogicService = matchingApiLogicService;
         this.accountRepository = accountRepository;
         this.chatroomApiLogicService = chatroomApiLogicService;
+        this.reportApiLogicService = reportApiLogicService;
 
     }
 
@@ -118,6 +126,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**자신이 대기룸에 없으면 입장**/
                 myMatchingAccount = matchingRoom.get(session.getId());
                 if(myMatchingAccount == null){
+
                     /**대기룸 입장**/
                     myMatchingAccount = MatchingAccount.builder()
                             .id(account.getId())
@@ -131,16 +140,28 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .matchingState(false)
                             .myMessage(webSocketMessage)
                             .startTime(System.currentTimeMillis())
-                            .wantGrade(webSocketMessage.getOption().getGrade())
+                            .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
+                            .selectGrade(webSocketMessage.getOption().getGrade())
+                            .gradeState(webSocketMessage.getOption().getGradeState())
                             .selectMajor(webSocketMessage.getOption().getMajorName())
                             .majorState(webSocketMessage.getOption().getMajorState())
                             .build();
                     matchingRoom.put(session.getId(),myMatchingAccount);
+
+                    /**매칭룸 자신을 제외한 상대방에게 모두 message보내기 들어갔으므로 **/
+                    //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
+                    if(matchingRoom.size() >= 0){
+                        for( Map.Entry<String,WebSocketSession> current : sessions.entrySet()){
+                            if(!myMatchingAccount.getMySession().getId().equals(current.getKey())){
+                                sendMessage(current.getValue(),new WebSocketMessage(current.getKey(),"client",null,matchingRoom.size()));
+                            }
+                        }
+                    }
                 }
 
                 //TODO: 매칭 시도하는 쓰레드 생성
                 TimerTask matchingThread = new TimerTask() {
-
+                    /** Task 실행시 session에서 값 꺼내 my를 고정시켜준다!!! **/
                     MatchingAccount my = matchingRoom.get(session.getId());
                     MatchingAccount peer = null;
 
@@ -150,7 +171,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         if(my == null){
                             cancel();
                         }
-                        //TODO : 추후 삭제
+                        //TODO : 찾는중 (10초마다 run이 실행되므로 10초마다 보냄)
                         sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(),"searching",null,null));
 
 
@@ -171,7 +192,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         //매칭상대 찾은 상태값 0: 몾찾음, 1: 찾음
                         int start = 0;
 
-                        //TODO : 매칭알고리즘
+                        //매칭 기록 있는지 확인
+                        DelayObject delayPeerObject = new DelayObject();
+
+                        /**
+                         * 매칭 알고리즘
+                         */
                         /** 1. 전체 웹소켓 세션을 돌면서 **/
                         for( Map.Entry<String,WebSocketSession> otherSession : sessions.entrySet()){
 
@@ -182,6 +208,31 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             /**if 체크 순서 중요! **/
                             if( peer != null && !my.getMySession().getId().equals(peer.getMySession().getId())) {
 
+                                //나와 연결되었던 상대의 아이디를 찾을 임시 객체
+                                delayPeerObject.setId(peer.getId());
+
+                                /**
+                                 * Delay는 내가 이전에 매칭된 상대방을 찾는경우 나와 상대방 count 모두 +1 된다
+                                 * 즉 매칭되었던 2명의 사용자가 반복적으로 3번 매칭 되는 경우만 매칭된다.
+                                 */
+                                /** 이전에 매칭된 사람 만나면 delayCount++ 하는데 3이상이면 그냥 매칭 **/
+                                if(my.getDelayObjects().contains(delayPeerObject)){//peer가 자신과 이전에 매칭 된 사람이고
+                                    //나와 연결되었던 상대의 아이디가 담긴 객체
+                                    DelayObject mypeerDelayObject = my.getDelayObjects().get(my.getDelayObjects().indexOf(delayPeerObject));
+                                    if(mypeerDelayObject.getDelayCount() <= 2){ //delayCount가 2이하라면
+                                        /** 자신의 객체의 있는 해당 사람과의 delayCount ++ 하고 상대방도 ++ 한 후 continue **/
+                                        mypeerDelayObject.setDelayCount(mypeerDelayObject.getDelayCount()+1);
+
+                                        //상대방의 연결되었던 객체의 나의 아이디를 이용해서 찾고
+                                        delayPeerObject.setId(my.getId());
+                                        // 이를 통해 상대방의 매칭되었던(=my)의 아이디가 담긴 객체 가져와서 count++
+                                        DelayObject peerRealDelayObject = peer.getDelayObjects().get(peer.getDelayObjects().indexOf(delayPeerObject));
+                                        peerRealDelayObject.setDelayCount(peerRealDelayObject.getDelayCount()+1);
+                                        start = 0;
+                                        continue;
+                                    }
+                                }
+
                                 /**3. 매칭된 상대방이 없거나 이미 매칭된 상태 또는 자신과 같은 성별이라면 continue**/
                                 if(peer.isMatchingState()
                                         || my.getGender().equals(peer.getGender())){
@@ -191,10 +242,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                                 /**4.매칭안된 사용자이고 자신과 다른 성별이면 조건의 맞는지 확인**/
 
-                                /**grade가 0이면 전체선택, Majorstate가 0이면 전체선택**/
-                                if(my.getWantGrade() != 0 && my.getMajorState() != 0){ // 학년, 학과모두 상관 있으면
+                                /**gradeState가 0이 아니면 전체선택, Majorstate가 0이면 전체선택**/
+                                if(my.getGradeState() != 0 && my.getMajorState() != 0){ // 학년, 학과모두 상관 있으면
 
-                                    if(!compareToWantGrade(my,peer)
+                                    if(!compareToGrade(my,peer)
                                             || !compareToMajor(my, peer)){
                                         //둘중 하나라도 해당 안되면
                                         start = 0;
@@ -203,28 +254,28 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                                     //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
                                     //상대방 기준
-                                    if(peer.getWantGrade() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToWantGrade(peer, my)
+                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                        if(!compareToGrade(peer, my)
                                                 || !compareToMajor(peer, my)){
                                             //둘중 하나라도 해당 안되면
                                             start = 0;
                                             continue;
                                         }
                                     }
-                                    else if(peer.getWantGrade() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
                                         if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
                                             start = 0;
                                             continue;
                                         }
-                                    } else if(peer.getWantGrade() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToWantGrade(peer,my)) { //학년 불일치 pass
+                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
+                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
                                             start = 0;
                                             continue;
                                         }
                                     }
 
-                                    /**grade가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
-                                } else if(my.getWantGrade() == 0 && my.getMajorState() != 0) { //학년 상관X, 학과 상관O
+                                    /**gradeState가 0으로 전체선택이고 Majorstate가 0이 아닌 상황**/
+                                } else if(my.getGradeState() == 0 && my.getMajorState() != 0) { //학년 상관X, 학과 상관O
                                     if(!compareToMajor(my,peer)){ //state에 따른 학과 매칭 실패
                                         start = 0;
                                         continue;
@@ -232,51 +283,51 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                                     //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
                                     //상대방 기준
-                                    if(peer.getWantGrade() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToWantGrade(peer, my)
+                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                        if(!compareToGrade(peer, my)
                                                 || !compareToMajor(peer, my)){
                                             //둘중 하나라도 해당 안되면
                                             start = 0;
                                             continue;
                                         }
                                     }
-                                    else if(peer.getWantGrade() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
                                         if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
                                             start = 0;
                                             continue;
                                         }
-                                    } else if(peer.getWantGrade() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToWantGrade(peer,my)) { //학년 불일치 pass
+                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
+                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
                                             start = 0;
                                             continue;
                                         }
                                     }
 
-                                    /**grade가 0 전체선택 아니고 Majorstate가 0인 상황**/
-                                } else if (my.getWantGrade() != 0 && my.getMajorState() == 0) { //학과 상관X, 학년 상관
-                                    /**상대방의 학년과 내가 원하는 학년이 맞는지 비교 **/
-                                    if (!compareToWantGrade(my,peer)) { //학년 불일치 pass
+                                    /**gradeState가 0 전체 선택 아니고 Majorstate가 0인 상황**/
+                                } else if (my.getGradeState() != 0 && my.getMajorState() == 0) { //학과 상관X, 학년 상관
+                                    /**state에 따른 학년 매칭 되는지 확인 **/
+                                    if (!compareToGrade(my,peer)) { //state에 따른 학년 매칭 실패
                                         start = 0;
                                         continue;
                                     }
 
                                     //TODO : 나의 조건이 상대방에게 맞는 경우이므로 상대방의 조건이 나와 맞는지 확인
                                     //상대방 기준
-                                    if(peer.getWantGrade() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
-                                        if(!compareToWantGrade(peer, my)
+                                    if(peer.getGradeState() != 0 && peer.getMajorState() != 0) { // 학년, 학과모두 상관 있으면
+                                        if(!compareToGrade(peer, my)
                                                 || !compareToMajor(peer, my)){
                                             //둘중 하나라도 해당 안되면
                                             start = 0;
                                             continue;
                                         }
                                     }
-                                    else if(peer.getWantGrade() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
+                                    else if(peer.getGradeState() == 0 && peer.getMajorState() != 0){//학년 상관X, 학과 상관O
                                         if(!compareToMajor(peer,my)){ //state에 따른 학과 매칭 실패
                                             start = 0;
                                             continue;
                                         }
-                                    } else if(peer.getWantGrade() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
-                                        if (!compareToWantGrade(peer,my)) { //학년 불일치 pass
+                                    } else if(peer.getGradeState() != 0 && peer.getMajorState() == 0){//학과 상관X, 학년 상관
+                                        if (!compareToGrade(peer,my)) { //state에 따른 학년 매칭 실패
                                             start = 0;
                                             continue;
                                         }
@@ -347,9 +398,24 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
                 if (otherMatchingAccount.isMatchingState()){
 
+                    /**연결되었으므로 각각 상대방의 id를 저장**/
+                    myMatchingAccount.setPeerId(otherMatchingAccount.getId());
+                    otherMatchingAccount.setPeerId(myMatchingAccount.getId());
+
                     /**각각 대기룸에서 나오기**/
                     matchingRoom.remove(myMatchingAccount.getMySession().getId());
                     matchingRoom.remove(otherMatchingAccount.getMySession().getId());
+
+                    /**매칭룸 자신과 상대방을 제외한 사람들에게 모두 message보내기 들어갔으므로 **/
+                    //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
+                    if(matchingRoom.size() >= 0){
+                        for( Map.Entry<String,WebSocketSession> current : sessions.entrySet()){
+                            if(!myMatchingAccount.getMySession().getId().equals(current.getKey())
+                            && !otherMatchingAccount.getMySession().getId().equals(current.getKey())){
+                                sendMessage(current.getValue(),new WebSocketMessage(current.getKey(),"client",null,matchingRoom.size()));
+                            }
+                        }
+                    }
 
                     /**연결 방으로 들어가기**/
                     connectRoom.put(myMatchingAccount.getMySession().getId(),myMatchingAccount);
@@ -372,8 +438,18 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"ticket",null,otherCount));
 
 
+                    /**각 객체의 감소된 Count 저장**/
                     myMatchingAccount.setCount(myMatchingAccount.getCount()-1);
                     otherMatchingAccount.setCount(otherMatchingAccount.getCount()-1);
+
+                    /**서로 매칭 DelayObject의 넣기**/
+                    DelayObject delayPeerObject = new DelayObject(otherMatchingAccount.getId(),0);
+                    if(!myMatchingAccount.getDelayObjects().contains(delayPeerObject)) {
+                        /**peer가 자신과 이전에 매칭 된 사람이 아니면서로 추가하기 **/
+                        myMatchingAccount.getDelayObjects().add(new DelayObject(otherMatchingAccount.getId(),0));
+                        otherMatchingAccount.getDelayObjects().add(new DelayObject(myMatchingAccount.getId(), 0));
+                        delayPeerObject = null; //사용 안하는 객체명시
+                    }
 
                     /** 매칭 룸 생성 **/
                     MatchingApiRequest request = MatchingApiRequest.builder()
@@ -512,9 +588,18 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 try{
                     /**1. 취소를 보낸 사용자와 상대 사용자 꺼내서**/
                     myMatchingAccount = matchingRoom.get(session.getId());
-                    otherMatchingAccount = matchingRoom.get(myMatchingAccount.getPeerSessionId());
-//                /**2. 상대방에게 내가 취소 했다고 알리기**/
-//                sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"cancel",null,null));
+
+                    /**2. 매칭 취소 했으므로 대기방에서 지우기**/
+                    matchingRoom.remove(myMatchingAccount.getMySession().getId());
+
+                    /**매칭룸 인원 변경되었으므로 모두 message보내기 **/
+                    //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
+                    if(matchingRoom.size() >= 0){
+                        for( Map.Entry<String,WebSocketSession> current : sessions.entrySet()){
+                            sendMessage(current.getValue(),new WebSocketMessage(current.getKey(),"client",null,matchingRoom.size()));
+                        }
+                    }
+
                     /**3. 상태 변경**/
                     myMatchingAccount.setMatchingState(false);
                     otherMatchingAccount.setMatchingState(false);
@@ -525,7 +610,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 //TODO : 매칭이 종료된 경우 - 한쪽이 거절하기 누른경우
             case "disconnect" :
-                /** 자신이 매칭대기룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
+                /** 자신이 매칭룸에 없으면 상대방이 먼저 취소한 경우 이므로 체크**/
                 try{
                     myMatchingAccount = connectRoom.get(session.getId());
                     if(myMatchingAccount != null){
@@ -535,6 +620,25 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 }catch (Exception e){
                     //TODO : 로그필요
                 }
+                break;
+
+                //TODO : 매칭된 상태에서 신고
+            case "report":
+                myMatchingAccount = connectRoom.get(session.getId());
+                if(myMatchingAccount == null){
+                    myMatchingAccount = matchingRoom.get(session.getId());
+                }
+                ReportEnum reportMsg = ReportEnum.valueOf((String)(webSocketMessage.getData()));
+
+                //신고서 작성
+                ReportApiRequest request = ReportApiRequest.builder()
+                        .contents(reportMsg)
+                        .reporterId(myMatchingAccount.getId())
+                        .reportedId(myMatchingAccount.getPeerId())
+                        .build();
+
+                reportApiLogicService.create(request);
+                break;
         }
     }
 
@@ -570,6 +674,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         }
 
         sendMessage(session,new WebSocketMessage(session.getId(),"ticket",null,countNum));
+        account = null; //사용 안하는 객체명시
 
 
 
@@ -628,10 +733,18 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         }
     }
 
-
-    /** 내가 원하는 학년이 상대방과 같은지 **/
-    private boolean compareToWantGrade(MatchingAccount my, MatchingAccount other){
-        return my.getWantGrade() == other.getGrade();
+    /** 나의 gradeState가 0이 아닌 상황에서 비교**/
+    private boolean compareToGrade(MatchingAccount my, MatchingAccount other){
+        
+        /** 나의 state 가 1이면 상대방이 내가 매칭되고 싶은 grade가 맞는지 **/
+        if(my.getGradeState() == 1){
+            return my.getSelectGrade() == other.getGrade();
+        }
+        /** 나의 state가 2이면 상대방이 내가 매칭되기 싫은 grade가 맞는지**/
+        else if(my.getGradeState() == 2){
+            return my.getSelectGrade() != other.getGrade();
+        }
+        return false;
     }
 
     /** 나의 majorState가 0이 아닌 상황에서 비교**/

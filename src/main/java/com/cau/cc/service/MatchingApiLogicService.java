@@ -1,17 +1,24 @@
 package com.cau.cc.service;
 
 import com.cau.cc.ifs.CrudInterface;
+import com.cau.cc.model.entity.GenderEnum;
 import com.cau.cc.model.entity.Matching;
 import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.request.MatchingApiRequest;
 import com.cau.cc.model.network.response.MatchingApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
 import com.cau.cc.model.repository.MatchingRepository;
+import com.cau.cc.webrtc.model.DelayObject;
 import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest, MatchingApiResponse> {
@@ -92,5 +99,37 @@ public class MatchingApiLogicService implements CrudInterface<MatchingApiRequest
     public Header<MatchingApiResponse> findByManIdAndWomanIdAndTime(MatchingApiRequest request){
         Matching matching = matchingRepository.findByManIdAndWomanIdAndTime(request.getManId(),request.getWomanId(),request.getTime());
         return response(matching);
+    }
+
+
+
+    /**id와 매칭된 매칭 테이블 모두 찾기**/
+    public List<DelayObject> findById(GenderEnum gender, Long id){
+        List<Matching> matchings = null;
+        if(gender == GenderEnum.남){
+            matchings = matchingRepository.findByManId(id);
+        } else{
+            matchings = matchingRepository.findByWomanId(id);
+        }
+        return delayObjects(matchings,gender);
+    }
+    
+    //TODO 리스트로 반환하기
+    private List<DelayObject> delayObjects (List<Matching> matching,GenderEnum gender){
+        if (matching == null){
+            return null;
+        }
+        Set<DelayObject> set = new HashSet<>();
+
+        for(Matching o : matching){
+            if(gender == GenderEnum.남){
+                set.add(new DelayObject(o.getWomanId().getId(),0));
+            } else{
+                set.add(new DelayObject(o.getManId().getId(),0));
+            }
+        }
+        //중복제거된 DelayObject를 list로 저장
+        List<DelayObject> delayObjects = new ArrayList<>(set);
+        return delayObjects;
     }
 }

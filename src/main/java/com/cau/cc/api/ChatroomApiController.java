@@ -31,7 +31,7 @@ public class ChatroomApiController  {
     /**
      * chat list api
      */
-    @ApiOperation(value = "채팅 목록",notes = " ")
+    @ApiOperation(value = "채팅 목록",notes = "status : 0 이면 보이고 status : 1 채팅방 나감")
     @GetMapping("/list")
     public Header<AccountChatListApiResponse> chatInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

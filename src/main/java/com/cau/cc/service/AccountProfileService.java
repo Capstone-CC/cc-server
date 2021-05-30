@@ -134,9 +134,9 @@ public class AccountProfileService {
             newChatroom.setManStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
             chatMessageController.message(message);
-            if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
-                chatMessageRepository.deleteAllByChatroomId(id);
-                chatRoomRepository.delete(newChatroom);
+            if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
+                //chatMessageRepository.deleteAllByChatroomId(id);
+                chatRoomRepository.delete(chat);
             }
         }
 
@@ -144,9 +144,9 @@ public class AccountProfileService {
             newChatroom.setWomanStatus(1);
             Chatroom chat = chatRoomRepository.save(newChatroom);
             chatMessageController.message(message);
-            if (newChatroom.getManStatus()==1 && newChatroom.getWomanStatus()==1) {
-                chatMessageRepository.deleteAllByChatroomId(id);
-                chatRoomRepository.delete(newChatroom);
+            if (chat.getManStatus()==1 && chat.getWomanStatus()==1) {
+                //chatMessageRepository.deleteAllByChatroomId(id);
+                chatRoomRepository.delete(chat);
             }
         }
 

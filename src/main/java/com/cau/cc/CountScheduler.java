@@ -22,6 +22,7 @@ public class CountScheduler {
         list.forEach(
                 list1 -> {
                     list1.setCount(100);
+                    list1.setReporterCount(3);
                     accountRepository.save(list1);
                 });
 

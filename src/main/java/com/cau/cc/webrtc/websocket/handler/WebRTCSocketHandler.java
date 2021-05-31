@@ -771,8 +771,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                     if(!matchingRoom.containsKey(my.getMySession().getId())){
                         /** 매칭 대기룸에 내가 없고 매칭룸에 내가 있으면 상대방이 날 먼저 찾음**/
-                        if(connectRoom.containsKey(my.getMySession().getId())){
-                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, " 다른 사람이 날 먼저 찾았음 "));
+                        if(connectRoom.containsKey(my.getMySession().getId()) ){
+                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, my.getPeerId()+"번 이 날 먼저 찾았음 "));
                         }
                         return false;
                     }

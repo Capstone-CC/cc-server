@@ -5,6 +5,7 @@ import com.cau.cc.model.network.Header;
 import com.cau.cc.model.network.response.AccountChatListApiResponse;
 import com.cau.cc.model.network.response.AccountOtherResponse;
 import com.cau.cc.model.network.response.ChatMessageApiResponse;
+import com.cau.cc.model.repository.ChatMessageRepository;
 import com.cau.cc.service.AccountProfileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +29,9 @@ public class ChatroomApiController  {
     @Autowired
     AccountProfileService accountProfileService;
 
+    @Autowired
+    ChatMessageRepository chatMessageRepository;
+
     /**
      * chat list api
      */
@@ -50,6 +54,13 @@ public class ChatroomApiController  {
                                                                direction = Sort.Direction.DESC, size = 30) Pageable pageable) {
         return accountProfileService.search(id, pageable);
     }
+
+//    @GetMapping("/list/{roomid}")
+//    public Header<List<ChatMessageApiResponse>> page(@PathVariable Long roomid,
+//                                                       @RequestParam("page") Long page) {
+//        //return accountProfileService.page(roomid, page);
+//    }
+
 
     @ApiOperation(value = "채팅 삭제",notes = "필수정보 : roomId 값")
     @DeleteMapping("/list/{id}")

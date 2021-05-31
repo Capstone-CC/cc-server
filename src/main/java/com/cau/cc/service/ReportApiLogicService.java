@@ -1,15 +1,13 @@
 package com.cau.cc.service;
 
-import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
-import com.cau.cc.model.entity.GenderEnum;
+import com.cau.cc.model.entity.Chatroom;
 import com.cau.cc.model.entity.Report;
 import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.request.ChatroomApiRequest;
 import com.cau.cc.model.network.request.ReportApiRequest;
 import com.cau.cc.model.network.response.ReportApiResponse;
 import com.cau.cc.model.repository.AccountRepository;
-import com.cau.cc.model.repository.MatchingRepository;
+import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.model.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,48 @@ public class ReportApiLogicService {
     @Autowired
     private ReportRepository reportRepository;
 
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
+
+
+    public Header<ReportApiResponse> createChat(Long id, ReportApiRequest request) {
+
+        ReportApiRequest body = request;
+        Optional<Account> report1 = accountRepository.findById(id);
+        Account reporter = report1.get();
+        if (reporter.getReporterCount() ==0) {
+            return Header.ERROR("최대 신고 횟수를 초과하였습니다.");
+        }
+        reporter.setReporterCount(reporter.getReporterCount()-1);
+
+        Optional<Chatroom> chatroom1 = chatRoomRepository.findById(request.getChatroomId());
+        Chatroom chatroom = chatroom1.get();
+
+        Account reported = null;
+        if(chatroom.getManId().getId() == reporter.getId()) {
+            Optional<Account> report2 = accountRepository.findById(chatroom.getWomanId().getId());
+            reported = report2.get();
+            reported.setReportedCount(reported.getReportedCount()+1);
+        }
+        else if (chatroom.getWomanId().getId() == reporter.getId()) {
+            Optional<Account> report2 = accountRepository.findById(chatroom.getManId().getId());
+            reported = report2.get();
+            reported.setReportedCount(reported.getReportedCount()+1);
+        }
+
+        accountRepository.save(reporter);
+        accountRepository.save(reported);
+
+        Report report = Report.builder()
+                .contents(body.getContents())
+                .reportTime(LocalDateTime.now())
+                .reporterId(reporter)
+                .reportedId(reported)
+                .build();
+
+        Report newReport = reportRepository.save(report);
+        return response(newReport);
+    }
 
     public Header<ReportApiResponse> create(ReportApiRequest request) {
 

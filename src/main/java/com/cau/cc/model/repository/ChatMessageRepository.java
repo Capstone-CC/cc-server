@@ -1,12 +1,17 @@
 package com.cau.cc.model.repository;
 
 
+import com.cau.cc.model.entity.Matching;
+import com.cau.cc.model.network.Header;
+import com.cau.cc.model.network.response.ChatMessageApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.cau.cc.model.entity.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
@@ -22,5 +27,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     @Query("delete from ChatMessage u where u.chatroomId = ?1")
     void deleteAllByChatroomId(Long id);
+
+    @Query(nativeQuery = true, value ="select u from ChatMessage u where u.chatroomId=:id order by u.id LIMIT :pageId*10L,30  ")
+    List<ChatMessageApiResponse> findByChat(Long id, Long pageId);
 
 }

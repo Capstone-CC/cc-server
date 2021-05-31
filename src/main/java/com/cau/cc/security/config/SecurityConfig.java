@@ -195,7 +195,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/account/password/verify",
                         "/email","/verify",
                         "/test",
-                        "/major/list").permitAll()
+                        "/major/list",
+                        "/chatroom/list/*",
+                        "/chatroom/list1/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()

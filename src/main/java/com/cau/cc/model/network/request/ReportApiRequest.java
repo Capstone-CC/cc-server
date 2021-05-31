@@ -20,6 +20,8 @@ public class ReportApiRequest {
 
     private ReportEnum contents;
 
+    private Long chatroomId;
+
     private LocalDateTime reportTime;
 
     private Long reporterId;

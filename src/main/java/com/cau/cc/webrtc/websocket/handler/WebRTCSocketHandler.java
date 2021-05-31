@@ -83,6 +83,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
         return this.randomNum[randomIdx];
     }
 
+    public int randomDelay(){
+        Random random = new Random();
+        int randomIdx = random.nextInt(4);
+        return this.randomNum[randomIdx];
+    }
+
 
     /**
      * 클라이언트로부터 메시지를 받으면 실행됨
@@ -208,7 +214,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                 Timer matchingTimer = new Timer(true);
                 //지정한 시간(firstTime)부터 10초 간격(period) 으로 지정한 작업(task)을 수행한다.
-                matchingTimer.scheduleAtFixedRate(matchingThread,0,5*1000);
+                matchingTimer.scheduleAtFixedRate(matchingThread,(long)(Math.random()*1),5*1000);
                 break;
 
 
@@ -762,9 +768,14 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**조건 일치**/
                 if (start == 1) {
 
+                    if(!matchingRoom.containsKey(my.getMySession().getId())){
+                        sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, " 다른 사람이 날 먼저 찾았음 "));
+                        return false;
+                    }
+
                     //TODO : 상대가 갑자기 없어진다면?
                     if(!matchingRoom.containsKey(peer.getMySession().getId())){
-                        sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견 했지만 다른 사람과 연결됨 -> research.."));
+                        sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, " 매칭 상대 : " + peer.getId() + " 발견 했지만 다른 사람과 연결됨 -> research.."));
                         return false;
                     }
 

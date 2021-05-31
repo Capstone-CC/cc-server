@@ -28,7 +28,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("delete from ChatMessage u where u.chatroomId = ?1")
     void deleteAllByChatroomId(Long id);
 
-    @Query(nativeQuery = true, value ="select u from ChatMessage u where u.chatroomId=:id order by u.id limit :pageId*10, 30  ")
+    @Query(nativeQuery = true, value ="select u from ChatMessage u where u.chatroomId=:id order by u.id LIMIT :pageId*10L,30  ")
     List<ChatMessageApiResponse> findByChat(Long id, Long pageId);
 
 }

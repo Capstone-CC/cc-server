@@ -55,11 +55,11 @@ public class ChatroomApiController  {
         return accountProfileService.search(id, pageable);
     }
 
-//    @GetMapping("/list/{roomid}")
-//    public Header<List<ChatMessageApiResponse>> page(@PathVariable Long roomid,
-//                                                       @RequestParam("page") Long page) {
-//        //return accountProfileService.page(roomid, page);
-//    }
+    @GetMapping("/list1/{roomid}")
+    public Header<List<ChatMessageApiResponse>> page(@PathVariable Long roomid,
+                                                       @RequestParam("page") Long page) {
+        return accountProfileService.page(roomid, page);
+    }
 
 
     @ApiOperation(value = "채팅 삭제",notes = "필수정보 : roomId 값")

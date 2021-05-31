@@ -258,8 +258,8 @@ public class AccountProfileService {
     }
 
     // TODO : 페이징 대신 처리
-//    public Header<List<ChatMessageApiResponse>> page(Long roomid, Long page) {
-//        List<ChatMessageApiResponse> chat = chatMessageRepository.findByChat(roomid, page);
-//
-//    }
+    public Header<List<ChatMessageApiResponse>> page(Long roomid, Long page) {
+        List<ChatMessageApiResponse> chat = chatMessageRepository.findByChat(roomid, page);
+        return Header.OK(chat);
+    }
 }

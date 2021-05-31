@@ -47,7 +47,7 @@ public class ChatroomApiController  {
     @GetMapping("/list/{id}")
     public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,
                                                        @ApiIgnore @PageableDefault(sort = "time",
-                                                               direction = Sort.Direction.ASC, size = 30) Pageable pageable) {
+                                                               direction = Sort.Direction.DESC, size = 30) Pageable pageable) {
         return accountProfileService.search(id, pageable);
     }
 

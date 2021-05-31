@@ -772,14 +772,14 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     if(!matchingRoom.containsKey(my.getMySession().getId())){
                         /** 매칭 대기룸에 내가 없고 매칭룸에 내가 있으면 상대방이 날 먼저 찾음**/
                         if(connectRoom.containsKey(my.getMySession().getId()) ){
-                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, my.getPeerId()+"번 이 날 먼저 찾았음 "));
+                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, my.getPeerId()+"번 이 날 먼저 찾았음 "));
                         }
                         return false;
                     }
 
                     //TODO : 상대가 갑자기 없어진다면?
                     if(!matchingRoom.containsKey(peer.getMySession().getId())){
-                        sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, " 매칭 상대 : " + peer.getId() + " 발견 했지만 다른 사람과 연결됨 -> research.."));
+                        sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "searching", null, " 매칭 상대 : " + peer.getId() + " 발견 했지만 다른 사람과 연결됨 -> research.."));
                         return false;
                     }
 

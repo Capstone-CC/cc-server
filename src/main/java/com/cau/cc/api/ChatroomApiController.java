@@ -43,7 +43,7 @@ public class ChatroomApiController  {
     /**
      * chat room 클릭시 저장된 db page로 불러오기.
      */
-    @ApiOperation(value = "채팅 내용",notes = "필수정보 : roomId 값")
+    @ApiOperation(value = "채팅 내용",notes = "필수정보 : /list/roomId?page=? ?는 0부터 시작")
     @GetMapping("/list/{id}")
     public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,
                                                        @ApiIgnore @PageableDefault(sort = "time",

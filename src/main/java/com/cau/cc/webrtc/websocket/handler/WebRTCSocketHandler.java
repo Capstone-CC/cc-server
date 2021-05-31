@@ -166,6 +166,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     @Override
                     public void run() {
 
+                        /**내 세션 닫어 있으면 cancle()**/
+                        if(!my.getMySession().isOpen()){
+                            cancel();
+                        }
+
                         if(!matchingRoom.containsKey(my.getMySession().getId())){
                             cancel();
                         }
@@ -217,15 +222,21 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**1. 자신의 객체 찾고**/
                 myMatchingAccount = connectRoom.get(session.getId());
 
-                /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
-                if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null){
+                /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없거나 자신이 매칭룸에 있으면 break;**/
+                if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null
+                || matchingRoom.containsKey(session.getId())) {
                     sendMessage(session,new WebSocketMessage(session.getId(),"notpeer",null,null));
                     break;
                 }
                 /**3. 자신과 연결된 상대방에게 WebRTC 필요 내용 전달 **/
                 otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
-                if(otherMatchingAccount != null){
+                if(otherMatchingAccount != null && !matchingRoom.containsKey(myMatchingAccount.getPeerSessionId())){
                     sendMessage(otherMatchingAccount.getMySession(),webSocketMessage);
+
+                    sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),
+                            "request",null,myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount.getId()+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
+                    sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"request",null,
+                            myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount.getId()+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
                 }
                 break;
 
@@ -400,6 +411,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                     sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),"matching",null,otherMatchingAccount.getNickName()));
                     sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"matching",null,myMatchingAccount.getNickName()));
+
                 }
 
                 /**수락 안했으므로 패스**/
@@ -427,7 +439,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
                     }
 
-
                 } catch (Exception e){
                     //TODO : 로그추가
                 }
@@ -452,6 +463,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         otherMatchingAccount.setPeerSessionId(null);
                         otherMatchingAccount.setMatchingState(false);
                     }
+
 
                     /**연결이 종료된 사용자들 현재 남은 인원 보내줘야하므로 **/
                     //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요

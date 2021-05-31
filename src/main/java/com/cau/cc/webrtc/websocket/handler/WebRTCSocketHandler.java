@@ -176,9 +176,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         if(!my.getMySession().isOpen()){
                             cancel();
                         }
-
-                        if(!matchingRoom.containsKey(my.getMySession().getId())){
-                            cancel();
+                        synchronized( matchingRoom ) {
+                            if (!matchingRoom.containsKey(my.getMySession().getId())) {
+                                cancel();
+                            }
                         }
 
                         if(my == null){
@@ -210,8 +211,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                         boolean result = matchingAlgorithm(my);
                         /** 내가 찾았거나 상대방이 날 찾았으면 cancel**/
-                        if(result || connectRoom.containsKey(my.getMySession().getId())){
-                            cancel();
+                        synchronized( connectRoom ) {
+                            if (result || connectRoom.containsKey(my.getMySession().getId())) {
+                                cancel();
+                            }
                         }
 
                     }//end run
@@ -235,13 +238,15 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     myMatchingAccount = connectRoom.get(session.getId());
                 }
 
-
-                /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없거나 자신이 매칭룸에 있으면 break;**/
-                if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null
-                || matchingRoom.containsKey(session.getId())) {
-                    sendMessage(session,new WebSocketMessage(session.getId(),"notpeer",null,null));
-                    break;
+                synchronized( matchingRoom ) {
+                    /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없거나 자신이 매칭룸에 있으면 break;**/
+                    if (myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null
+                            || matchingRoom.containsKey(session.getId())) {
+                        sendMessage(session, new WebSocketMessage(session.getId(), "notpeer", null, null));
+                        break;
+                    }
                 }
+
                 /**3. 자신과 연결된 상대방에게 WebRTC 필요 내용 전달 **/
                 synchronized( connectRoom ) {
                     otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
@@ -337,12 +342,14 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                         @Override
                         public void run() {
-                            if(randomMin >= 0 && connectRoom.get(my.getMySession().getId()) != null
-                                    && connectRoom.get(peer.getMySession().getId()) != null){
-                                /** 2. 1씩 값 내리고 **/
-                                randomMin --;
-                            } else{ /** 0보다 작거나 세션에 없는 경우 task 종료 **/
-                                cancel();
+                            synchronized( connectRoom ) {
+                                if (randomMin >= 0 && connectRoom.get(my.getMySession().getId()) != null
+                                        && connectRoom.get(peer.getMySession().getId()) != null) {
+                                    /** 2. 1씩 값 내리고 **/
+                                    randomMin--;
+                                } else { /** 0보다 작거나 세션에 없는 경우 task 종료 **/
+                                    cancel();
+                                }
                             }
                             try {
                                 /** 2, 매칭된 사용자 두명에게 초단위로 메세지 보내기 **/

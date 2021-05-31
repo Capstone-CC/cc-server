@@ -206,7 +206,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                         boolean result = matchingAlgorithm(my);
                         /** 내가 찾았거나 상대방이 날 찾았으면 cancel**/
-                        if(result || my.isMatchingState()){
+                        if(result || connectRoom.containsKey(my.getMySession().getId())){
                             cancel();
                         }
 
@@ -773,7 +773,6 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         /** 매칭 대기룸에 내가 없고 매칭룸에 내가 있으면 상대방이 날 먼저 찾음**/
                         if(connectRoom.containsKey(my.getMySession().getId())){
                             sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notfound", null, " 다른 사람이 날 먼저 찾았음 "));
-                            my.setMatchingState(true);
                         }
                         return false;
                     }

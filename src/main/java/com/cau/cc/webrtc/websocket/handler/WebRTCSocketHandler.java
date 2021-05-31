@@ -166,6 +166,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     @Override
                     public void run() {
 
+                        /**내 세션 닫어 있으면 cancle()**/
+                        if(!my.getMySession().isOpen()){
+                            cancel();
+                        }
+
                         if(!matchingRoom.containsKey(my.getMySession().getId())){
                             cancel();
                         }
@@ -217,7 +222,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 /**1. 자신의 객체 찾고**/
                 myMatchingAccount = connectRoom.get(session.getId());
 
-                /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없으면 break;**/
+                /**2. 자신의 객체가 없거나 자신과 연결된 상대가 없거나 자신이 매칭룸에 있으면 break;**/
                 if(myMatchingAccount == null || myMatchingAccount.getPeerSessionId() == null
                 || matchingRoom.containsKey(session.getId())) {
                     sendMessage(session,new WebSocketMessage(session.getId(),"notpeer",null,null));

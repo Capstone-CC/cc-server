@@ -251,13 +251,16 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 synchronized( connectRoom ) {
                     otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
                 }
-                if(otherMatchingAccount != null && !matchingRoom.containsKey(myMatchingAccount.getPeerSessionId())){
-                    sendMessage(otherMatchingAccount.getMySession(),webSocketMessage);
+                synchronized( matchingRoom ) {
 
-                    sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),
-                            "request",null,myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount.getId()+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
-                    sendMessage(otherMatchingAccount.getMySession(),new WebSocketMessage(otherMatchingAccount.getMySession().getId(),"request",null,
-                            myMatchingAccount.getId()+"번 사용자가 "+otherMatchingAccount.getId()+"번 사용자에게  "+webSocketMessage.getEvent()+" 보냄"));
+                    if (otherMatchingAccount != null && !matchingRoom.containsKey(myMatchingAccount.getPeerSessionId())) {
+                        sendMessage(otherMatchingAccount.getMySession(), webSocketMessage);
+
+                        sendMessage(myMatchingAccount.getMySession(), new WebSocketMessage(myMatchingAccount.getMySession().getId(),
+                                "request", null, myMatchingAccount.getId() + "번 사용자가 " + otherMatchingAccount.getId() + "번 사용자에게  " + webSocketMessage.getEvent() + " 보냄"));
+                        sendMessage(otherMatchingAccount.getMySession(), new WebSocketMessage(otherMatchingAccount.getMySession().getId(), "request", null,
+                                myMatchingAccount.getId() + "번 사용자가 " + otherMatchingAccount.getId() + "번 사용자에게  " + webSocketMessage.getEvent() + " 보냄"));
+                    }
                 }
                 break;
 

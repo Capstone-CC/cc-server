@@ -29,6 +29,10 @@ public class MatchingAccount {
     private String nickName;
     private long startTime;
 
+    //빠른 타이머 종료를 위한 timerState 추가
+    private boolean timerState; // 탐색 Thread -> 기본값 true로 시작 (false이면 탐색 종료)
+    private boolean timeTimerState; // 매칭timer Thread -> 기본값 false로 시작 (매칭성공시 true, false이면 타이머종료)
+
     //DelayCount를 위한 정보
     private List<DelayObject> delayObjects = new ArrayList<>();
 

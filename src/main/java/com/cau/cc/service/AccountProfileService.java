@@ -19,6 +19,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -198,12 +200,23 @@ public class AccountProfileService {
         return Header.OK(accountChatListApiResponse);
     }
 
+    class chatComparator implements  Comparator<ChatMessageApiResponse> {
+        @Override
+        public int compare(ChatMessageApiResponse a, ChatMessageApiResponse b) {
+            if (a.getId() > b.getId() ) return 1;
+            if (a.getId() < b.getId() ) return -1;
+            return 0;
+        }
+    }
+
     public Header<List<ChatMessageApiResponse>> search(Long id, Pageable pageable) {
         Page<ChatMessage> chatMessages = chatMessageRepository.findByChatMessage(id, pageable);
 
         List<ChatMessageApiResponse> chatMessageApiResponseList = chatMessages.stream()
                 .map(chatMessage -> res(chatMessage))
                 .collect(Collectors.toList());
+
+        Collections.sort(chatMessageApiResponseList, new chatComparator());
 
         Pagination pagination = Pagination.builder()
                 .totalPages(chatMessages.getTotalPages())
@@ -255,11 +268,5 @@ public class AccountProfileService {
                 .content(account.getContent())
                 .build();
         return accountProfileApiResponse;
-    }
-
-    // TODO : 페이징 대신 처리
-    public Header<List<ChatMessageApiResponse>> page(Long roomid, Long page) {
-        List<ChatMessageApiResponse> chat = chatMessageRepository.findByChat(roomid, page);
-        return Header.OK(chat);
     }
 }

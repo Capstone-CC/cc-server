@@ -38,7 +38,7 @@ public class ReportApiLogicService {
         }
         reporter.setReporterCount(reporter.getReporterCount()-1);
 
-        Optional<Chatroom> chatroom1 = chatRoomRepository.findById(request.getChatroomId());
+        Optional<Chatroom> chatroom1 = chatRoomRepository.findById(request.getId());
         Chatroom chatroom = chatroom1.get();
 
         Account reported = null;

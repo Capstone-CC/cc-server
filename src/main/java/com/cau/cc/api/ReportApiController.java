@@ -1,9 +1,7 @@
 package com.cau.cc.api;
 
-import com.cau.cc.ifs.CrudInterface;
 import com.cau.cc.model.entity.Account;
 import com.cau.cc.model.network.Header;
-import com.cau.cc.model.network.request.DatelocationApiRequest;
 import com.cau.cc.model.network.request.ReportApiRequest;
 import com.cau.cc.model.network.response.ReportApiResponse;
 import com.cau.cc.service.ReportApiLogicService;
@@ -22,7 +20,7 @@ public class ReportApiController{
     @Autowired
     ReportApiLogicService reportApiLogicService;
 
-    @ApiOperation(value = "신고 시 카운트 증가",notes = "필수 정보 : @RequestBody chatroomId")
+    @ApiOperation(value = "신고 시 카운트 증가",notes = "필수 정보 : @RequestBody id(chatroomId)")
     @PostMapping("") // /api/report
     public Header<ReportApiResponse> create(@RequestBody ReportApiRequest request) {
         try{

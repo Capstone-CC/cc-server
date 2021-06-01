@@ -473,8 +473,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         myMatchingAccount = matchingRoom.get(session.getId());
                         /**2. 매칭 취소 했으므로 대기방에서 지우기**/
                         matchingRoom.remove(myMatchingAccount.getMySession().getId());
-                        timerPool.remove(myMatchingAccount.getEmail());
-
+                        Timer mytimer = timerPool.get(myMatchingAccount.getEmail());
+                        if(mytimer != null){
+                            timerPool.remove(myMatchingAccount.getEmail());
+                            mytimer.cancel();
+                        }
+                        
                         /**3. 사용 안하므로 **/
                         myMatchingAccount = null;
 

@@ -52,13 +52,15 @@ public class ChatroomApiController  {
     public Header<List<ChatMessageApiResponse>> search(@PathVariable Long id,
                                                        @ApiIgnore @PageableDefault(sort = "time",
                                                                direction = Sort.Direction.DESC, size = 30) Pageable pageable) {
-        return accountProfileService.search(id, pageable);
-    }
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Account account = (Account) auth.getPrincipal();
 
-    @GetMapping("/list1/{roomid}")
-    public Header<List<ChatMessageApiResponse>> page(@PathVariable Long roomid,
-                                                       @RequestParam("page") Long page) {
-        return accountProfileService.page(roomid, page);
+            return accountProfileService.search(id, pageable);
+
+        }catch (Exception e){
+            return Header.ERROR("로그인 필요");
+        }
     }
 
 

@@ -48,6 +48,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
     /**session ID - MatchingAccount**/
     public static Map<String,MatchingAccount> connectRoom = new ConcurrentHashMap<>();
 
+    /** 매칭 시도하는 Thread pool **/
+    public static Map<String,Timer> timerPool = new ConcurrentHashMap<>();
+
+    /** 매칭 후 time 내려주는 Thread **/
+    public static Map<String,Timer> timeTimerrPool = new ConcurrentHashMap<>();
+
     //private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     ObjectMapper mapper = new ObjectMapper();
@@ -142,6 +148,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .gender(account.getGender())
                             .nickName(account.getNickName())
                             .matchingState(false)
+                            .matchingfinalState(false)
                             .peerSessionId(null)
                             .startTime(System.currentTimeMillis())
                             .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
@@ -175,6 +182,12 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                         /**내 세션 닫어 있으면 cancle()**/
                         if(!my.getMySession().isOpen()){
+                            cancel();
+                        }
+
+                        /** 상대방이 날 먼저 찾음 **/
+                        if(my.getPeerSessionId() != null){
+                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notify : ", null, my.getPeerId() + "번 이 날 먼저 찾았음 "));
                             cancel();
                         }
 
@@ -215,9 +228,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     }//end run
                 };
 
-                Timer matchingTimer = new Timer(true);
+                Timer matchingTimer = new Timer(myMatchingAccount.getEmail(),false);
                 //지정한 시간(firstTime)부터 10초 간격(period) 으로 지정한 작업(task)을 수행한다.
                 matchingTimer.scheduleAtFixedRate(matchingThread,(long)(Math.random()*1),5*1000);
+                timerPool.put(myMatchingAccount.getEmail(),matchingTimer);
                 break;
 
 
@@ -258,20 +272,27 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
 
             case "connect":
-                /** connect를 보낸 사용자 state를 1로 바꾸기**/
-                synchronized( connectRoom ) {
+
+                    /** connect를 보낸 사용자 가져와서**/
                     myMatchingAccount = connectRoom.get(session.getId());
+                    /** 완전히 매칭이 된 상태라면 break; **/
+                    if(myMatchingAccount.isMatchingfinalState()){
+                        sendMessage(myMatchingAccount.getMySession(),new WebSocketMessage(myMatchingAccount.getMySession().getId(),"notify : ",null,"이미 "+myMatchingAccount.getPeerId()+"번과 매칭됨"));
+                        break;
+                    }
+                    /** 아니면 state를 true로 바꾸기 **/
                     myMatchingAccount.setMatchingState(true);
 
                     /** 상대방 stete 확인 **/
 
                     otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
 
+
                     if (otherMatchingAccount.isMatchingState()) {
 
-                        /**연결되었으므로 각각 상대방의 id를 저장**/
-                        myMatchingAccount.setPeerId(otherMatchingAccount.getId());
-                        otherMatchingAccount.setPeerId(myMatchingAccount.getId());
+                        /**Matching final State 설정**/
+                        myMatchingAccount.setMatchingfinalState(true);
+                        otherMatchingAccount.setMatchingfinalState(true);
 
                         /**각각 count 값 1씩 감소**/
                         Account tmp = accountRepository.findByEmail(myMatchingAccount.getEmail());
@@ -324,43 +345,42 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         }
 
                         matchingApiLogicService.create(request);
+
+                        //TODO: 타임 내리는 쓰레드 생성
+                        TimerTask timerTask = new MyTimerTask(myMatchingAccount) {
+
+                            /** 1. 랜덤값(분) 받아서 **/
+                            int randomMin = random();
+
+                            MatchingAccount my = connectRoom.get(this.getMyAccount().getMySession().getId());
+                            MatchingAccount peer = connectRoom.get(my.getPeerSessionId());
+
+                            @Override
+                            public void run() {
+
+                                if (randomMin >= 0 && connectRoom.get(my.getMySession().getId()) != null
+                                        && connectRoom.get(peer.getMySession().getId()) != null) {
+                                    /** 2. 1씩 값 내리고 **/
+                                    randomMin--;
+                                } else { /** 0보다 작거나 세션에 없는 경우 task 종료 **/
+                                    cancel();
+                                }
+
+                                try {
+                                    /** 2, 매칭된 사용자 두명에게 초단위로 메세지 보내기 **/
+                                    sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"timer",null,randomMin));
+                                    sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"timer",null,randomMin));
+                                } catch (Exception e) {
+                                    //TODO: 로그 필요
+                                }
+
+                            }
+                        };
+                        Timer timer = new Timer(myMatchingAccount.getEmail(),false);
+                        //지정한 시간(firstTime)부터 1초 간격(period) 으로 지정한 작업(task)을 수행한다.
+                        timer.scheduleAtFixedRate(timerTask, 0, 1 * 1000);
+                        timeTimerrPool.put(myMatchingAccount.getEmail(),timer);
                     }
-                }
-                    //TODO: 타임 내리는 쓰레드 생성
-                TimerTask timerTask = new MyTimerTask(myMatchingAccount) {
-
-                    /** 1. 랜덤값(분) 받아서 **/
-                    int randomMin = random();
-
-                    MatchingAccount my = connectRoom.get(this.getMyAccount().getMySession().getId());
-                    MatchingAccount peer = connectRoom.get(my.getPeerSessionId());
-
-                    @Override
-                    public void run() {
-
-                        if (randomMin >= 0 && connectRoom.get(my.getMySession().getId()) != null
-                                && connectRoom.get(peer.getMySession().getId()) != null) {
-                            /** 2. 1씩 값 내리고 **/
-                            randomMin--;
-                        } else { /** 0보다 작거나 세션에 없는 경우 task 종료 **/
-                            cancel();
-                        }
-
-                        try {
-                            /** 2, 매칭된 사용자 두명에게 초단위로 메세지 보내기 **/
-                            sendMessage(my.getMySession(),new WebSocketMessage(my.getMySession().getId(),"timer",null,randomMin));
-                            sendMessage(peer.getMySession(),new WebSocketMessage(peer.getMySession().getId(),"timer",null,randomMin));
-                        } catch (Exception e) {
-                            //TODO: 로그 필요
-                        }
-
-                    }
-                };
-
-                Timer timer = new Timer(true);
-                //지정한 시간(firstTime)부터 1초 간격(period) 으로 지정한 작업(task)을 수행한다.
-                timer.scheduleAtFixedRate(timerTask,0,1*1000);
-
                 break;
 
 
@@ -452,12 +472,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         myMatchingAccount = matchingRoom.get(session.getId());
                         /**2. 매칭 취소 했으므로 대기방에서 지우기**/
                         matchingRoom.remove(myMatchingAccount.getMySession().getId());
+                        timerPool.remove(myMatchingAccount.getEmail());
 
-
-                        /**3. 상태 변경**/
-                        myMatchingAccount.setMatchingState(false);
-                        myMatchingAccount.setPeerId(null);
-                        myMatchingAccount.setPeerSessionId(null);
+                        /**3. 사용 안하므로 **/
+                        myMatchingAccount = null;
 
                         /**매칭룸 인원 변경되었으므로 모두 message보내기 **/
                         //TODO : 현재 계속 1 Client에게 2번씩 보내는 문제 해결필요
@@ -481,17 +499,24 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                         otherMatchingAccount = connectRoom.get(myMatchingAccount.getPeerSessionId());
 
                         if (myMatchingAccount != null) {
+                            Timer mytimer = timeTimerrPool.get(myMatchingAccount.getEmail());
+                            if(mytimer != null){
+                                timeTimerrPool.remove(myMatchingAccount.getEmail());
+                                mytimer.cancel();
+                            }
                             connectRoom.remove(myMatchingAccount.getMySession().getId());
-                            myMatchingAccount.setPeerId(null);
-                            myMatchingAccount.setPeerSessionId(null);
-                            myMatchingAccount.setMatchingState(false);
+                            /**사용 안하므로 **/
+                            myMatchingAccount = null;
                         }
                         if (otherMatchingAccount != null) {
+                            Timer peertimer = timeTimerrPool.get(otherMatchingAccount.getEmail());
+                            if(peertimer != null){
+                                timeTimerrPool.remove(otherMatchingAccount.getEmail());
+                                peertimer.cancel();
+                            }
                             connectRoom.remove(otherMatchingAccount.getMySession().getId());
-
-                            otherMatchingAccount.setPeerId(null);
-                            otherMatchingAccount.setPeerSessionId(null);
-                            otherMatchingAccount.setMatchingState(false);
+                            /**사용 안하므로 **/
+                            otherMatchingAccount = null;
                         }
                     }
 
@@ -635,13 +660,13 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
          * 매칭 알고리즘
          */
         /** 1. 전체 웹소켓 세션을 돌면서 **/
-        for (Map.Entry<String, WebSocketSession> otherSession : sessions.entrySet()) {
+        for (Map.Entry<String, MatchingAccount> otherSession : matchingRoom.entrySet()) {
 
             start = 1;
             MatchingAccount peer = null;
             /**2. 대기룸에 있는 사용자 중에서 자신이 아닌 상대방 찾고**/
 
-            peer = matchingRoom.get(otherSession.getKey());
+            peer = otherSession.getValue();
 
             /**if 체크 순서 중요! **/
             if (peer != null && !my.getMySession().getId().equals(peer.getMySession().getId())) {
@@ -796,9 +821,8 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                 if (start == 1) {
                     if(!matchingRoom.containsKey(my.getMySession().getId())){
                         /** 매칭 대기룸에 내가 없고 매칭룸에 내가 있으면 상대방이 날 먼저 찾음**/
-
                         if (connectRoom.containsKey(my.getMySession().getId())) {
-                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, my.getPeerId() + "번 이 날 먼저 찾았음 "));
+                            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notify : ", null, "뜨면 안됨"));
                         }
                         return false;
 
@@ -813,8 +837,11 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
 
                     //바로 메시지 보내기
                     /**5. 조건의 맞다면 각자 자신의 상대 sessionid 저장후**/
-                    my.setPeerSessionId(peer.getMySession().getId()); // 나의 객체의 상대방 id 저장
-                    peer.setPeerSessionId(my.getMySession().getId()); //상대방 객체의 나의 id 저장
+                    my.setPeerSessionId(peer.getMySession().getId()); // 나의 객체의 상대방 세션 id 저장
+                    peer.setPeerSessionId(my.getMySession().getId()); //상대방 객체의 나의 세션 id 저장
+                    /**연결되었으므로 각각 상대방의 id를 저장**/
+                    my.setPeerId(peer.getId());  // 나의 객체의 상대방 id 저장
+                    peer.setPeerId(my.getId()); //상대방 객체의 나의 id 저장
 
                     /**7. 대기룸에서 나가기 **/
                     /**각각 대기룸에서 나오기**/
@@ -836,6 +863,10 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                     }
 
                     sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "found", null, " 매칭 상대 : " + peer.getId() + " 발견"));
+                    Timer myTimer = timerPool.remove(my.getEmail());
+                    Timer peerTimer = timerPool.remove(peer.getEmail());
+                    myTimer.cancel();
+                    peerTimer.cancel();
 
                     return true;
                 }

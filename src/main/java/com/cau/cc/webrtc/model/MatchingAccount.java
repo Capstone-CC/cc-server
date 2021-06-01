@@ -11,6 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,4 +46,16 @@ public class MatchingAccount {
     //매칭상태
     private boolean matchingState;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MatchingAccount that = (MatchingAccount) o;
+        return Objects.equals(email, that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
 }

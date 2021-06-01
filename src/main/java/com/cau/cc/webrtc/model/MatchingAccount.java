@@ -39,12 +39,13 @@ public class MatchingAccount {
     private int selectGrade;
 
     //매칭된 상대방 sessionId, userId, 매칭된 시간
-    private String peerSessionId; //offer에서 매칭시 저장됨
-    private Long peerId; //connect시 저장됨
+    private String peerSessionId; //find에서 알고리즘 매칭시 저장됨
+    private Long peerId; //find에서 알고리즘 매칭시 저장됨
     private LocalDateTime matchingTime; //매칭룸 만들때 저장됨
 
     //매칭상태
-    private boolean matchingState;
+    private boolean matchingState; //내가 connect 보내기만 해도 true
+    private boolean matchingfinalState; //둘다 성공한경우 true
 
     @Override
     public boolean equals(Object o) {

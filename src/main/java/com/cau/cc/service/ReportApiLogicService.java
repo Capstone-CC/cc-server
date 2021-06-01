@@ -53,13 +53,12 @@ public class ReportApiLogicService {
             reported = report2.get();
             reported.setReportedCount(reported.getReportedCount()+1);
         }
-//        List<Report> duplicateReport = reportRepository.findByReporter(reporter.getId());
-//        for(int i = 0 ; i<duplicateReport.size(); i++) {
-//            if(duplicateReport.get(i).getReportedId().getId() == reported.getId()) {
-//                return Header.ERROR("이미 신고한 상대 입니다.");
-//            }
-//        }
-
+        Optional<Report> duplicateReport = reportRepository.findByReporter(reporter.getId(), reported.getId());
+        if(duplicateReport.isPresent()) {
+            if (duplicateReport.get().getReportedId().getId() == reported.getId()) {
+                return Header.ERROR("이미 신고한 상대 입니다.");
+            }
+        }
 
         accountRepository.save(reporter);
         accountRepository.save(reported);
@@ -85,11 +84,17 @@ public class ReportApiLogicService {
             return Header.ERROR("최대 신고 횟수를 초과하였습니다.");
         }
         reporter.setReporterCount(reporter.getReporterCount()-1);
-        //Report duplicateReport = reportRepository.findByReporterId(reporter.getId());
 
         Optional<Account> report2 = accountRepository.findById(request.getReportedId());
         Account reported = report2.get();
         reported.setReportedCount(reported.getReportedCount()+1);
+
+        Optional<Report> duplicateReport = reportRepository.findByReporter(reporter.getId(), reported.getId());
+        if(duplicateReport.isPresent()) {
+            if (duplicateReport.get().getReportedId().getId() == reported.getId()) {
+                return Header.ERROR("이미 신고한 상대 입니다.");
+            }
+        }
 
         accountRepository.save(reporter);
         accountRepository.save(reported);

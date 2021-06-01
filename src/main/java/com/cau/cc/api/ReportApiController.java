@@ -22,10 +22,18 @@ public class ReportApiController{
     @Autowired
     ReportApiLogicService reportApiLogicService;
 
-    @ApiOperation(value = "신고 시 카운트 증가",notes = "필수 정보 : report request")
+    @ApiOperation(value = "신고 시 카운트 증가",notes = "필수 정보 : @RequestBody chatroomId")
     @PostMapping("") // /api/report
     public Header<ReportApiResponse> create(@RequestBody ReportApiRequest request) {
-        return reportApiLogicService.create(request);
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Account account = (Account) auth.getPrincipal();
+
+            return reportApiLogicService.createChat(account.getId(), request);
+
+        }catch (Exception e){
+            return Header.ERROR("로그인 필요");
+        }
     }
 
 

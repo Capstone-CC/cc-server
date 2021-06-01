@@ -11,6 +11,7 @@ import com.cau.cc.model.repository.ChatRoomRepository;
 import com.cau.cc.model.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,7 +37,6 @@ public class ReportApiLogicService {
         if (reporter.getReporterCount() ==0) {
             return Header.ERROR("최대 신고 횟수를 초과하였습니다.");
         }
-        Report duplicateReport = reportRepository.findByReporterId(id);
         reporter.setReporterCount(reporter.getReporterCount()-1);
 
         Optional<Chatroom> chatroom1 = chatRoomRepository.findById(request.getId());
@@ -53,9 +53,13 @@ public class ReportApiLogicService {
             reported = report2.get();
             reported.setReportedCount(reported.getReportedCount()+1);
         }
-        if(duplicateReport.getReportedId().getId() == reported.getId()) {
-            return Header.ERROR("이미 신고한 상대 입니다.");
-        }
+//        List<Report> duplicateReport = reportRepository.findByReporter(reporter.getId());
+//        for(int i = 0 ; i<duplicateReport.size(); i++) {
+//            if(duplicateReport.get(i).getReportedId().getId() == reported.getId()) {
+//                return Header.ERROR("이미 신고한 상대 입니다.");
+//            }
+//        }
+
 
         accountRepository.save(reporter);
         accountRepository.save(reported);
@@ -81,7 +85,7 @@ public class ReportApiLogicService {
             return Header.ERROR("최대 신고 횟수를 초과하였습니다.");
         }
         reporter.setReporterCount(reporter.getReporterCount()-1);
-        Report duplicateReport = reportRepository.findByReporterId(reporter.getId());
+        //Report duplicateReport = reportRepository.findByReporterId(reporter.getId());
 
         Optional<Account> report2 = accountRepository.findById(request.getReportedId());
         Account reported = report2.get();
@@ -96,10 +100,11 @@ public class ReportApiLogicService {
                 .reporterId(accountRepository.getOne(body.getReporterId()))
                 .reportedId(accountRepository.getOne(body.getReportedId()))
                 .build();
-
-        if(duplicateReport.getReportedId().getId() == reported.getId()) {
-            return Header.ERROR("이미 신고한 상대 입니다.");
-        }
+//        if(duplicateReport!=null) {
+//            if (duplicateReport.getReportedId().getId() == reported.getId()) {
+//                return Header.ERROR("이미 신고한 상대 입니다.");
+//            }
+//        }
         Report newReport = reportRepository.save(report);
         return response(newReport);
     }

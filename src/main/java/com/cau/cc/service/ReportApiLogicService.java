@@ -36,6 +36,7 @@ public class ReportApiLogicService {
         if (reporter.getReporterCount() ==0) {
             return Header.ERROR("최대 신고 횟수를 초과하였습니다.");
         }
+        Report duplicateReport = reportRepository.findByReporterId(id);
         reporter.setReporterCount(reporter.getReporterCount()-1);
 
         Optional<Chatroom> chatroom1 = chatRoomRepository.findById(request.getId());
@@ -52,6 +53,9 @@ public class ReportApiLogicService {
             reported = report2.get();
             reported.setReportedCount(reported.getReportedCount()+1);
         }
+        if(duplicateReport.getReportedId().getId() == reported.getId()) {
+            return Header.ERROR("이미 신고한 상대 입니다.");
+        }
 
         accountRepository.save(reporter);
         accountRepository.save(reported);
@@ -62,6 +66,7 @@ public class ReportApiLogicService {
                 .reporterId(reporter)
                 .reportedId(reported)
                 .build();
+
 
         Report newReport = reportRepository.save(report);
         return response(newReport);
@@ -76,6 +81,7 @@ public class ReportApiLogicService {
             return Header.ERROR("최대 신고 횟수를 초과하였습니다.");
         }
         reporter.setReporterCount(reporter.getReporterCount()-1);
+        Report duplicateReport = reportRepository.findByReporterId(reporter.getId());
 
         Optional<Account> report2 = accountRepository.findById(request.getReportedId());
         Account reported = report2.get();
@@ -91,6 +97,9 @@ public class ReportApiLogicService {
                 .reportedId(accountRepository.getOne(body.getReportedId()))
                 .build();
 
+        if(duplicateReport.getReportedId().getId() == reported.getId()) {
+            return Header.ERROR("이미 신고한 상대 입니다.");
+        }
         Report newReport = reportRepository.save(report);
         return response(newReport);
     }

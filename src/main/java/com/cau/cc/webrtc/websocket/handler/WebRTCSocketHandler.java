@@ -150,6 +150,7 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
                             .matchingState(false)
                             .matchingfinalState(false)
                             .peerSessionId(null)
+                            .peerId(null)
                             .startTime(System.currentTimeMillis())
                             .delayObjects(matchingApiLogicService.findById(account.getGender(),account.getId()))
                             .selectGrade(webSocketMessage.getOption().getGrade())
@@ -649,6 +650,13 @@ public class WebRTCSocketHandler extends TextWebSocketHandler {
      * 매칭알고리즘
      */
     private synchronized boolean matchingAlgorithm(MatchingAccount my) {
+
+
+        /** 상대방이 날 먼저 찾음 **/
+        if(my.getPeerSessionId() != null){
+            sendMessage(my.getMySession(), new WebSocketMessage(my.getMySession().getId(), "notify : ", null, my.getPeerId() + "번 이 날 먼저 찾았음 "));
+            return true;
+        }
 
         //매칭상대 찾은 상태값 0: 몾찾음, 1: 찾음
         int start = 0;

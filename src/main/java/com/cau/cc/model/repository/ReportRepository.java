@@ -8,6 +8,6 @@ import java.util.*;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
-    @Query("select u from Report u where u.reporterId = ?1")
-    List<Report> findByReporter(Long id);
+    @Query(nativeQuery = true, value = "select * from report u where u.reporter_id = :reporterId and u.reported_id = :reportedId")
+    Optional<Report> findByReporter(Long reporterId, Long reportedId);
 }

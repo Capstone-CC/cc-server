@@ -193,6 +193,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/**",
                         "/account/password/find",
                         "/account/password/verify",
+                        "/account/password/modify",
                         "/email","/verify",
                         "/test",
                         "/major/list"

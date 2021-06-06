@@ -17,10 +17,16 @@ $ java -version
 $ javac -version
 > javac 11.0.11
 ```
-## Run
+## Run On the file location
 ```
+MacOS:
 chmod +x gradlew
 $ sudo ./gradlew clean bootjar
+$ java -jar build/libs/cc-0.0.1-SNAPSHOT.jar
+
+Window:
+$ chmod +x gradlew
+$ ./gradlew clean bootjar
 $ java -jar build/libs/cc-0.0.1-SNAPSHOT.jar
 ```
 Now you can check the api below in url.

@@ -1,8 +1,12 @@
 # How To Run
-How to run server on local 
+How to run server on local (Ubuntu Environment)
 
 ## Install
+```
 you need jdk version 11 [Download](https://www.oracle.com/kr/java/technologies/javase-jdk11-downloads.html)
+or
+$ sudo apt install openjdk-11-jdk
+```
 ```
 $ java -version
 > openjdk version "11.0.11" 2021-04-20

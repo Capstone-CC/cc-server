@@ -17,10 +17,10 @@ $ java -version
 $ javac -version
 > javac 11.0.11
 ```
-## Run On the file location
+## Run On the repository location
 ```
 MacOS:
-chmod +x gradlew
+$ chmod +x gradlew
 $ sudo ./gradlew clean bootjar
 $ java -jar build/libs/cc-0.0.1-SNAPSHOT.jar
 

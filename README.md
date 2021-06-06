@@ -29,6 +29,6 @@ $ chmod +x gradlew
 $ ./gradlew clean bootjar
 $ java -jar build/libs/cc-0.0.1-SNAPSHOT.jar
 ```
-Now you can check the api below in url.
+Now you can check the api below url.
 
 **[http://localhost:8080/api/swaager](localhost:8080/api/swaager)**
